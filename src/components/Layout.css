@@ -17,23 +17,24 @@
 .header-content {
   max-width: 1200px;
   margin: 0 auto;
-  padding: 0 20px;
+  padding: 14px 20px;
   display: flex;
-  justify-content: space-between;
   align-items: center;
-  height: 64px;
-  gap: 24px;
+  gap: 20px;
+  min-height: 72px;
+  flex-wrap: wrap;
 }
 
 .header-logo {
   flex: 0 0 auto;
   font-family: var(--font-family-heading);
-  font-size: 0.95rem;
+  font-size: 1.15rem;
   font-weight: 600;
   line-height: 1;
   letter-spacing: 0.12em;
   color: var(--text-primary);
   text-decoration: none;
+  margin-right: auto;
 }
 
 .header-logo:hover {
@@ -42,15 +43,18 @@
 
 .nav {
   display: flex;
-  gap: 2rem;
+  gap: 0.5rem;
   justify-content: center;
   flex: 1 1 auto;
+  align-items: center;
 }
 
 .header-actions {
-  flex: 0 0 44px;
   display: flex;
+  align-items: center;
   justify-content: flex-end;
+  gap: 10px;
+  flex: 0 0 auto;
 }
 
 .header-icon-link {
@@ -75,21 +79,65 @@
   background-color: rgba(11, 11, 18, 0.05);
 }
 
+.menu-toggle {
+  display: none;
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  color: var(--text-primary);
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  gap: 6px;
+  cursor: pointer;
+  transition: transform 0.2s;
+}
+
+.menu-toggle:hover {
+  color: var(--text-primary);
+}
+
+.menu-toggle span {
+  display: block;
+  width: 20px;
+  height: 2px;
+  background: currentColor;
+  border-radius: 999px;
+  transform-origin: center;
+  transition: transform 0.2s ease, opacity 0.2s ease;
+}
+
+.menu-toggle.open span:nth-child(1) {
+  transform: translateY(4px) rotate(45deg);
+}
+
+.menu-toggle.open span:nth-child(2) {
+  transform: translateY(-4px) rotate(-45deg);
+}
+
 .nav-link {
   font-family: var(--font-family-body);
   color: var(--text-secondary);
   text-decoration: none;
   font-weight: 500;
-  transition: color 0.2s;
+  transition: color 0.2s, background-color 0.2s, border-color 0.2s;
   position: relative;
+  padding: 0.7rem 0.95rem;
+  border-radius: 999px;
+  white-space: nowrap;
 }
 
 .nav-link:hover {
   color: var(--primary-color);
+  background: rgba(39, 19, 255, 0.05);
 }
 
 .nav-link.active {
   color: var(--primary-color);
+  background: rgba(39, 19, 255, 0.08);
 }
 
 .main-content {
@@ -111,22 +159,88 @@
   font-size: 0.875rem;
 }
 
-@media (max-width: 768px) {
+@media (max-width: 900px) {
   .header-content {
-    flex-direction: column;
-    height: auto;
-    padding: 16px 20px;
-    gap: 12px;
+    padding-bottom: 0;
+    gap: 14px;
+  }
+
+  .header-logo {
+    margin-right: auto;
+    flex: 1 1 auto;
+    min-width: 0;
+  }
+
+  .menu-toggle {
+    display: inline-flex;
   }
 
   .nav {
-    gap: 1rem;
-    flex-wrap: wrap;
-    justify-content: center;
+    order: 3;
+    width: 100%;
+    flex-basis: 100%;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0;
+    max-height: 0;
+    opacity: 0;
+    overflow: hidden;
+    pointer-events: none;
+    transform: translateY(-10px);
+    transition: max-height 0.28s ease, opacity 0.2s ease, transform 0.2s ease;
+  }
+
+  .nav.nav-open {
+    max-height: 520px;
+    opacity: 1;
+    pointer-events: auto;
+    transform: translateY(0);
+    margin-top: 4px;
+    padding-top: 16px;
+    border-top: 1px solid rgba(11, 11, 18, 0.08);
+  }
+
+  .nav-link {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    padding: 0.95rem 0;
+    border-radius: 0;
+    background: transparent;
+    border: 0;
+    font-size: 1rem;
+    line-height: 1.3;
+  }
+
+  .nav-link::after {
+    content: '\203A';
+    color: rgba(98, 102, 118, 0.9);
+    font-size: 1.8rem;
+    font-weight: 300;
+    line-height: 1;
+    transform: translateY(-1px);
+  }
+
+  .nav-link:hover {
+    background: transparent;
+    color: var(--text-primary);
+  }
+
+  .nav-link.active {
+    background: transparent;
+    color: var(--text-primary);
   }
 
   .header-actions {
-    justify-content: center;
+    margin-left: 0;
+    flex: 0 0 auto;
   }
+}
 
+@media (max-width: 520px) {
+  .header-content {
+    padding: 14px 20px 0;
+    gap: 14px;
+  }
 }

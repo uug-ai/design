@@ -77,6 +77,25 @@
   margin-top: 40px;
 }
 
+@media (min-width: 900px) {
+  .foundations-grid {
+    grid-template-columns: repeat(6, minmax(0, 1fr));
+    align-items: stretch;
+  }
+
+  .foundations-grid .foundation-card {
+    grid-column: span 2;
+  }
+
+  .foundations-grid .foundation-card:nth-child(4) {
+    grid-column: 2 / span 2;
+  }
+
+  .foundations-grid .foundation-card:nth-child(5) {
+    grid-column: 4 / span 2;
+  }
+}
+
 .benefit-card {
   padding: 32px;
   background-color: var(--surface);
@@ -125,7 +144,9 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  border: 1px solid transparent;
+  border: 1px solid rgba(11, 11, 18, 0.08);
+  color: #4f5463;
+  background: linear-gradient(135deg, rgba(11, 11, 18, 0.05), rgba(11, 11, 18, 0.025));
 }
 
 .foundation-icon svg {
@@ -133,33 +154,23 @@
 }
 
 .foundation-icon-colors {
-  color: #3452df;
-  background: linear-gradient(135deg, rgba(39, 19, 255, 0.14), rgba(39, 19, 255, 0.08));
-  border-color: rgba(39, 19, 255, 0.12);
+  color: #4f5463;
 }
 
 .foundation-icon-typography {
-  color: #7a4ce0;
-  background: linear-gradient(135deg, rgba(116, 38, 255, 0.16), rgba(116, 38, 255, 0.08));
-  border-color: rgba(116, 38, 255, 0.12);
+  color: #4f5463;
 }
 
 .foundation-icon-spacing {
-  color: #10956a;
-  background: linear-gradient(135deg, rgba(16, 185, 129, 0.16), rgba(16, 185, 129, 0.08));
-  border-color: rgba(16, 185, 129, 0.12);
+  color: #4f5463;
 }
 
 .foundation-icon-branding {
-  color: #d29214;
-  background: linear-gradient(135deg, rgba(245, 158, 11, 0.18), rgba(245, 158, 11, 0.08));
-  border-color: rgba(245, 158, 11, 0.16);
+  color: #4f5463;
 }
 
 .foundation-icon-components {
-  color: #d24a8f;
-  background: linear-gradient(135deg, rgba(236, 72, 153, 0.18), rgba(236, 72, 153, 0.08));
-  border-color: rgba(236, 72, 153, 0.14);
+  color: #4f5463;
 }
 
 .foundation-card h3 {
@@ -175,6 +186,7 @@
 }
 
 .cta-section {
+  margin-top: 96px;
   text-align: center;
   padding: 60px 40px;
   background: linear-gradient(135deg, rgba(37, 99, 235, 0.05), rgba(139, 92, 246, 0.05));
@@ -235,6 +247,10 @@
   .cta-buttons {
     flex-direction: column;
     align-items: center;
+  }
+
+  .cta-section {
+    margin-top: 64px;
   }
 
   .btn {

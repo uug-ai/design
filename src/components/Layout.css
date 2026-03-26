@@ -72,7 +72,7 @@
 
 .header-icon-link:hover {
   color: var(--primary-color);
-  background-color: rgba(39, 19, 255, 0.06);
+  background-color: rgba(11, 11, 18, 0.05);
 }
 
 .nav-link {

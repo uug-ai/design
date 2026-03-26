@@ -1,0 +1,83 @@
+.typography-page .typography-section {
+  margin-top: 60px;
+}
+
+.font-specimen {
+  background-color: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 40px;
+  margin-top: 24px;
+}
+
+.specimen-text {
+  font-size: 1.5rem;
+  color: var(--text-primary);
+  text-align: center;
+  word-break: break-all;
+}
+
+.type-scale {
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+  margin-top: 24px;
+}
+
+.type-example {
+  padding: 24px;
+  background-color: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+}
+
+.type-preview {
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: 12px;
+}
+
+.type-details {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+}
+
+.type-separator {
+  color: var(--border);
+}
+
+.weight-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 20px;
+  margin-top: 24px;
+}
+
+.weight-example {
+  padding: 24px;
+  background-color: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+}
+
+.weight-preview {
+  font-size: 2rem;
+  color: var(--text-primary);
+  margin-bottom: 12px;
+}
+
+.weight-details {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+}
+
+.weight-value {
+  font-family: 'Courier New', monospace;
+  color: var(--primary-color);
+}

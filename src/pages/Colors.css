@@ -1,0 +1,10 @@
+.colors-page .color-section {
+  margin-top: 60px;
+}
+
+.color-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 20px;
+  margin-top: 24px;
+}

@@ -122,6 +122,44 @@
   height: 60px;
   border-radius: 12px;
   margin-bottom: 16px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid transparent;
+}
+
+.foundation-icon svg {
+  flex: 0 0 auto;
+}
+
+.foundation-icon-colors {
+  color: #3452df;
+  background: linear-gradient(135deg, rgba(39, 19, 255, 0.14), rgba(39, 19, 255, 0.08));
+  border-color: rgba(39, 19, 255, 0.12);
+}
+
+.foundation-icon-typography {
+  color: #7a4ce0;
+  background: linear-gradient(135deg, rgba(116, 38, 255, 0.16), rgba(116, 38, 255, 0.08));
+  border-color: rgba(116, 38, 255, 0.12);
+}
+
+.foundation-icon-spacing {
+  color: #10956a;
+  background: linear-gradient(135deg, rgba(16, 185, 129, 0.16), rgba(16, 185, 129, 0.08));
+  border-color: rgba(16, 185, 129, 0.12);
+}
+
+.foundation-icon-branding {
+  color: #d29214;
+  background: linear-gradient(135deg, rgba(245, 158, 11, 0.18), rgba(245, 158, 11, 0.08));
+  border-color: rgba(245, 158, 11, 0.16);
+}
+
+.foundation-icon-components {
+  color: #d24a8f;
+  background: linear-gradient(135deg, rgba(236, 72, 153, 0.18), rgba(236, 72, 153, 0.08));
+  border-color: rgba(236, 72, 153, 0.14);
 }
 
 .foundation-card h3 {

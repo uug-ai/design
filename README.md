@@ -72,6 +72,25 @@ src/
 └── index.css         # Global styles and CSS variables
 ```
 
+## Deployment
+
+This project is automatically deployed to GitHub Pages when changes are pushed to the `main` branch.
+
+### GitHub Pages Setup
+
+1. Go to your repository Settings > Pages
+2. Set Source to "GitHub Actions"
+3. The workflow will automatically build and deploy on every push to `main`
+
+The site will be available at: `https://uug-ai.github.io/design/`
+
+### Manual Deployment
+
+To manually trigger a deployment:
+1. Go to Actions tab in GitHub
+2. Select "Deploy to GitHub Pages" workflow
+3. Click "Run workflow"
+
 ## License
 
 MIT License - see [LICENSE](LICENSE) file for details

@@ -4,59 +4,72 @@ import './Colors.css'
 
 function Colors() {
   const primaryColors = [
-    { name: 'Primary Blue', value: '#2563eb', variable: '--primary-color' },
-    { name: 'Primary Dark', value: '#1e40af', variable: '--primary-dark' },
-    { name: 'Secondary Purple', value: '#8b5cf6', variable: '--secondary-color' },
-    { name: 'Accent Green', value: '#10b981', variable: '--accent-color' },
+    { name: 'Primary Blue', value: '#2713ff', variable: '--primary-color' },
+    { name: 'Primary Blue Dark', value: '#1807c7', variable: '--primary-dark' },
+    { name: 'Signal Magenta', value: '#ff0059', variable: '--secondary-color' },
+    {
+      name: 'Brand Gradient',
+      value: 'linear-gradient(90deg, #2713ff 0%, #ff0059 100%)',
+      variable: '--brand-gradient',
+    },
   ]
 
   const neutralColors = [
-    { name: 'Text Primary', value: '#1f2937', variable: '--text-primary' },
-    { name: 'Text Secondary', value: '#6b7280', variable: '--text-secondary' },
+    { name: 'Ink', value: '#0b0b12', variable: '--text-primary' },
+    { name: 'Slate Copy', value: '#626676', variable: '--text-secondary' },
     { name: 'Background', value: '#ffffff', variable: '--background' },
-    { name: 'Surface', value: '#f9fafb', variable: '--surface' },
-    { name: 'Border', value: '#e5e7eb', variable: '--border' },
+    { name: 'Soft Surface', value: '#f7f5fb', variable: '--surface' },
+    { name: 'Raised Surface', value: '#efeafb', variable: '--surface-strong' },
+    { name: 'Border', value: '#e6e0f0', variable: '--border' },
   ]
 
   const cssCode = `:root {
-  /* Primary Colors */
-  --primary-color: #2563eb;
-  --primary-dark: #1e40af;
-  --secondary-color: #8b5cf6;
-  --accent-color: #10b981;
+  /* Brand Colors */
+  --primary-color: #2713ff;
+  --primary-dark: #1807c7;
+  --secondary-color: #ff0059;
+  --accent-color: #7426ff;
+  --brand-gradient: linear-gradient(90deg, #2713ff 0%, #ff0059 100%);
 
   /* Neutral Colors */
-  --text-primary: #1f2937;
-  --text-secondary: #6b7280;
+  --text-primary: #0b0b12;
+  --text-secondary: #626676;
   --background: #ffffff;
-  --surface: #f9fafb;
-  --border: #e5e7eb;
+  --surface: #f7f5fb;
+  --surface-strong: #efeafb;
+  --border: #e6e0f0;
 }`
 
-  const usageCode = `/* Using CSS Variables */
-.button {
-  background-color: var(--primary-color);
+  const usageCode = `.button-primary {
+  background: var(--brand-gradient);
   color: var(--background);
+  border: 0;
 }
 
-.button:hover {
-  background-color: var(--primary-dark);
+.section-kicker {
+  color: var(--accent-color);
+}
+
+.metrics-card {
+  background-color: var(--surface);
+  border: 1px solid var(--border);
 }`
 
   return (
     <div className="page colors-page">
       <h1>Colors</h1>
       <p>
-        Our color palette is designed to be accessible, modern, and reflective of the
-        UUG.AI brand. Each color has been carefully selected to ensure proper contrast
-        ratios and visual harmony.
+        The reference design points to a bright, high-contrast system: a clean white
+        canvas, near-black typography, and a blue-to-magenta gradient reserved for
+        emphasis, calls to action, and brand moments.
       </p>
 
       <section className="color-section">
         <h2>Primary Colors</h2>
         <p>
-          Primary colors are used for key actions, interactive elements, and brand
-          expression throughout the interface.
+          The palette should stay focused. The mockup relies on two saturated endpoints
+          and uses the full gradient sparingly so the interface keeps its editorial,
+          product-led feel.
         </p>
         <div className="color-grid">
           {primaryColors.map((color) => (
@@ -73,7 +86,8 @@ function Colors() {
       <section className="color-section">
         <h2>Neutral Colors</h2>
         <p>
-          Neutral colors provide the foundation for text, backgrounds, and UI structure.
+          Neutrals do most of the work: crisp white layouts, soft lilac-tinted surfaces,
+          and restrained borders that keep dense product information readable.
         </p>
         <div className="color-grid">
           {neutralColors.map((color) => (

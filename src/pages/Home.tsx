@@ -1,29 +1,63 @@
+import { BadgeCheck, Component, Palette, RulerArrows, Text } from 'iconoir-react'
 import { Link } from 'react-router-dom'
 import './Home.css'
 
 function Home() {
+  const foundations = [
+    {
+      to: '/colors',
+      title: 'Colors',
+      description: 'Thoughtful color palettes for accessibility and brand expression.',
+      icon: Palette,
+      iconClassName: 'foundation-icon-colors',
+    },
+    {
+      to: '/typography',
+      title: 'Typography',
+      description: 'Type scales, font families, and text styles for clear communication.',
+      icon: Text,
+      iconClassName: 'foundation-icon-typography',
+    },
+    {
+      to: '/spacing',
+      title: 'Spacing',
+      description: 'Consistent spacing system for layout harmony and visual rhythm.',
+      icon: RulerArrows,
+      iconClassName: 'foundation-icon-spacing',
+    },
+    {
+      to: '/branding',
+      title: 'Branding',
+      description: 'Logo usage, brand values, and visual identity guidelines.',
+      icon: BadgeCheck,
+      iconClassName: 'foundation-icon-branding',
+    },
+    {
+      to: '/components',
+      title: 'Components',
+      description: 'Reusable UI components with code examples and best practices.',
+      icon: Component,
+      iconClassName: 'foundation-icon-components',
+    },
+  ]
+
   return (
     <div className="page home-page">
       <div className="hero">
-        <h1>UUG.AI Design System</h1>
+        <div className="hero-title-block">
+          <h1 className="hero-title-main">AUGMENT VISION</h1>
+          <div className="hero-title-sub">Design system</div>
+        </div>
         <p className="hero-description">
-          A comprehensive design system that ensures consistency, efficiency, and quality
-          across all UUG.AI products and experiences.
-        </p>
-      </div>
-
-      <section className="section">
-        <h2>What is a Design System?</h2>
-        <p>
           A design system is a collection of reusable components, guided by clear standards,
           that can be assembled together to build any number of applications. It serves as
           a single source of truth for design and development teams, ensuring consistency
           and efficiency across all digital products.
         </p>
-      </section>
+      </div>
+
 
       <section className="section">
-        <h2>Why Design Systems Matter</h2>
         <div className="benefits-grid">
           <div className="benefit-card">
             <h3>Consistency</h3>
@@ -52,37 +86,25 @@ function Home() {
         </div>
       </section>
 
-      <section className="section">
+      <section className="section foundations-section">
         <h2>Design System Foundations</h2>
         <p>
           Our design system is built on fundamental principles that guide every decision:
         </p>
         <div className="foundations-grid">
-          <Link to="/colors" className="foundation-card">
-            <div className="foundation-icon" style={{ backgroundColor: '#2563eb' }}></div>
-            <h3>Colors</h3>
-            <p>Thoughtful color palettes for accessibility and brand expression.</p>
-          </Link>
-          <Link to="/typography" className="foundation-card">
-            <div className="foundation-icon" style={{ backgroundColor: '#8b5cf6' }}></div>
-            <h3>Typography</h3>
-            <p>Type scales, font families, and text styles for clear communication.</p>
-          </Link>
-          <Link to="/spacing" className="foundation-card">
-            <div className="foundation-icon" style={{ backgroundColor: '#10b981' }}></div>
-            <h3>Spacing</h3>
-            <p>Consistent spacing system for layout harmony and visual rhythm.</p>
-          </Link>
-          <Link to="/branding" className="foundation-card">
-            <div className="foundation-icon" style={{ backgroundColor: '#f59e0b' }}></div>
-            <h3>Branding</h3>
-            <p>Logo usage, brand values, and visual identity guidelines.</p>
-          </Link>
-          <Link to="/components" className="foundation-card">
-            <div className="foundation-icon" style={{ backgroundColor: '#ec4899' }}></div>
-            <h3>Components</h3>
-            <p>Reusable UI components with code examples and best practices.</p>
-          </Link>
+          {foundations.map((foundation) => {
+            const Icon = foundation.icon
+
+            return (
+              <Link key={foundation.to} to={foundation.to} className="foundation-card">
+                <div className={`foundation-icon ${foundation.iconClassName}`}>
+                  <Icon width={28} height={28} />
+                </div>
+                <h3>{foundation.title}</h3>
+                <p>{foundation.description}</p>
+              </Link>
+            )
+          })}
         </div>
       </section>
 

@@ -11,7 +11,7 @@ function ColorSwatch({ name, value, variable }: ColorSwatchProps) {
     <div className="color-swatch">
       <div
         className="color-preview"
-        style={{ backgroundColor: value }}
+        style={{ background: value }}
         aria-label={`Color: ${name}`}
       />
       <div className="color-info">

@@ -4,53 +4,52 @@ import './Branding.css'
 function Branding() {
   const brandValues = [
     {
-      title: 'Innovation',
-      description: 'We push boundaries and embrace cutting-edge technology to solve complex problems.',
+      title: 'Bold Clarity',
+      description: 'Lead with simple, high-contrast statements before introducing product detail.',
     },
     {
-      title: 'Clarity',
-      description: 'We communicate clearly and design intuitive experiences that users understand immediately.',
+      title: 'Operational Scale',
+      description: 'Use metrics, maps, and system views to show that the platform handles real-world complexity.',
     },
     {
-      title: 'Reliability',
-      description: 'We build robust, dependable systems that our users can trust.',
+      title: 'Focused Accents',
+      description: 'Reserve the gradient for actions, highlights, and section dividers rather than full-page fill.',
     },
     {
-      title: 'Excellence',
-      description: 'We maintain the highest standards in everything we create.',
+      title: 'Human Confidence',
+      description: 'Write with authority and keep the interface reassuring, crisp, and controlled.',
     },
   ]
 
-  const logoUsage = `<!-- Logo in HTML -->
-<img src="/logo.svg" alt="UUG.AI Logo" />
-
-<!-- With proper spacing -->
-<img src="/logo.svg" alt="UUG.AI Logo"
-     style="margin: 16px;" />`
+  const logoUsage = `.brand-mark {
+  font-family: var(--font-family-heading);
+  font-size: 300px;
+  font-weight: 600;
+  line-height: 1;
+  letter-spacing: 0.1em;
+  text-align: center;
+  color: var(--text-primary);
+}`
 
   return (
     <div className="page branding-page">
       <h1>Branding</h1>
       <p>
-        The UUG.AI brand represents innovation, intelligence, and reliability. Our visual
-        identity reflects these values through thoughtful design choices and consistent
-        application.
+        The reference direction is clear: editorial-scale headlines, white space, crisp
+        neutral layouts, and a blue-to-magenta accent system. The design language should
+        communicate scale and intelligence without becoming visually noisy.
       </p>
 
       <section className="branding-section">
         <h2>Logo</h2>
         <p>
-          The UUG.AI logo is the cornerstone of our brand identity. It should be used
-          consistently across all touchpoints.
+          The wordmark should feel closer to a product headline than a decorative logo.
+          Outfit gives it the right weight and geometry. The logo is simply UUG, with the
+          typography carrying the identity instead of extra decoration.
         </p>
         <div className="logo-showcase">
-          <div className="logo-display">
-            <svg viewBox="0 0 200 60" xmlns="http://www.w3.org/2000/svg" width="200" height="60">
-              <text x="10" y="40" fontFamily="Arial, sans-serif" fontSize="36"
-                    fontWeight="bold" fill="#2563eb">
-                UUG.AI
-              </text>
-            </svg>
+          <div className="logo-display" aria-label="UUG logo">
+            UUG
           </div>
         </div>
 
@@ -58,7 +57,8 @@ function Branding() {
         <ul className="guidelines-list">
           <li>Maintain minimum clear space of 16px around the logo</li>
           <li>Do not modify, rotate, or distort the logo</li>
-          <li>Use approved color variations only</li>
+          <li>Prefer the plain ink wordmark on light backgrounds</li>
+          <li>Keep the letter spacing open and the form centered</li>
           <li>Ensure sufficient contrast with the background</li>
         </ul>
 
@@ -67,17 +67,20 @@ function Branding() {
 
       <section className="branding-section">
         <h2>Brand Colors</h2>
-        <p>Our primary brand color is Blue (#2563eb), representing trust and intelligence.</p>
+        <p>
+          The design relies on a restrained palette. The gradient is the main signal of
+          brand energy, while ink and white keep the interface precise.
+        </p>
         <div className="brand-colors">
           <div className="brand-color-card">
-            <div className="brand-color-preview" style={{ backgroundColor: '#2563eb' }}></div>
-            <div className="brand-color-name">Brand Blue</div>
-            <div className="brand-color-value">#2563eb</div>
+            <div className="brand-color-preview" style={{ background: 'var(--brand-gradient)' }}></div>
+            <div className="brand-color-name">Brand Gradient</div>
+            <div className="brand-color-value">#2713FF -&gt; #FF0059</div>
           </div>
           <div className="brand-color-card">
-            <div className="brand-color-preview" style={{ backgroundColor: '#8b5cf6' }}></div>
-            <div className="brand-color-name">Brand Purple</div>
-            <div className="brand-color-value">#8b5cf6</div>
+            <div className="brand-color-preview" style={{ backgroundColor: '#0b0b12' }}></div>
+            <div className="brand-color-name">Brand Ink</div>
+            <div className="brand-color-value">#0b0b12</div>
           </div>
         </div>
       </section>
@@ -101,20 +104,20 @@ function Branding() {
         <h2>Voice & Tone</h2>
         <div className="voice-tone-grid">
           <div className="voice-card">
-            <h3>Professional</h3>
-            <p>We maintain a professional demeanor while remaining approachable.</p>
+            <h3>Direct</h3>
+            <p>Start with a clear claim, then support it with product proof.</p>
           </div>
           <div className="voice-card">
-            <h3>Clear</h3>
-            <p>We communicate directly and avoid jargon when possible.</p>
+            <h3>Technical</h3>
+            <p>Use precise language that reflects real operational capability, not hype.</p>
           </div>
           <div className="voice-card">
             <h3>Confident</h3>
-            <p>We speak with authority on our domain expertise.</p>
+            <p>Sound certain and informed, with concise sentences and strong hierarchy.</p>
           </div>
           <div className="voice-card">
-            <h3>Human</h3>
-            <p>We write like humans, not robots, with warmth and personality.</p>
+            <h3>Measured</h3>
+            <p>Avoid decorative marketing language when product evidence can do the work.</p>
           </div>
         </div>
       </section>

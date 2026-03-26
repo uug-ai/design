@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { Check, Copy } from 'iconoir-react'
 
 interface CodeBlockProps {
   code: string
@@ -23,7 +24,12 @@ function CodeBlock({ code, language = 'text' }: CodeBlockProps) {
       <button
         className={`copy-button ${copied ? 'copied' : ''}`}
         onClick={handleCopy}
+        type="button"
+        aria-label={copied ? 'Code copied' : 'Copy code'}
       >
+        <span className="copy-button-icon" aria-hidden="true">
+          {copied ? <Check width={16} height={16} /> : <Copy width={16} height={16} />}
+        </span>
         {copied ? 'Copied!' : 'Copy'}
       </button>
       <pre>

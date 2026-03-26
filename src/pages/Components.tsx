@@ -22,7 +22,7 @@ function Components() {
     const header = document.querySelector('.header')
 
     if (!(header instanceof HTMLElement)) {
-      return window.innerWidth <= 640 ? 120 : 72
+      return window.innerWidth <= 640 ? 76 : 72
     }
 
     return header.getBoundingClientRect().height
@@ -35,13 +35,48 @@ function Components() {
     return headerOffset + stickyHeight
   }
 
+  const getActiveSectionId = () => {
+    const scrollAnchor = window.scrollY + getStickyOffset() + 32
+    const sections = componentLinks
+      .map((componentLink) => {
+        const section = sectionRefs.current[componentLink.id]
+
+        if (!section) {
+          return null
+        }
+
+        return {
+          id: componentLink.id,
+          top: section.getBoundingClientRect().top + window.scrollY,
+        }
+      })
+      .filter((section): section is { id: string; top: number } => section !== null)
+
+    if (sections.length === 0) {
+      return null
+    }
+
+    let nextActiveSection: string | null = null
+
+    for (const section of sections) {
+      if (scrollAnchor >= section.top) {
+        nextActiveSection = section.id
+        continue
+      }
+
+      break
+    }
+
+    return nextActiveSection
+  }
+
   useEffect(() => {
     const updateStickyState = () => {
       if (!navStickyRef.current) {
         return
       }
 
-      const stickyOffset = window.innerWidth <= 640 ? 116 : 68
+      const stickyOffset = getHeaderOffset()
       setIsNavSticky(navStickyRef.current.getBoundingClientRect().top <= stickyOffset)
     }
 
@@ -55,10 +90,53 @@ function Components() {
     }
   }, [])
 
-  const handleComponentSelect = (componentId: string) => {
-    const nextComponent = activeComponent === componentId ? null : componentId
+  useEffect(() => {
+    const throttleMs = 80
+    let timeoutId = 0
+    let lastRunAt = 0
 
-    if (nextComponent === null && pageTopRef.current) {
+    const updateActiveSection = () => {
+      const nextActiveSection = getActiveSectionId()
+
+      setActiveComponent((currentActiveSection) => {
+        if (currentActiveSection === nextActiveSection) {
+          return currentActiveSection
+        }
+
+        return nextActiveSection
+      })
+
+      lastRunAt = window.performance.now()
+      timeoutId = 0
+    }
+
+    const scheduleActiveSectionUpdate = () => {
+      const now = window.performance.now()
+      const timeUntilNextRun = Math.max(0, throttleMs - (now - lastRunAt))
+
+      if (timeoutId !== 0) {
+        return
+      }
+
+      timeoutId = window.setTimeout(updateActiveSection, timeUntilNextRun)
+    }
+
+    updateActiveSection()
+    window.addEventListener('scroll', scheduleActiveSectionUpdate, { passive: true })
+    window.addEventListener('resize', scheduleActiveSectionUpdate)
+
+    return () => {
+      if (timeoutId !== 0) {
+        window.clearTimeout(timeoutId)
+      }
+
+      window.removeEventListener('scroll', scheduleActiveSectionUpdate)
+      window.removeEventListener('resize', scheduleActiveSectionUpdate)
+    }
+  }, [])
+
+  const handleComponentSelect = (componentId: string) => {
+    if (activeComponent === componentId && pageTopRef.current) {
       const headerOffset = getHeaderOffset()
       const top = pageTopRef.current.getBoundingClientRect().top + window.scrollY - headerOffset
 
@@ -66,21 +144,21 @@ function Components() {
         top: Math.max(0, top),
         behavior: 'smooth',
       })
-    } else if (nextComponent !== null) {
-      const stickyOffset = getStickyOffset()
-      const targetSection = sectionRefs.current[nextComponent]
 
-      if (targetSection) {
-        const top = targetSection.getBoundingClientRect().top + window.scrollY - stickyOffset
-
-        window.scrollTo({
-          top: Math.max(0, top),
-          behavior: 'smooth',
-        })
-      }
+      return
     }
 
-    setActiveComponent(nextComponent)
+    const stickyOffset = getStickyOffset()
+    const targetSection = sectionRefs.current[componentId]
+
+    if (targetSection) {
+      const top = targetSection.getBoundingClientRect().top + window.scrollY - stickyOffset
+
+      window.scrollTo({
+        top: Math.max(0, top),
+        behavior: 'smooth',
+      })
+    }
   }
 
   const buttonCode = `<button className="btn btn-primary">

@@ -132,12 +132,12 @@
 
 .nav-link:hover {
   color: var(--primary-color);
-  background: rgba(39, 19, 255, 0.05);
+  background: transparent;
 }
 
 .nav-link.active {
   color: var(--primary-color);
-  background: rgba(39, 19, 255, 0.08);
+  background: transparent;
 }
 
 .main-content {

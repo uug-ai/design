@@ -1,0 +1,117 @@
+.spacing-page .spacing-section {
+  margin-top: 60px;
+}
+
+.spacing-examples {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin-top: 24px;
+}
+
+.spacing-example {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  padding: 20px;
+  background-color: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+}
+
+.spacing-visual {
+  min-width: 100px;
+  height: 100px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: repeating-linear-gradient(
+    45deg,
+    #f3f4f6,
+    #f3f4f6 10px,
+    #e5e7eb 10px,
+    #e5e7eb 20px
+  );
+  border-radius: 4px;
+}
+
+.spacing-box {
+  background-color: var(--primary-color);
+  border-radius: 4px;
+}
+
+.spacing-info {
+  flex: 1;
+}
+
+.spacing-name {
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: 4px;
+}
+
+.spacing-value {
+  font-size: 1rem;
+  color: var(--primary-color);
+  font-family: 'Courier New', monospace;
+  margin-bottom: 4px;
+}
+
+.spacing-usage {
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+}
+
+.visual-demo {
+  margin-top: 24px;
+}
+
+.demo-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  margin-top: 16px;
+}
+
+.demo-box {
+  background-color: var(--surface);
+  border: 2px dashed var(--primary-color);
+  border-radius: 4px;
+  font-size: 0.875rem;
+  color: var(--text-primary);
+  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.demo-flex {
+  display: flex;
+  align-items: center;
+  padding: 16px;
+  background-color: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  position: relative;
+}
+
+.demo-item {
+  width: 60px;
+  height: 60px;
+  background-color: var(--primary-color);
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 4px;
+  font-weight: 600;
+}
+
+.demo-label {
+  position: absolute;
+  bottom: -24px;
+  left: 16px;
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+}

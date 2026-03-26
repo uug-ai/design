@@ -53,6 +53,10 @@
   margin-bottom: 80px;
 }
 
+.foundations-section {
+  margin-top: 184px;
+}
+
 .section h2 {
   text-align: center;
   font-size: 2.5rem;
@@ -184,6 +188,10 @@
 @media (max-width: 768px) {
   .hero-description {
     font-size: 1.125rem;
+  }
+
+  .foundations-section {
+    margin-top: 120px;
   }
 
   .cta-buttons {

@@ -36,8 +36,8 @@ function Branding() {
       <h1>Branding</h1>
       <p>
         The reference direction is clear: editorial-scale headlines, white space, crisp
-        neutral layouts, and a vivid violet-to-magenta accent system. The design language
-        should communicate scale and intelligence without becoming visually noisy.
+        neutral layouts, and a blue-to-magenta accent system. The design language should
+        communicate scale and intelligence without becoming visually noisy.
       </p>
 
       <section className="branding-section">

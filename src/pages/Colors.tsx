@@ -4,8 +4,8 @@ import './Colors.css'
 
 function Colors() {
   const primaryColors = [
-    { name: 'Electric Violet', value: '#2713ff', variable: '--primary-color' },
-    { name: 'Deep Violet', value: '#1807c7', variable: '--primary-dark' },
+    { name: 'Primary Blue', value: '#2713ff', variable: '--primary-color' },
+    { name: 'Primary Blue Dark', value: '#1807c7', variable: '--primary-dark' },
     { name: 'Signal Magenta', value: '#ff0059', variable: '--secondary-color' },
     {
       name: 'Brand Gradient',
@@ -60,7 +60,7 @@ function Colors() {
       <h1>Colors</h1>
       <p>
         The reference design points to a bright, high-contrast system: a clean white
-        canvas, near-black typography, and a violet-to-magenta gradient reserved for
+        canvas, near-black typography, and a blue-to-magenta gradient reserved for
         emphasis, calls to action, and brand moments.
       </p>
 

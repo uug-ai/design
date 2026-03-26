@@ -47,7 +47,7 @@ function Home() {
         </div>
       </section>
 
-      <section className="section">
+      <section className="section foundations-section">
         <h2>Design System Foundations</h2>
         <p>
           Our design system is built on fundamental principles that guide every decision:

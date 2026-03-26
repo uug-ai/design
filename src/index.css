@@ -35,7 +35,7 @@ body {
   -moz-osx-font-smoothing: grayscale;
   color: var(--text-primary);
   background-color: var(--background);
-  background-image: radial-gradient(circle at top, rgba(39, 19, 255, 0.04), transparent 28%);
+  background-image: radial-gradient(circle at top, rgba(39, 19, 255, 0.05), transparent 28%);
 }
 
 code {

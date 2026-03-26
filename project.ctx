@@ -1,0 +1,105 @@
+# UUG.AI Design System — Project Context
+
+## Overview
+
+Package: @uug-ai/design-system v0.1.0
+Purpose: A documentation/reference website that serves as the single source of truth for design and development teams at UUG.AI. It showcases design tokens (colors, spacing, typography), brand guidelines, and reusable UI component patterns with live examples and copy-able code snippets.
+
+Base path (deployed): /design/
+
+---
+
+## Tech Stack
+
+- React 18.3.1 + TypeScript 5.4.5
+- React Router DOM 6.22.3 (client-side routing, BrowserRouter)
+- Vite 5.2.8 + @vitejs/plugin-react (build tool, dev server, Fast Refresh)
+- Plain CSS (co-located per component/page, no CSS-in-JS, no Tailwind, no component library)
+- ESLint with @typescript-eslint and react-hooks / react-refresh plugins
+
+---
+
+## Project Structure
+
+```
+src/
+  main.tsx              # App entry point — BrowserRouter + StrictMode
+  App.tsx               # Route definitions
+  index.css             # Global resets and base styles
+  App.css               # App-level styles
+  components/
+    Layout.tsx/.css     # Persistent shell: header (logo + nav), main slot, footer
+    ColorSwatch.tsx/.css  # Color preview card (name, hex, CSS variable)
+    CodeBlock.tsx       # Code display with copy-to-clipboard button
+  pages/
+    Home.tsx/.css       # Hero + benefits grid + foundations nav links
+    Colors.tsx/.css     # Primary and neutral color palettes with CSS variable snippets
+    Typography.tsx/.css # Font stack, type scale (7 levels), font weights, usage examples
+    Spacing.tsx/.css    # 8-step spacing scale (4px–80px) with visual demos and CSS vars
+    Branding.tsx/.css   # SVG logo, usage guidelines, brand colors, brand values, embed code
+    Components.tsx/.css # Live demos + JSX/CSS code snippets for Buttons, Inputs, Cards
+```
+
+---
+
+## Routing
+
+All routes are wrapped in <Layout> (persistent header/nav/footer).
+
+| Route        | Page Component  | Content                                      |
+|------------- |---------------- |--------------------------------------------- |
+| /            | Home            | Hero, benefits, foundations links            |
+| /colors      | Colors          | Primary + neutral palettes, CSS variables    |
+| /typography  | Typography      | Type scale, font weights, usage examples     |
+| /spacing     | Spacing         | Spacing scale, visual demos, CSS variables   |
+| /branding    | Branding        | Logo, brand colors, brand values, embed code |
+| /components  | Components      | Buttons, Inputs, Cards — live + code         |
+
+---
+
+## Components
+
+### Layout
+- Wraps every page with a persistent header and footer.
+- Header: UUG.AI logo (links to /), navigation links to all pages.
+- Active nav item highlighted using useLocation() — compares location.pathname, applies "active" CSS class.
+- Footer: copyright notice.
+- Props: { children: ReactNode }
+
+### ColorSwatch
+- Presentational card: colored preview box + name + hex value + optional CSS variable name.
+- Props: { name: string; value: string; variable?: string }
+
+### CodeBlock
+- Displays a code snippet with a "Copy to Clipboard" button.
+- Uses navigator.clipboard; shows "Copied!" feedback for 2 seconds via useState + setTimeout.
+- Props: { code: string; language?: string }
+
+---
+
+## Design System Tokens
+
+### Colors (CSS custom properties)
+- Primary palette: Blue, Dark Blue, Purple, Green
+- Neutral palette: text, backgrounds, borders
+- Defined as CSS variables (e.g. --primary-color, --text-primary)
+
+### Typography
+- System font stack
+- 7-level type scale: Display → Small
+- Font weights: 400, 500, 600, 700
+
+### Spacing
+- 8-step scale, all multiples of 4px: 4px, 8px, 12px, 16px, 24px, 32px, 48px, 80px
+- CSS variables: --spacing-xs through --spacing-xxl
+
+---
+
+## Conventions & Patterns
+
+- Token-first: all design values are CSS custom properties shown as copy-able snippets.
+- Co-located CSS: each component and page has its own .css file alongside the .tsx file.
+- Data-driven pages: Colors, Typography, Spacing, Branding map over local arrays — easy to update.
+- Storybook-lite pattern: Components page shows live renders alongside JSX and CSS CodeBlocks.
+- No external UI library: fully hand-crafted components and styles.
+- TypeScript props interfaces for all components: ColorSwatchProps, CodeBlockProps, LayoutProps.

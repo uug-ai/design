@@ -5,10 +5,13 @@ function Home() {
   return (
     <div className="page home-page">
       <div className="hero">
-        <h1>UUG.AI Design System</h1>
+        <div className="hero-title-block">
+          <h1 className="hero-title-main">AUGMENT VISION</h1>
+          <div className="hero-title-sub">Design system</div>
+        </div>
         <p className="hero-description">
-          A comprehensive design system that ensures consistency, efficiency, and quality
-          across all UUG.AI products and experiences.
+          A comprehensive design system for building consistent, scalable, high-clarity
+          product experiences.
         </p>
       </div>
 

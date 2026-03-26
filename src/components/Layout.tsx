@@ -21,9 +21,6 @@ function Layout({ children }: LayoutProps) {
     <div className="app-container">
       <header className="header">
         <div className="header-content">
-          <div className="logo">
-            <Link to="/">UUG.AI Design System</Link>
-          </div>
           <nav className="nav">
             {navItems.map((item) => (
               <Link

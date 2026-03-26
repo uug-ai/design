@@ -1,9 +1,12 @@
-import { useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import CodeBlock from '../components/CodeBlock'
 import Loader from '../components/Loader'
 import './Components.css'
 
 function Components() {
+  const pageTopRef = useRef<HTMLDivElement | null>(null)
+  const navStickyRef = useRef<HTMLDivElement | null>(null)
+  const sectionRefs = useRef<Record<string, HTMLElement | null>>({})
   const [buttonDisabled, setButtonDisabled] = useState(false)
   const [inputValue, setInputValue] = useState('')
   const componentLinks = [
@@ -12,6 +15,73 @@ function Components() {
     { id: 'cards', label: 'Cards' },
     { id: 'loader', label: 'Loader' },
   ]
+  const [activeComponent, setActiveComponent] = useState<string | null>(null)
+  const [isNavSticky, setIsNavSticky] = useState(false)
+
+  const getHeaderOffset = () => {
+    const header = document.querySelector('.header')
+
+    if (!(header instanceof HTMLElement)) {
+      return window.innerWidth <= 640 ? 120 : 72
+    }
+
+    return header.getBoundingClientRect().height
+  }
+
+  const getStickyOffset = () => {
+    const headerOffset = getHeaderOffset()
+    const stickyHeight = navStickyRef.current?.getBoundingClientRect().height ?? 0
+
+    return headerOffset + stickyHeight
+  }
+
+  useEffect(() => {
+    const updateStickyState = () => {
+      if (!navStickyRef.current) {
+        return
+      }
+
+      const stickyOffset = window.innerWidth <= 640 ? 116 : 68
+      setIsNavSticky(navStickyRef.current.getBoundingClientRect().top <= stickyOffset)
+    }
+
+    updateStickyState()
+    window.addEventListener('scroll', updateStickyState, { passive: true })
+    window.addEventListener('resize', updateStickyState)
+
+    return () => {
+      window.removeEventListener('scroll', updateStickyState)
+      window.removeEventListener('resize', updateStickyState)
+    }
+  }, [])
+
+  const handleComponentSelect = (componentId: string) => {
+    const nextComponent = activeComponent === componentId ? null : componentId
+
+    if (nextComponent === null && pageTopRef.current) {
+      const headerOffset = getHeaderOffset()
+      const top = pageTopRef.current.getBoundingClientRect().top + window.scrollY - headerOffset
+
+      window.scrollTo({
+        top: Math.max(0, top),
+        behavior: 'smooth',
+      })
+    } else if (nextComponent !== null) {
+      const stickyOffset = getStickyOffset()
+      const targetSection = sectionRefs.current[nextComponent]
+
+      if (targetSection) {
+        const top = targetSection.getBoundingClientRect().top + window.scrollY - stickyOffset
+
+        window.scrollTo({
+          top: Math.max(0, top),
+          behavior: 'smooth',
+        })
+      }
+    }
+
+    setActiveComponent(nextComponent)
+  }
 
   const buttonCode = `<button className="btn btn-primary">
   Primary Button
@@ -153,29 +223,45 @@ function Components() {
 }`
 
   return (
-    <div className="page components-page">
+    <div ref={pageTopRef} className="page components-page">
       <h1>Components</h1>
       <div className="components-intro">
         <p>
           Reusable UI components built with accessibility and consistency in mind.
           Each component includes live examples and copy-able code.
         </p>
+      </div>
 
+      <div
+        ref={navStickyRef}
+        className={`components-nav-sticky ${isNavSticky ? 'is-sticky' : ''}`}
+      >
         <nav className="components-nav" aria-label="Component sections">
           <p className="components-nav-title">Browse components</p>
           <ul className="components-nav-list">
             {componentLinks.map((componentLink) => (
               <li key={componentLink.id}>
-                <a className="components-nav-link" href={`#${componentLink.id}`}>
+                <button
+                  className={`components-nav-link ${activeComponent === componentLink.id ? 'is-active' : ''}`}
+                  type="button"
+                  onClick={() => handleComponentSelect(componentLink.id)}
+                  aria-pressed={activeComponent === componentLink.id}
+                >
                   {componentLink.label}
-                </a>
+                </button>
               </li>
             ))}
           </ul>
         </nav>
       </div>
 
-      <section id="buttons" className="component-section">
+      <section
+        id="buttons"
+        className="component-section"
+        ref={(element) => {
+          sectionRefs.current.buttons = element
+        }}
+      >
         <h2>Buttons</h2>
         <p>
           Buttons are the primary way users take actions in the interface. Use primary
@@ -204,7 +290,13 @@ function Components() {
         </div>
       </section>
 
-      <section id="inputs" className="component-section">
+      <section
+        id="inputs"
+        className="component-section"
+        ref={(element) => {
+          sectionRefs.current.inputs = element
+        }}
+      >
         <h2>Inputs</h2>
         <p>
           Form inputs allow users to enter data. Always include a label for accessibility.
@@ -236,7 +328,13 @@ function Components() {
         </div>
       </section>
 
-      <section id="cards" className="component-section">
+      <section
+        id="cards"
+        className="component-section"
+        ref={(element) => {
+          sectionRefs.current.cards = element
+        }}
+      >
         <h2>Cards</h2>
         <p>
           Cards are flexible containers for grouping related content and actions.
@@ -260,7 +358,13 @@ function Components() {
         </div>
       </section>
 
-      <section id="loader" className="component-section">
+      <section
+        id="loader"
+        className="component-section"
+        ref={(element) => {
+          sectionRefs.current.loader = element
+        }}
+      >
         <h2>Loader</h2>
         <p>
           Loaders communicate progress without blocking the interface. This library now

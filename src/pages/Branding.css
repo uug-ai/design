@@ -17,6 +17,16 @@
 .logo-display {
   display: flex;
   justify-content: center;
+  align-items: center;
+  width: 100%;
+  font-family: var(--font-family-heading);
+  font-size: clamp(5rem, 24vw, 300px);
+  font-weight: 600;
+  line-height: 1;
+  letter-spacing: 0.1em;
+  text-align: center;
+  color: var(--text-primary);
+  padding-left: 0.1em;
 }
 
 .guidelines-list {

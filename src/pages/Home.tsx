@@ -10,23 +10,15 @@ function Home() {
           <div className="hero-title-sub">Design system</div>
         </div>
         <p className="hero-description">
-          A comprehensive design system for building consistent, scalable, high-clarity
-          product experiences.
-        </p>
-      </div>
-
-      <section className="section">
-        <h2>What is a Design System?</h2>
-        <p>
           A design system is a collection of reusable components, guided by clear standards,
           that can be assembled together to build any number of applications. It serves as
           a single source of truth for design and development teams, ensuring consistency
           and efficiency across all digital products.
         </p>
-      </section>
+      </div>
+
 
       <section className="section">
-        <h2>Why Design Systems Matter</h2>
         <div className="benefits-grid">
           <div className="benefit-card">
             <h3>Consistency</h3>

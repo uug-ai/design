@@ -187,40 +187,42 @@ function Components() {
           Reusable UI components built with accessibility and consistency in mind.
           Each component includes a live example and a direct Storybook entry for deeper review.
         </p>
-        <div className="components-storybook-callout">
-          <div>
-            <strong>Need deeper component detail?</strong>
-            <p>
-              Open the integrated Storybook for isolated states, controls, and component-level documentation.
-            </p>
-          </div>
-          <a href={storybookUrl} className="components-storybook-link" target="_blank" rel="noreferrer">
-            Open Storybook
-          </a>
-        </div>
       </div>
 
       <div
         ref={navStickyRef}
         className={`components-nav-sticky ${isNavSticky ? 'is-sticky' : ''}`}
       >
-        <nav className="components-nav" aria-label="Component sections">
-          <p className="components-nav-title">Browse components</p>
-          <ul className="components-nav-list">
-            {COMPONENT_LINKS.map((componentLink) => (
-              <li key={componentLink.id}>
-                <button
-                  className={`components-nav-link ${activeComponent === componentLink.id ? 'is-active' : ''}`}
-                  type="button"
-                  onClick={() => handleComponentSelect(componentLink.id)}
-                  aria-pressed={activeComponent === componentLink.id}
-                >
-                  {componentLink.label}
-                </button>
-              </li>
-            ))}
-          </ul>
-        </nav>
+        <div className="components-overview-card">
+          <div className="components-storybook-callout">
+            <div>
+              <strong>Need deeper component detail?</strong>
+              <p>
+                Open the integrated Storybook for isolated states, controls, and component-level documentation.
+              </p>
+            </div>
+            <a href={storybookUrl} className="components-storybook-link" target="_blank" rel="noreferrer">
+              Open Storybook
+            </a>
+          </div>
+
+          <nav className="components-nav" aria-label="Component sections">
+            <ul className="components-nav-list">
+              {COMPONENT_LINKS.map((componentLink) => (
+                <li key={componentLink.id}>
+                  <button
+                    className={`components-nav-link ${activeComponent === componentLink.id ? 'is-active' : ''}`}
+                    type="button"
+                    onClick={() => handleComponentSelect(componentLink.id)}
+                    aria-pressed={activeComponent === componentLink.id}
+                  >
+                    {componentLink.label}
+                  </button>
+                </li>
+              ))}
+            </ul>
+          </nav>
+        </div>
       </div>
 
       <section

@@ -1,3 +1,9 @@
+.app-container {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
 .header {
   background-color: var(--background);
   border-bottom: 1px solid var(--border);

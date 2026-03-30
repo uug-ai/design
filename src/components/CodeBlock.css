@@ -1,0 +1,51 @@
+.code-block {
+  background-color: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 20px;
+  margin: 20px 0;
+  position: relative;
+  font-family: 'Courier New', monospace;
+  font-size: 0.875rem;
+  overflow-x: auto;
+  box-shadow: 0 20px 40px var(--shadow);
+}
+
+.copy-button {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 14px;
+  background: rgba(255, 255, 255, 0.72);
+  color: var(--text-secondary);
+  border: 1px solid rgba(98, 102, 118, 0.24);
+  border-radius: 999px;
+  cursor: pointer;
+  font-size: 0.75rem;
+  font-weight: 600;
+  line-height: 1;
+  backdrop-filter: blur(10px);
+  transition: color 0.2s, border-color 0.2s, background-color 0.2s, box-shadow 0.2s;
+}
+
+.copy-button-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.copy-button:hover {
+  background: rgba(255, 255, 255, 0.92);
+  color: var(--text-primary);
+  border-color: rgba(65, 105, 225, 0.22);
+  box-shadow: 0 12px 24px rgba(20, 11, 59, 0.08);
+}
+
+.copy-button.copied {
+  background: rgba(255, 255, 255, 0.92);
+  color: var(--primary-color);
+  border-color: rgba(65, 105, 225, 0.32);
+}

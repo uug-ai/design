@@ -1,7 +1,24 @@
 import { useEffect, useRef, useState } from 'react'
-import CodeBlock from '../components/CodeBlock'
 import Loader from '../components/Loader'
+import { storybookEntryUrl, storybookUrl } from '../config/storybook'
 import './Components.css'
+
+const COMPONENT_LINKS = [
+  { id: 'buttons', label: 'Buttons', storybookPath: '/docs/components-buttons--docs' },
+  { id: 'inputs', label: 'Inputs', storybookPath: '/docs/components-inputs--docs' },
+  { id: 'cards', label: 'Cards', storybookPath: '/docs/components-cards--docs' },
+  { id: 'loader', label: 'Loader', storybookPath: '/docs/components-loader--docs' },
+] as const
+
+type ComponentSectionId = (typeof COMPONENT_LINKS)[number]['id']
+type ComponentSectionPosition = { id: ComponentSectionId; top: number }
+
+const COMPONENT_STORYBOOK_LINKS = Object.fromEntries(
+  COMPONENT_LINKS.map((componentLink) => [
+    componentLink.id,
+    storybookEntryUrl(componentLink.storybookPath),
+  ])
+) as Record<string, string>
 
 function Components() {
   const pageTopRef = useRef<HTMLDivElement | null>(null)
@@ -9,12 +26,6 @@ function Components() {
   const sectionRefs = useRef<Record<string, HTMLElement | null>>({})
   const [buttonDisabled, setButtonDisabled] = useState(false)
   const [inputValue, setInputValue] = useState('')
-  const componentLinks = [
-    { id: 'buttons', label: 'Buttons' },
-    { id: 'inputs', label: 'Inputs' },
-    { id: 'cards', label: 'Cards' },
-    { id: 'loader', label: 'Loader' },
-  ]
   const [activeComponent, setActiveComponent] = useState<string | null>(null)
   const [isNavSticky, setIsNavSticky] = useState(false)
 
@@ -33,41 +44,6 @@ function Components() {
     const stickyHeight = navStickyRef.current?.getBoundingClientRect().height ?? 0
 
     return headerOffset + stickyHeight
-  }
-
-  const getActiveSectionId = () => {
-    const scrollAnchor = window.scrollY + getStickyOffset() + 32
-    const sections = componentLinks
-      .map((componentLink) => {
-        const section = sectionRefs.current[componentLink.id]
-
-        if (!section) {
-          return null
-        }
-
-        return {
-          id: componentLink.id,
-          top: section.getBoundingClientRect().top + window.scrollY,
-        }
-      })
-      .filter((section): section is { id: string; top: number } => section !== null)
-
-    if (sections.length === 0) {
-      return null
-    }
-
-    let nextActiveSection: string | null = null
-
-    for (const section of sections) {
-      if (scrollAnchor >= section.top) {
-        nextActiveSection = section.id
-        continue
-      }
-
-      break
-    }
-
-    return nextActiveSection
   }
 
   useEffect(() => {
@@ -94,6 +70,48 @@ function Components() {
     const throttleMs = 80
     let timeoutId = 0
     let lastRunAt = 0
+
+    const getStickyOffset = () => {
+      const headerOffset = getHeaderOffset()
+      const stickyHeight = navStickyRef.current?.getBoundingClientRect().height ?? 0
+
+      return headerOffset + stickyHeight
+    }
+
+    const getActiveSectionId = () => {
+      const scrollAnchor = window.scrollY + getStickyOffset() + 32
+      const sections = COMPONENT_LINKS
+        .map((componentLink) => {
+          const section = sectionRefs.current[componentLink.id]
+
+          if (!section) {
+            return null
+          }
+
+          return {
+            id: componentLink.id,
+            top: section.getBoundingClientRect().top + window.scrollY,
+          }
+        })
+        .filter((section): section is ComponentSectionPosition => section !== null)
+
+      if (sections.length === 0) {
+        return null
+      }
+
+      let nextActiveSection: string | null = null
+
+      for (const section of sections) {
+        if (scrollAnchor >= section.top) {
+          nextActiveSection = section.id
+          continue
+        }
+
+        break
+      }
+
+      return nextActiveSection
+    }
 
     const updateActiveSection = () => {
       const nextActiveSection = getActiveSectionId()
@@ -161,152 +179,13 @@ function Components() {
     }
   }
 
-  const buttonCode = `<button className="btn btn-primary">
-  Primary Button
-</button>
-
-<button className="btn btn-secondary">
-  Secondary Button
-</button>
-
-<button className="btn btn-primary" disabled>
-  Disabled Button
-</button>`
-
-  const buttonCss = `.btn {
-  padding: 14px 28px;
-  border-radius: 8px;
-  font-size: 1rem;
-  font-weight: 600;
-  border: none;
-  cursor: pointer;
-  transition: all 0.2s;
-}
-
-.btn-primary {
-  background-color: var(--primary-color);
-  color: white;
-}
-
-.btn-primary:hover:not(:disabled) {
-  background-color: var(--primary-dark);
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
-}
-
-.btn-secondary {
-  background-color: transparent;
-  color: var(--primary-color);
-  border: 2px solid var(--primary-color);
-}
-
-.btn:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
-}`
-
-  const inputCode = `<div className="input-group">
-  <label htmlFor="email" className="input-label">
-    Email
-  </label>
-  <input
-    type="email"
-    id="email"
-    className="input"
-    placeholder="Enter your email"
-  />
-</div>`
-
-  const inputCss = `.input-group {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-
-.input-label {
-  font-size: 0.875rem;
-  font-weight: 600;
-  color: var(--text-primary);
-}
-
-.input {
-  padding: 12px 16px;
-  border: 1px solid var(--border);
-  border-radius: 8px;
-  font-size: 1rem;
-  color: var(--text-primary);
-  transition: border-color 0.2s, box-shadow 0.2s;
-}
-
-.input:focus {
-  outline: none;
-  border-color: var(--primary-color);
-  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
-}`
-
-  const cardCode = `<div className="card">
-  <h3>Card Title</h3>
-  <p>Card content goes here with descriptive text.</p>
-  <button className="btn btn-primary">Action</button>
-</div>`
-
-  const cardCss = `.card {
-  padding: 32px;
-  background-color: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: 12px;
-  box-shadow: 0 2px 4px var(--shadow);
-  transition: transform 0.2s, box-shadow 0.2s;
-}
-
-.card:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 8px 24px var(--shadow);
-}`
-
-  const loaderCode = `import Loader from '../components/Loader'
-
-<Loader size="sm" tone="primary" />
-<Loader size="md" tone="accent" />
-<Loader size="lg" tone="secondary" />
-
-<Loader inline label="Syncing records" tone="primary" />
-<Loader inline label="Preparing dashboard" tone="accent" />
-<Loader inverted tone="accent" />`
-
-  const loaderCss = `.loader {
-  --loader-size: 2.5rem;
-  --loader-gradient-start: var(--primary-color);
-  --loader-gradient-end: var(--secondary-color);
-  --loader-track: rgba(39, 19, 255, 0.16);
-  display: inline-flex;
-  align-items: center;
-  gap: 0.75rem;
-}
-
-.loader__spinner {
-  width: var(--loader-size);
-  height: var(--loader-size);
-  background: var(--background);
-  border-radius: 50%;
-}
-
-.loader__track-circle {
-  stroke: var(--loader-track);
-}
-
-.loader__indicator-circle {
-  stroke-dasharray: 28 72;
-  animation: loader-spin 1.05s infinite;
-}`
-
   return (
     <div ref={pageTopRef} className="page components-page">
       <h1>Components</h1>
       <div className="components-intro">
         <p>
           Reusable UI components built with accessibility and consistency in mind.
-          Each component includes live examples and copy-able code.
+          Each component includes a live example and a direct Storybook entry for deeper review.
         </p>
       </div>
 
@@ -314,23 +193,36 @@ function Components() {
         ref={navStickyRef}
         className={`components-nav-sticky ${isNavSticky ? 'is-sticky' : ''}`}
       >
-        <nav className="components-nav" aria-label="Component sections">
-          <p className="components-nav-title">Browse components</p>
-          <ul className="components-nav-list">
-            {componentLinks.map((componentLink) => (
-              <li key={componentLink.id}>
-                <button
-                  className={`components-nav-link ${activeComponent === componentLink.id ? 'is-active' : ''}`}
-                  type="button"
-                  onClick={() => handleComponentSelect(componentLink.id)}
-                  aria-pressed={activeComponent === componentLink.id}
-                >
-                  {componentLink.label}
-                </button>
-              </li>
-            ))}
-          </ul>
-        </nav>
+        <div className="components-overview-card">
+          <div className="components-storybook-callout">
+            <div>
+              <strong>Need deeper component detail?</strong>
+              <p>
+                Open the integrated Storybook for isolated states, controls, and component-level documentation.
+              </p>
+            </div>
+            <a href={storybookUrl} className="components-storybook-link" target="_blank" rel="noreferrer">
+              Open Storybook
+            </a>
+          </div>
+
+          <nav className="components-nav" aria-label="Component sections">
+            <ul className="components-nav-list">
+              {COMPONENT_LINKS.map((componentLink) => (
+                <li key={componentLink.id}>
+                  <button
+                    className={`components-nav-link ${activeComponent === componentLink.id ? 'is-active' : ''}`}
+                    type="button"
+                    onClick={() => handleComponentSelect(componentLink.id)}
+                    aria-pressed={activeComponent === componentLink.id}
+                  >
+                    {componentLink.label}
+                  </button>
+                </li>
+              ))}
+            </ul>
+          </nav>
+        </div>
       </div>
 
       <section
@@ -349,6 +241,9 @@ function Components() {
         <div className="component-demo">
           <h3>Preview</h3>
           <div className="demo-area">
+            <a href={COMPONENT_STORYBOOK_LINKS.buttons} className="component-storybook-button" target="_blank" rel="noreferrer">
+              View in Storybook
+            </a>
             <button className="btn btn-primary">Primary Button</button>
             <button className="btn btn-secondary">Secondary Button</button>
             <button
@@ -359,12 +254,6 @@ function Components() {
               {buttonDisabled ? 'Disabled Button' : 'Click to Disable'}
             </button>
           </div>
-
-          <h3>HTML Code</h3>
-          <CodeBlock code={buttonCode} language="html" />
-
-          <h3>CSS Code</h3>
-          <CodeBlock code={buttonCss} language="css" />
         </div>
       </section>
 
@@ -383,6 +272,9 @@ function Components() {
         <div className="component-demo">
           <h3>Preview</h3>
           <div className="demo-area">
+            <a href={COMPONENT_STORYBOOK_LINKS.inputs} className="component-storybook-button" target="_blank" rel="noreferrer">
+              View in Storybook
+            </a>
             <div className="input-group">
               <label htmlFor="demo-email" className="input-label">
                 Email
@@ -397,12 +289,6 @@ function Components() {
               />
             </div>
           </div>
-
-          <h3>HTML Code</h3>
-          <CodeBlock code={inputCode} language="html" />
-
-          <h3>CSS Code</h3>
-          <CodeBlock code={inputCss} language="css" />
         </div>
       </section>
 
@@ -421,18 +307,15 @@ function Components() {
         <div className="component-demo">
           <h3>Preview</h3>
           <div className="demo-area">
+            <a href={COMPONENT_STORYBOOK_LINKS.cards} className="component-storybook-button" target="_blank" rel="noreferrer">
+              View in Storybook
+            </a>
             <div className="card">
               <h3 style={{ marginTop: 0 }}>Card Title</h3>
               <p>Card content goes here with descriptive text that explains the card's purpose.</p>
               <button className="btn btn-primary">Action</button>
             </div>
           </div>
-
-          <h3>HTML Code</h3>
-          <CodeBlock code={cardCode} language="html" />
-
-          <h3>CSS Code</h3>
-          <CodeBlock code={cardCss} language="css" />
         </div>
       </section>
 
@@ -453,6 +336,9 @@ function Components() {
         <div className="component-demo">
           <h3>Preview</h3>
           <div className="demo-area loader-demo-area">
+            <a href={COMPONENT_STORYBOOK_LINKS.loader} className="component-storybook-button" target="_blank" rel="noreferrer">
+              View in Storybook
+            </a>
             <div className="loader-showcase">
               <span className="loader-showcase-label">Sizes</span>
               <div className="loader-row">
@@ -488,12 +374,6 @@ function Components() {
               </div>
             </div>
           </div>
-
-          <h3>React Code</h3>
-          <CodeBlock code={loaderCode} language="tsx" />
-
-          <h3>CSS Code</h3>
-          <CodeBlock code={loaderCss} language="css" />
         </div>
       </section>
     </div>

@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import { Link, useLocation } from 'react-router-dom'
+import { storybookUrl } from '../config/storybook'
 import './Layout.css'
 
 interface LayoutProps {
@@ -46,6 +47,15 @@ function Layout({ children }: LayoutProps) {
                 {item.label}
               </Link>
             ))}
+            <a
+              href={storybookUrl}
+              className="nav-link"
+              target="_blank"
+              rel="noreferrer"
+              onClick={() => setIsMenuOpen(false)}
+            >
+              Storybook
+            </a>
           </nav>
           <div className="header-actions">
             <a

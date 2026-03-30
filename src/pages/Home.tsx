@@ -122,7 +122,7 @@ function Home() {
           <Link to="/components" className="btn btn-secondary">
             Browse Components
           </Link>
-          <a href={storybookUrl} className="btn btn-secondary">
+          <a href={storybookUrl} className="btn btn-secondary" target="_blank" rel="noreferrer">
             Open Storybook
           </a>
         </div>

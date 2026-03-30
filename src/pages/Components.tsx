@@ -194,7 +194,7 @@ function Components() {
               Open the integrated Storybook for isolated states, controls, and component-level documentation.
             </p>
           </div>
-          <a href={storybookUrl} className="components-storybook-link">
+          <a href={storybookUrl} className="components-storybook-link" target="_blank" rel="noreferrer">
             Open Storybook
           </a>
         </div>
@@ -239,7 +239,7 @@ function Components() {
         <div className="component-demo">
           <h3>Preview</h3>
           <div className="demo-area">
-            <a href={COMPONENT_STORYBOOK_LINKS.buttons} className="component-storybook-button">
+            <a href={COMPONENT_STORYBOOK_LINKS.buttons} className="component-storybook-button" target="_blank" rel="noreferrer">
               View in Storybook
             </a>
             <button className="btn btn-primary">Primary Button</button>
@@ -270,7 +270,7 @@ function Components() {
         <div className="component-demo">
           <h3>Preview</h3>
           <div className="demo-area">
-            <a href={COMPONENT_STORYBOOK_LINKS.inputs} className="component-storybook-button">
+            <a href={COMPONENT_STORYBOOK_LINKS.inputs} className="component-storybook-button" target="_blank" rel="noreferrer">
               View in Storybook
             </a>
             <div className="input-group">
@@ -305,7 +305,7 @@ function Components() {
         <div className="component-demo">
           <h3>Preview</h3>
           <div className="demo-area">
-            <a href={COMPONENT_STORYBOOK_LINKS.cards} className="component-storybook-button">
+            <a href={COMPONENT_STORYBOOK_LINKS.cards} className="component-storybook-button" target="_blank" rel="noreferrer">
               View in Storybook
             </a>
             <div className="card">
@@ -334,7 +334,7 @@ function Components() {
         <div className="component-demo">
           <h3>Preview</h3>
           <div className="demo-area loader-demo-area">
-            <a href={COMPONENT_STORYBOOK_LINKS.loader} className="component-storybook-button">
+            <a href={COMPONENT_STORYBOOK_LINKS.loader} className="component-storybook-button" target="_blank" rel="noreferrer">
               View in Storybook
             </a>
             <div className="loader-showcase">

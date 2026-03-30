@@ -4,3 +4,67 @@
   href="https://fonts.googleapis.com/css2?family=Outfit:wght@500;600;700;800;900&display=swap"
   rel="stylesheet"
 />
+<style>
+  :root {
+    --uug-font-heading: 'Outfit', sans-serif;
+    --uug-font-body: 'Inter', sans-serif;
+  }
+
+  body,
+  #storybook-explorer-menu,
+  #storybook-explorer-tree,
+  .sidebar-container,
+  .sidebar-header,
+  .top-bar {
+    font-family: var(--uug-font-heading);
+  }
+
+  .sidebar-header button,
+  .sidebar-header a {
+    font-family: var(--uug-font-heading);
+    font-size: 1.05rem;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+  }
+
+  .sidebar-subheading button,
+  .sidebar-item,
+  .sidebar-item span,
+  #storybook-explorer-tree button,
+  #storybook-explorer-tree a {
+    font-family: var(--uug-font-heading);
+    font-weight: 600;
+    letter-spacing: 0.01em;
+  }
+
+  .sidebar-subheading button {
+    font-size: 0.72rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+  }
+
+  .sidebar-item,
+  #storybook-explorer-tree button,
+  #storybook-explorer-tree a {
+    font-size: 0.88rem;
+    line-height: 1.35;
+  }
+
+  .top-bar button,
+  .top-bar a,
+  .top-bar select,
+  .top-bar span {
+    font-family: var(--uug-font-heading);
+    font-size: 0.78rem;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  .search-field input,
+  input[type='text'],
+  input[type='search'] {
+    font-family: var(--uug-font-body);
+  }
+</style>

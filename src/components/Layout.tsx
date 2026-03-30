@@ -50,6 +50,8 @@ function Layout({ children }: LayoutProps) {
             <a
               href={storybookUrl}
               className="nav-link"
+              target="_blank"
+              rel="noreferrer"
               onClick={() => setIsMenuOpen(false)}
             >
               Storybook

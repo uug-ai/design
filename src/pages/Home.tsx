@@ -1,5 +1,6 @@
 import { BadgeCheck, Component, Palette, RulerArrows, Text } from 'iconoir-react'
 import { Link } from 'react-router-dom'
+import { storybookUrl } from '../config/storybook'
 import './Home.css'
 
 function Home() {
@@ -121,6 +122,9 @@ function Home() {
           <Link to="/components" className="btn btn-secondary">
             Browse Components
           </Link>
+          <a href={storybookUrl} className="btn btn-secondary">
+            Open Storybook
+          </a>
         </div>
       </section>
     </div>

@@ -29,6 +29,41 @@ Open [http://localhost:5173](http://localhost:5173) to view the design system in
 npm run build
 ```
 
+### Build App And Storybook
+
+```bash
+npm run build:all
+```
+
+This builds the Vite app into `dist/` and Storybook into `dist/storybook/` in one step.
+
+### Preview App And Storybook
+
+```bash
+npm run preview:all
+```
+
+This serves the built output locally with the same paths used in production:
+
+- App: `/design/`
+- Storybook: `/design/storybook/`
+
+### Storybook
+
+```bash
+npm run storybook
+```
+
+Storybook runs on [http://localhost:6006](http://localhost:6006) and exposes isolated stories for the shared components in `src/components`.
+
+### Build Storybook
+
+```bash
+npm run build-storybook
+```
+
+Production builds publish Storybook into the same site under `/design/storybook/`, so it can be linked directly from the existing design system pages.
+
 ### Preview Production Build
 
 ```bash
@@ -43,6 +78,7 @@ npm run preview
 - **Spacing**: Consistent spacing system with visual examples
 - **Branding**: Logo guidelines, brand values, and voice & tone
 - **Components**: Reusable UI components with interactive examples and copy-able code
+- **Storybook**: Isolated component previews and documentation for shared UI pieces
 
 ## Technology Stack
 

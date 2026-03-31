@@ -1,5 +1,5 @@
 import { useId } from 'react'
-import './Loader.css'
+import './component.css'
 
 type LoaderSize = 'sm' | 'md' | 'lg'
 type LoaderTone = 'neutral' | 'primary' | 'secondary' | 'accent'

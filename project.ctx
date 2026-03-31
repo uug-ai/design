@@ -5,7 +5,7 @@
 Package: @uug-ai/design-system v0.1.0
 Purpose: A documentation/reference website that serves as the single source of truth for design and development teams at UUG.AI. It showcases design tokens (colors, spacing, typography), brand guidelines, and reusable UI component patterns with live examples and copy-able code snippets.
 
-Base path (deployed): /design/
+Base path (deployed): /
 
 ---
 

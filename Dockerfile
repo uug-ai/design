@@ -16,7 +16,7 @@ RUN npm run build-storybook
 FROM nginx:1.27-alpine AS runtime
 
 COPY nginx.conf /etc/nginx/conf.d/default.conf
-COPY --from=builder /app/dist /usr/share/nginx/html/design
+COPY --from=builder /app/dist /usr/share/nginx/html
 
 EXPOSE 80
 

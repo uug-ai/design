@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { Check, Copy } from 'iconoir-react'
-import './CodeBlock.css'
+import './component.css'
 
 interface CodeBlockProps {
   code: string

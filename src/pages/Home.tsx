@@ -1,6 +1,7 @@
 import { BadgeCheck, Component, Palette, RulerArrows, Text } from 'iconoir-react'
 import { Link } from 'react-router-dom'
 import { storybookUrl } from '../config/storybook'
+import '../components/Button/component.css'
 import './Home.css'
 
 function Home() {

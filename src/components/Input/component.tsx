@@ -1,8 +1,7 @@
-import type { Meta, StoryObj } from '@storybook/react-vite'
 import { useState } from 'react'
-import '../pages/Components.css'
+import './component.css'
 
-function InputsShowcase() {
+function InputShowcase() {
   const [value, setValue] = useState('')
 
   return (
@@ -24,14 +23,4 @@ function InputsShowcase() {
   )
 }
 
-const meta = {
-  title: 'Components/Inputs',
-  component: InputsShowcase,
-  tags: ['autodocs'],
-} satisfies Meta<typeof InputsShowcase>
-
-export default meta
-
-type Story = StoryObj<typeof meta>
-
-export const Playground: Story = {}
+export default InputShowcase

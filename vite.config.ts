@@ -10,5 +10,5 @@ export default defineConfig(({ command }) => ({
   preview: {
     host: '0.0.0.0',
   },
-  base: command === 'serve' ? '/' : '/design/',
+  base: '/',
 }))

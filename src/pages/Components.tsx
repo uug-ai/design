@@ -1,4 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
+import '../components/Button/component.css'
+import '../components/Card/component.css'
+import '../components/Input/component.css'
 import Loader from '../components/Loader'
 import { storybookEntryUrl, storybookUrl } from '../config/storybook'
 import './Components.css'

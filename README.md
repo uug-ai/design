@@ -45,8 +45,8 @@ npm run preview:all
 
 This serves the built output locally with the same paths used in production:
 
-- App: `/design/`
-- Storybook: `/design/storybook/`
+- App: `/`
+- Storybook: `/storybook/`
 
 ### Storybook
 
@@ -62,7 +62,7 @@ Storybook runs on [http://localhost:6006](http://localhost:6006) and exposes iso
 npm run build-storybook
 ```
 
-Production builds publish Storybook into the same site under `/design/storybook/`, so it can be linked directly from the existing design system pages.
+Production builds publish Storybook into the same site under `/storybook/`, so it can be linked directly from the existing design system pages.
 
 ### Preview Production Build
 
@@ -118,7 +118,7 @@ This project is automatically deployed to GitHub Pages when changes are pushed t
 2. Set Source to "GitHub Actions"
 3. The workflow will automatically build and deploy on every push to `main`
 
-The site will be available at: `https://uug-ai.github.io/design/`
+The site will be available at the site root configured for your deployment.
 
 ### Manual Deployment
 

@@ -34,11 +34,6 @@ function sendNotFound(response) {
   response.end('Not found')
 }
 
-function sendRedirect(response, location) {
-  response.writeHead(302, { Location: location })
-  response.end()
-}
-
 function safeJoin(base, relativePath) {
   const resolvedPath = normalize(join(base, relativePath))
 
@@ -68,18 +63,8 @@ createServer((request, response) => {
   const requestUrl = new URL(request.url || '/', `http://${request.headers.host || 'localhost'}`)
   const pathname = requestUrl.pathname
 
-  if (pathname === '/') {
-    sendRedirect(response, '/design/')
-    return
-  }
-
-  if (!pathname.startsWith('/design/')) {
-    sendNotFound(response)
-    return
-  }
-
-  if (pathname.startsWith('/design/storybook/')) {
-    const storybookPath = pathname.replace('/design/storybook/', 'storybook/')
+  if (pathname.startsWith('/storybook/')) {
+    const storybookPath = pathname.replace('/storybook/', 'storybook/')
     const exactFile = resolveStaticFile(storybookPath)
 
     if (exactFile) {
@@ -95,7 +80,7 @@ createServer((request, response) => {
     }
   }
 
-  const appPath = pathname.replace('/design/', '')
+  const appPath = pathname === '/' ? 'index.html' : pathname.slice(1)
   const exactFile = resolveStaticFile(appPath)
 
   if (exactFile) {
@@ -112,6 +97,6 @@ createServer((request, response) => {
 
   sendNotFound(response)
 }).listen(port, '0.0.0.0', () => {
-  console.log(`Previewing integrated build at http://localhost:${port}/design/`)
-  console.log(`Storybook is available at http://localhost:${port}/design/storybook/`)
+  console.log(`Previewing integrated build at http://localhost:${port}/`)
+  console.log(`Storybook is available at http://localhost:${port}/storybook/`)
 })

@@ -89,6 +89,42 @@
   font-family: 'Courier New', monospace;
 }
 
+.favicon-showcase {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 24px;
+  margin: 24px 0;
+}
+
+.favicon-card {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 16px;
+  padding: 24px;
+  background-color: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  box-shadow: 0 20px 40px var(--shadow);
+}
+
+.favicon-card--contrast {
+  background: linear-gradient(180deg, rgba(11, 11, 18, 0.96) 0%, rgba(31, 24, 58, 0.98) 100%);
+  border-color: rgba(116, 38, 255, 0.18);
+}
+
+.favicon-card-label {
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-secondary);
+}
+
+.favicon-card--contrast .favicon-card-label {
+  color: rgba(255, 255, 255, 0.72);
+}
+
 .values-grid,
 .voice-tone-grid {
   display: grid;

@@ -1,0 +1,25 @@
+.favicon-tile {
+  --favicon-size: 32px;
+  width: calc(var(--favicon-size) + 40px);
+  height: calc(var(--favicon-size) + 40px);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 20px;
+  border: 1px solid var(--border);
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.96) 0%, rgba(247, 245, 251, 0.98) 100%);
+  box-shadow: 0 20px 40px var(--shadow);
+}
+
+.favicon-tile--contrast {
+  border-color: rgba(255, 255, 255, 0.14);
+  background: radial-gradient(circle at top, rgba(255, 255, 255, 0.14), transparent 62%), #0b0b12;
+  box-shadow: 0 24px 48px rgba(11, 11, 18, 0.24);
+}
+
+.favicon-tile__image {
+  width: var(--favicon-size);
+  height: var(--favicon-size);
+  display: block;
+  image-rendering: -webkit-optimize-contrast;
+}

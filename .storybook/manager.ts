@@ -7,6 +7,7 @@ addons.setConfig({
     fontBase: 'Outfit, sans-serif',
     fontCode: 'Inter, sans-serif',
     brandTitle: 'UUG',
+    brandUrl: '/components',
     brandTarget: '_self',
     colorSecondary: '#ffffff',
     appBg: '#111426',

@@ -1,4 +1,5 @@
 import CodeBlock from '../components/CodeBlock'
+import Favicon from '../components/Favicon'
 import './Branding.css'
 
 function Branding() {
@@ -30,6 +31,8 @@ function Branding() {
   text-align: center;
   color: var(--text-primary);
 }`
+
+  const faviconUsage = `<Favicon size={32} tone="surface" label="UUG favicon" />`
 
   return (
     <div className="page branding-page">
@@ -83,6 +86,34 @@ function Branding() {
             <div className="brand-color-value">#0b0b12</div>
           </div>
         </div>
+      </section>
+
+      <section className="branding-section">
+        <h2>Favicon</h2>
+        <p>
+          The favicon should stay crisp at small sizes and sit inside a simple, quiet tile
+          whenever it appears in documentation or presentation surfaces.
+        </p>
+        <div className="favicon-showcase" aria-label="UUG favicon examples">
+          <div className="favicon-card">
+            <span className="favicon-card-label">Primary tile</span>
+            <Favicon size={32} label="UUG favicon on a light tile" />
+          </div>
+          <div className="favicon-card favicon-card--contrast">
+            <span className="favicon-card-label">Contrast tile</span>
+            <Favicon size={64} tone="contrast" label="UUG favicon on a dark tile" />
+          </div>
+        </div>
+
+        <h3>Favicon Usage</h3>
+        <ul className="guidelines-list">
+          <li>Use the 32px asset as the default reference in UI documentation</li>
+          <li>Keep the favicon centered inside a padded square tile</li>
+          <li>Pair the icon with neutral or ink surfaces instead of decorative treatments</li>
+          <li>Scale up the tile for presentations rather than stretching the image itself</li>
+        </ul>
+
+        <CodeBlock code={faviconUsage} language="tsx" />
       </section>
 
       <section className="branding-section">

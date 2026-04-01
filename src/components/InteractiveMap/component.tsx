@@ -236,7 +236,7 @@ function InteractiveMap({
 
   const getBadgePlacement = (badge: MapBadge) => {
     const top = Number.parseFloat(badge.top)
-    return top >= 70 ? 'below' : 'above'
+    return top >= 70 ? 'above' : 'below'
   }
 
   return (

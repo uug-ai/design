@@ -26,7 +26,7 @@
   --interactive-map-control-button-border: rgba(39, 19, 255, 0.1);
   --interactive-map-control-button-surface: linear-gradient(180deg, #ffffff 0%, #f7f5fb 100%);
   --interactive-map-control-shadow: rgba(15, 12, 41, 0.08);
-  --interactive-map-grid-color: rgba(19, 16, 36, 0.18);
+  --interactive-map-grid-color: rgba(19, 16, 36, 0.65);
   --interactive-map-hint-surface: rgba(255, 255, 255, 0.84);
   --interactive-map-hint-border: rgba(19, 16, 36, 0.06);
   --interactive-map-annotation-surface: rgba(255, 255, 255, 0.94);
@@ -283,7 +283,7 @@
   background-image: radial-gradient(circle, var(--interactive-map-grid-color) 1.4px, transparent 1.5px);
   background-size: 12px 12px;
   mask-image:
-    radial-gradient(circle at 12% 30%, #000 0, #000 10%, transparent 12%),
+    radial-gradient(circle at 12% 30%, #000 0, #ff0000 10%, transparent 12%),
     radial-gradient(circle at 19% 32%, #000 0, #000 15%, transparent 17%),
     radial-gradient(circle at 25% 80%, #000 0, #000 9%, transparent 15%),
     radial-gradient(circle at 18% 68%, #000 0, #000 7%, transparent 9%),
@@ -355,13 +355,13 @@
 }
 
 .interactive-map__badge-card--below {
-  right: -18px;
+  right: -24px;
   top: calc(100% + 6px);
 }
 
 .interactive-map__badge-card--below.interactive-map__badge-card--flipped {
   right: auto;
-  left: -18px;
+  left: -24px;
 }
 
 .interactive-map__badge-card--below .map-annotation-card {
@@ -381,7 +381,7 @@
 }
 
 .interactive-map__badge-card--below .map-annotation-card .map-annotation-card__shell::before {
-  top: -4px;
+  top: 0;
   bottom: auto;
 }
 

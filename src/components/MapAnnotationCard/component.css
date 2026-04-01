@@ -43,7 +43,7 @@
   height: 16px;
   top: var(--map-annotation-pointer-top);
   bottom: var(--map-annotation-pointer-bottom);
-  background: linear-gradient(135deg, hsla(278, 30%, 48%, 1) 0%, hsla(2, 48%, 39%, 1) 100%);
+  background: linear-gradient(90deg, hsla(245, 100%, 54%, 1) 0%, hsla(339, 100%, 50%, 1) 100%);
   transform: rotate(45deg);
   z-index: 0;
 }

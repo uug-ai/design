@@ -31,7 +31,7 @@
   max-width: 260px;
   padding: 4px;
   border-radius: 20px;
-  background: linear-gradient(90deg, hsla(278, 30%, 48%, 1) 0%, hsla(2, 48%, 39%, 1) 100%);
+  background: linear-gradient(90deg, hsla(245, 100%, 54%, 1) 0%, hsla(339, 100%, 50%, 1) 100%);
   box-shadow: 0 18px 38px var(--map-annotation-shadow);
 }
 

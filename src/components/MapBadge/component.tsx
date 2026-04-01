@@ -16,13 +16,13 @@ interface MapBadgeProps {
   className?: string
 }
 
-const GRADIENT_START = 'hsla(278, 30%, 48%, 1)'
-const GRADIENT_END = 'hsla(2, 48%, 39%, 1)'
+const GRADIENT_START = 'hsla(245, 100%, 54%, 1)'
+const GRADIENT_END = 'hsla(339, 100%, 50%, 1)'
 
 const TONE_COLORS: Record<MapBadgeTone, string> = {
   primary: '#a22aff',
-  secondary: '#2713ff',
-  accent: '#ff0059',
+  secondary: 'hsl(245, 100%, 54%)',
+  accent: 'hsl(339, 100%, 50%)',
 }
 
 function MapBadge({

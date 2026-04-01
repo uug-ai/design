@@ -1,0 +1,97 @@
+.map-annotation-card {
+  --map-annotation-surface: rgba(255, 255, 255, 0.94);
+  --map-annotation-shadow: rgba(15, 12, 41, 0.12);
+  --map-annotation-text: var(--text-primary);
+  --map-annotation-muted: var(--text-secondary);
+  --map-annotation-pointer-bottom: -8px;
+  --map-annotation-pointer-top: auto;
+  display: block;
+}
+
+.map-annotation-card[data-theme='light'] {
+  --map-annotation-surface: rgba(255, 255, 255, 0.98);
+  --map-annotation-shadow: rgba(15, 12, 41, 0.12);
+  --map-annotation-text: var(--text-primary);
+  --map-annotation-muted: var(--text-secondary);
+}
+
+.map-annotation-card[data-theme='dark'] {
+  --map-annotation-surface: rgba(10, 10, 16, 0.92);
+  --map-annotation-shadow: rgba(0, 0, 0, 0.35);
+  --map-annotation-text: #ffffff;
+  --map-annotation-muted: rgba(255, 255, 255, 0.72);
+}
+
+.map-annotation-card__shell {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  min-width: 220px;
+  max-width: 260px;
+  padding: 4px;
+  border-radius: 20px;
+  background: linear-gradient(90deg, hsla(245, 100%, 54%, 1) 0%, hsla(339, 100%, 50%, 1) 100%);
+  box-shadow: 0 18px 38px var(--map-annotation-shadow);
+}
+
+.map-annotation-card__shell::after {
+  content: '';
+  position: absolute;
+  right: 32px;
+  width: 16px;
+  height: 16px;
+  top: var(--map-annotation-pointer-top);
+  bottom: var(--map-annotation-pointer-bottom);
+  background: linear-gradient(90deg, hsla(245, 100%, 54%, 1) 0%, hsla(339, 100%, 50%, 1) 100%);
+  transform: rotate(45deg);
+  z-index: 0;
+}
+
+.map-annotation-card__shell::before {
+  content: '';
+  position: absolute;
+  right: 32px;
+  width: 16px;
+  height: 16px;
+  top: calc(var(--map-annotation-pointer-top) + 2px);
+  bottom: calc(var(--map-annotation-pointer-bottom) + 6px);
+  background: var(--map-annotation-surface);
+  transform: rotate(45deg);
+  z-index: 1;
+}
+
+.map-annotation-card__content {
+  position: relative;
+  z-index: 2;
+  width: 100%;
+  padding: 14px 16px;
+  border-radius: 16px;
+  background: var(--map-annotation-surface);
+  backdrop-filter: blur(14px);
+}
+
+.map-annotation-card__content strong,
+.map-annotation-card__content span {
+  display: block;
+}
+
+.map-annotation-card__content strong {
+  color: var(--map-annotation-text);
+  font-size: 0.95rem;
+}
+
+.map-annotation-card__content span {
+  margin-top: 2px;
+  color: var(--map-annotation-muted);
+  font-size: 0.82rem;
+}
+
+@media (prefers-color-scheme: dark) {
+  .map-annotation-card[data-theme='auto'] {
+    --map-annotation-surface: rgba(10, 10, 16, 0.92);
+    --map-annotation-shadow: rgba(0, 0, 0, 0.35);
+    --map-annotation-text: #ffffff;
+    --map-annotation-muted: rgba(255, 255, 255, 0.72);
+  }
+}

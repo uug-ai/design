@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react'
 import '../components/Button/component.css'
 import '../components/Card/component.css'
 import '../components/Input/component.css'
+import InteractiveMap from '../components/InteractiveMap'
 import Loader from '../components/Loader'
 import { storybookEntryUrl, storybookUrl } from '../config/storybook'
 import './Components.css'
@@ -10,6 +11,7 @@ const COMPONENT_LINKS = [
   { id: 'buttons', label: 'Buttons', storybookPath: '/docs/components-buttons--docs' },
   { id: 'inputs', label: 'Inputs', storybookPath: '/docs/components-inputs--docs' },
   { id: 'cards', label: 'Cards', storybookPath: '/docs/components-cards--docs' },
+  { id: 'interactive-map', label: 'Interactive Map', storybookPath: '/docs/components-interactive-map--docs' },
   { id: 'loader', label: 'Loader', storybookPath: '/docs/components-loader--docs' },
 ] as const
 
@@ -412,6 +414,31 @@ function Components() {
               <p>Card content goes here with descriptive text that explains the card's purpose.</p>
               <button className="btn btn-primary">Action</button>
             </div>
+          </div>
+        </div>
+      </section>
+
+      <section
+        id="interactive-map"
+        className="component-section"
+        ref={(element) => {
+          sectionRefs.current['interactive-map'] = element
+        }}
+      >
+        <h2>Interactive Map</h2>
+        <p>
+          An animated geographic-style visualization adapted from the public website hero.
+          It now supports scroll-to-zoom, drag-to-pan, and inline controls so teams can use
+          it as a reusable storytelling component instead of a one-off landing page effect.
+        </p>
+
+        <div className="component-demo">
+          <h3>Preview</h3>
+          <div className="demo-area">
+            <a href={COMPONENT_STORYBOOK_LINKS['interactive-map']} className="component-storybook-button" target="_blank" rel="noreferrer">
+              View in Storybook
+            </a>
+            <InteractiveMap />
           </div>
         </div>
       </section>

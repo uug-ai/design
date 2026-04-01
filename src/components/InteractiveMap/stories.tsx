@@ -42,10 +42,15 @@ const meta = {
     minScale: 1,
     maxScale: 2.8,
     initialScale: 1,
+    theme: 'light',
   },
   argTypes: {
     className: {
       control: false,
+    },
+    theme: {
+      control: 'inline-radio',
+      options: ['light', 'dark', 'auto'],
     },
   },
 } satisfies Meta<typeof InteractiveMap>

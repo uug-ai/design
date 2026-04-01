@@ -1,6 +1,67 @@
 .interactive-map {
+  --interactive-map-background: linear-gradient(180deg, rgba(255, 255, 255, 0.92) 0%, rgba(250, 248, 255, 0.98) 100%);
+  --interactive-map-border: rgba(19, 16, 36, 0.06);
+  --interactive-map-control-surface: rgba(255, 255, 255, 0.84);
+  --interactive-map-control-border: rgba(19, 16, 36, 0.08);
+  --interactive-map-control-button-border: rgba(39, 19, 255, 0.1);
+  --interactive-map-control-button-surface: linear-gradient(180deg, #ffffff 0%, #f7f5fb 100%);
+  --interactive-map-control-shadow: rgba(15, 12, 41, 0.08);
+  --interactive-map-grid-color: rgba(19, 16, 36, 0.18);
+  --interactive-map-hint-surface: rgba(255, 255, 255, 0.84);
+  --interactive-map-hint-border: rgba(19, 16, 36, 0.06);
+  --interactive-map-annotation-surface: rgba(255, 255, 255, 0.94);
+  --interactive-map-annotation-border: rgba(19, 16, 36, 0.08);
+  --interactive-map-annotation-shadow: rgba(15, 12, 41, 0.12);
+  --interactive-map-glow-left: radial-gradient(circle, rgba(39, 19, 255, 0.16) 0%, rgba(39, 19, 255, 0) 70%);
+  --interactive-map-glow-right: radial-gradient(circle, rgba(255, 0, 89, 0.18) 0%, rgba(255, 0, 89, 0) 72%);
   display: grid;
   gap: 20px;
+}
+
+.interactive-map[data-theme='light'] {
+  --interactive-map-background: linear-gradient(180deg, rgba(255, 255, 255, 0.92) 0%, rgba(250, 248, 255, 0.98) 100%);
+  --interactive-map-border: rgba(19, 16, 36, 0.06);
+  --interactive-map-control-surface: rgba(255, 255, 255, 0.84);
+  --interactive-map-control-border: rgba(19, 16, 36, 0.08);
+  --interactive-map-control-button-border: rgba(39, 19, 255, 0.1);
+  --interactive-map-control-button-surface: linear-gradient(180deg, #ffffff 0%, #f7f5fb 100%);
+  --interactive-map-control-shadow: rgba(15, 12, 41, 0.08);
+  --interactive-map-grid-color: rgba(19, 16, 36, 0.18);
+  --interactive-map-hint-surface: rgba(255, 255, 255, 0.84);
+  --interactive-map-hint-border: rgba(19, 16, 36, 0.06);
+  --interactive-map-annotation-surface: rgba(255, 255, 255, 0.94);
+  --interactive-map-annotation-border: rgba(19, 16, 36, 0.08);
+  --interactive-map-annotation-shadow: rgba(15, 12, 41, 0.12);
+  --interactive-map-glow-left: radial-gradient(circle, rgba(39, 19, 255, 0.16) 0%, rgba(39, 19, 255, 0) 70%);
+  --interactive-map-glow-right: radial-gradient(circle, rgba(255, 0, 89, 0.18) 0%, rgba(255, 0, 89, 0) 72%);
+}
+
+.interactive-map[data-theme='dark'] {
+  --interactive-map-background: linear-gradient(180deg, rgba(4, 4, 8, 0.96) 0%, rgba(12, 12, 18, 0.98) 100%);
+  --interactive-map-border: rgba(255, 255, 255, 0.08);
+  --interactive-map-control-surface: rgba(10, 10, 16, 0.86);
+  --interactive-map-control-border: rgba(255, 255, 255, 0.08);
+  --interactive-map-control-button-border: rgba(255, 255, 255, 0.12);
+  --interactive-map-control-button-surface: linear-gradient(180deg, rgba(16, 16, 24, 0.96) 0%, rgba(8, 8, 14, 0.96) 100%);
+  --interactive-map-control-shadow: rgba(0, 0, 0, 0.35);
+  --interactive-map-grid-color: rgba(255, 255, 255, 0.26);
+  --interactive-map-hint-surface: rgba(12, 12, 18, 0.84);
+  --interactive-map-hint-border: rgba(255, 255, 255, 0.08);
+  --interactive-map-annotation-surface: rgba(10, 10, 16, 0.92);
+  --interactive-map-annotation-border: rgba(255, 255, 255, 0.08);
+  --interactive-map-annotation-shadow: rgba(0, 0, 0, 0.35);
+  --interactive-map-glow-left: radial-gradient(circle, rgba(108, 90, 255, 0.2) 0%, rgba(108, 90, 255, 0) 72%);
+  --interactive-map-glow-right: radial-gradient(circle, rgba(255, 82, 118, 0.18) 0%, rgba(255, 82, 118, 0) 72%);
+}
+
+.interactive-map[data-theme='dark'] .interactive-map__zoom-readout,
+.interactive-map[data-theme='dark'] .interactive-map__hint span {
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.interactive-map[data-theme='dark'] .interactive-map__heading p:last-child,
+.interactive-map[data-theme='dark'] .interactive-map__control-button {
+  color: #ffffff;
 }
 
 .interactive-map__toolbar {
@@ -43,10 +104,10 @@
   align-items: center;
   gap: 10px;
   padding: 10px;
-  border: 1px solid rgba(19, 16, 36, 0.08);
+  border: 1px solid var(--interactive-map-control-border);
   border-radius: 18px;
-  background: rgba(255, 255, 255, 0.84);
-  box-shadow: 0 18px 38px rgba(15, 12, 41, 0.08);
+  background: var(--interactive-map-control-surface);
+  box-shadow: 0 18px 38px var(--interactive-map-control-shadow);
   backdrop-filter: blur(14px);
 }
 
@@ -64,9 +125,9 @@
   justify-content: center;
   width: 42px;
   height: 42px;
-  border: 1px solid rgba(39, 19, 255, 0.1);
+  border: 1px solid var(--interactive-map-control-button-border);
   border-radius: 12px;
-  background: linear-gradient(180deg, #ffffff 0%, #f7f5fb 100%);
+  background: var(--interactive-map-control-button-surface);
   color: var(--text-primary);
   cursor: pointer;
   transition: transform 0.2s ease, border-color 0.2s ease, color 0.2s ease,
@@ -84,9 +145,8 @@
   position: relative;
   min-height: 680px;
   border-radius: 40px;
-  background:
-    linear-gradient(180deg, rgba(255, 255, 255, 0.92) 0%, rgba(250, 248, 255, 0.98) 100%);
-  border: 1px solid rgba(19, 16, 36, 0.06);
+  background: var(--interactive-map-background);
+  border: 1px solid var(--interactive-map-border);
   overflow: hidden;
   cursor: grab;
   touch-action: none;
@@ -112,8 +172,8 @@
   min-height: 32px;
   padding: 0 12px;
   border-radius: 999px;
-  background: rgba(255, 255, 255, 0.84);
-  border: 1px solid rgba(19, 16, 36, 0.06);
+  background: var(--interactive-map-hint-surface);
+  border: 1px solid var(--interactive-map-hint-border);
   color: var(--text-secondary);
   font-size: 0.78rem;
   font-weight: 600;
@@ -143,20 +203,20 @@
   inset: 7% auto auto 8%;
   width: 260px;
   height: 260px;
-  background: radial-gradient(circle, rgba(39, 19, 255, 0.16) 0%, rgba(39, 19, 255, 0) 70%);
+  background: var(--interactive-map-glow-left);
 }
 
 .interactive-map__glow--right {
   inset: 16% 7% auto auto;
   width: 220px;
   height: 220px;
-  background: radial-gradient(circle, rgba(255, 0, 89, 0.18) 0%, rgba(255, 0, 89, 0) 72%);
+  background: var(--interactive-map-glow-right);
 }
 
 .interactive-map__grid {
   position: absolute;
   inset: 8% 2% 8% 4%;
-  background-image: radial-gradient(circle, rgba(19, 16, 36, 0.18) 1.4px, transparent 1.5px);
+  background-image: radial-gradient(circle, var(--interactive-map-grid-color) 1.4px, transparent 1.5px);
   background-size: 12px 12px;
   mask-image:
     radial-gradient(circle at 12% 30%, #000 0, #000 10%, transparent 12%),
@@ -178,105 +238,116 @@
   mask-repeat: no-repeat;
 }
 
-.interactive-map__node {
+.interactive-map__badge {
   position: absolute;
-  width: 18px;
-  height: 18px;
-  border: 0;
-  border-radius: 50%;
   transform: translate(-50%, -50%);
-  box-shadow: 0 0 0 7px rgba(162, 42, 255, 0.12);
-  cursor: pointer;
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
-  animation: interactive-map-node-pulse 3.2s ease-in-out infinite;
+  z-index: 1;
 }
 
-.interactive-map__node:hover {
-  transform: translate(-50%, -50%) scale(1.12);
-}
-
-.interactive-map__node--primary {
-  background: #ffffff;
-  border: 3px solid #a22aff;
-}
-
-.interactive-map__node--secondary {
-  background: #ffffff;
-  border: 3px solid #2713ff;
-  box-shadow: 0 0 0 7px rgba(39, 19, 255, 0.12);
-}
-
-.interactive-map__node--accent {
-  background: #ffffff;
-  border: 3px solid #ff0059;
-  box-shadow: 0 0 0 7px rgba(255, 0, 89, 0.12);
+.interactive-map__badge.is-active {
+  z-index: 5;
 }
 
 .interactive-map__annotation {
   position: absolute;
-  display: flex;
-  align-items: center;
-  gap: 14px;
   min-width: 220px;
   max-width: 260px;
-  padding: 14px 16px;
-  border-radius: 18px;
-  background: rgba(255, 255, 255, 0.94);
-  border: 1px solid rgba(19, 16, 36, 0.08);
-  box-shadow: 0 18px 38px rgba(15, 12, 41, 0.12);
-  backdrop-filter: blur(14px);
 }
 
-.interactive-map__annotation strong,
-.interactive-map__annotation span {
-  display: block;
-}
-
-.interactive-map__annotation strong {
-  font-size: 0.95rem;
-}
-
-.interactive-map__annotation span {
-  margin-top: 2px;
-  color: var(--text-secondary);
-  font-size: 0.82rem;
-}
-
-.interactive-map__annotation-icon {
+.interactive-map__badge-trigger {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 40px;
-  height: 40px;
-  border-radius: 12px;
-  background: rgba(39, 19, 255, 0.08);
-  color: var(--primary-color);
-  flex: 0 0 auto;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  cursor: pointer;
 }
 
-.interactive-map__annotation-icon--pulse {
-  animation: interactive-map-icon-pulse 2.2s infinite;
+.interactive-map__badge-trigger.is-active {
+  z-index: 4;
 }
 
-@keyframes interactive-map-node-pulse {
-  0%,
-  100% {
-    box-shadow: 0 0 0 7px rgba(162, 42, 255, 0.12);
-  }
-
-  50% {
-    box-shadow: 0 0 0 12px rgba(162, 42, 255, 0.05);
-  }
+.interactive-map__badge-card {
+  position: absolute;
+  z-index: 4;
+  width: max-content;
+  max-width: 260px;
 }
 
-@keyframes interactive-map-icon-pulse {
-  0%,
-  100% {
-    box-shadow: 0 0 0 0 rgba(255, 0, 89, 0.3);
+.interactive-map__badge-card--above {
+  right: -24px;
+  bottom: calc(100% + 6px);
+}
+
+.interactive-map__badge-card--above.interactive-map__badge-card--flipped {
+  right: auto;
+  left: -24px;
+}
+
+.interactive-map__badge-card--above .map-annotation-card {
+  --map-annotation-pointer-top: auto;
+  --map-annotation-pointer-bottom: -6px;
+}
+
+.interactive-map__badge-card--below {
+  right: -18px;
+  top: calc(100% + 6px);
+}
+
+.interactive-map__badge-card--below.interactive-map__badge-card--flipped {
+  right: auto;
+  left: -18px;
+}
+
+.interactive-map__badge-card--below .map-annotation-card {
+  --map-annotation-pointer-top: -6px;
+  --map-annotation-pointer-bottom: auto;
+}
+
+.interactive-map__badge-card--flipped .map-annotation-card .map-annotation-card__shell::after,
+.interactive-map__badge-card--flipped .map-annotation-card .map-annotation-card__shell::before {
+  right: auto;
+  left: 32px;
+}
+
+.interactive-map__badge-card--below .map-annotation-card .map-annotation-card__shell::after {
+  top: -6px;
+  bottom: auto;
+}
+
+.interactive-map__badge-card--below .map-annotation-card .map-annotation-card__shell::before {
+  top: -4px;
+  bottom: auto;
+}
+
+@media (prefers-color-scheme: dark) {
+  .interactive-map[data-theme='auto'] {
+    --interactive-map-background: linear-gradient(180deg, rgba(4, 4, 8, 0.96) 0%, rgba(12, 12, 18, 0.98) 100%);
+    --interactive-map-border: rgba(255, 255, 255, 0.08);
+    --interactive-map-control-surface: rgba(10, 10, 16, 0.86);
+    --interactive-map-control-border: rgba(255, 255, 255, 0.08);
+    --interactive-map-control-button-border: rgba(255, 255, 255, 0.12);
+    --interactive-map-control-button-surface: linear-gradient(180deg, rgba(16, 16, 24, 0.96) 0%, rgba(8, 8, 14, 0.96) 100%);
+    --interactive-map-control-shadow: rgba(0, 0, 0, 0.35);
+    --interactive-map-grid-color: rgba(255, 255, 255, 0.26);
+    --interactive-map-hint-surface: rgba(12, 12, 18, 0.84);
+    --interactive-map-hint-border: rgba(255, 255, 255, 0.08);
+    --interactive-map-annotation-surface: rgba(10, 10, 16, 0.92);
+    --interactive-map-annotation-border: rgba(255, 255, 255, 0.08);
+    --interactive-map-annotation-shadow: rgba(0, 0, 0, 0.35);
+    --interactive-map-glow-left: radial-gradient(circle, rgba(108, 90, 255, 0.2) 0%, rgba(108, 90, 255, 0) 72%);
+    --interactive-map-glow-right: radial-gradient(circle, rgba(255, 82, 118, 0.18) 0%, rgba(255, 82, 118, 0) 72%);
   }
 
-  60% {
-    box-shadow: 0 0 0 10px rgba(255, 0, 89, 0);
+  .interactive-map[data-theme='auto'] .interactive-map__zoom-readout,
+  .interactive-map[data-theme='auto'] .interactive-map__hint span {
+    color: rgba(255, 255, 255, 0.7);
+  }
+
+  .interactive-map[data-theme='auto'] .interactive-map__heading p:last-child,
+  .interactive-map[data-theme='auto'] .interactive-map__control-button {
+    color: #ffffff;
   }
 }
 
@@ -287,6 +358,10 @@
 
   .interactive-map__annotation {
     min-width: 190px;
+    max-width: 220px;
+  }
+
+  .interactive-map__badge-card {
     max-width: 220px;
   }
 }
@@ -305,13 +380,15 @@
   .interactive-map__annotation {
     min-width: 0;
     max-width: 180px;
-    gap: 10px;
-    padding: 12px 14px;
   }
 
-  .interactive-map__annotation-icon {
-    width: 36px;
-    height: 36px;
+  .interactive-map__badge-card {
+    max-width: 180px;
+  }
+
+  .interactive-map__badge-card--above,
+  .interactive-map__badge-card--below {
+    right: 18px;
   }
 
   .interactive-map__hint {

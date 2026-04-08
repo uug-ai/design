@@ -26,7 +26,9 @@ const playgroundHtml = `
       <div class="interactive-map__scene">
         <div class="interactive-map__glow interactive-map__glow--left"></div>
         <div class="interactive-map__glow interactive-map__glow--right"></div>
-        <div class="interactive-map__grid"></div>
+        <div class="interactive-map__surface">
+          <img class="interactive-map__map-image" src="/worldmap.svg" alt="" aria-hidden="true" />
+        </div>
       </div>
     </div>
   </section>
@@ -43,6 +45,7 @@ const meta = {
     maxScale: 2.8,
     initialScale: 1,
     theme: 'light',
+    hiddenBadgeAreaLeftPercent: 0,
   },
   argTypes: {
     className: {
@@ -51,6 +54,9 @@ const meta = {
     theme: {
       control: 'inline-radio',
       options: ['light', 'dark', 'auto'],
+    },
+    hiddenBadgeAreaLeftPercent: {
+      control: { type: 'range', min: 0, max: 50, step: 1 },
     },
   },
 } satisfies Meta<typeof InteractiveMap>
@@ -72,5 +78,13 @@ export const FocusedView: Story = {
     minScale: 1.2,
     initialScale: 1.35,
     maxScale: 3.2,
+  },
+}
+
+export const HiddenBadgeArea: Story = {
+  args: {
+    title: 'Operations map with reserved panel space',
+    description: 'Badges stay anchored to the map and hide while they pass under the reserved left-side area.',
+    hiddenBadgeAreaLeftPercent: 28,
   },
 }

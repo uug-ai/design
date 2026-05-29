@@ -95,3 +95,10 @@
     --map-annotation-muted: rgba(255, 255, 255, 0.72);
   }
 }
+
+[data-theme='dark'] .map-annotation-card[data-theme='auto'] {
+  --map-annotation-surface: rgba(10, 10, 16, 0.92);
+  --map-annotation-shadow: rgba(0, 0, 0, 0.35);
+  --map-annotation-text: #ffffff;
+  --map-annotation-muted: rgba(255, 255, 255, 0.72);
+}

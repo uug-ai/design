@@ -20,6 +20,25 @@
   --surface-strong: #efeafb;
   --border: #e6e0f0;
   --shadow: rgba(20, 11, 59, 0.08);
+  --body-gradient: radial-gradient(circle at top, rgba(39, 19, 255, 0.05), transparent 28%);
+}
+
+/* Dark mode palette — activated via [data-theme="dark"] on <html>. */
+[data-theme='dark'] {
+  --primary-color: #6f5cff;
+  --primary-dark: #4b38e6;
+  --secondary-color: #ff4d85;
+  --accent-color: #a07cff;
+  --brand-gradient: linear-gradient(90deg, #6f5cff 0%, #ff4d85 100%);
+  --text-primary: #f5f4ff;
+  --text-secondary: #a7a4bd;
+  --background: #0b0b12;
+  --surface: #14141e;
+  --surface-strong: #1c1c2a;
+  --border: #2a2a3a;
+  --shadow: rgba(0, 0, 0, 0.5);
+  --body-gradient: radial-gradient(circle at top, rgba(111, 92, 255, 0.12), transparent 32%);
+  color-scheme: dark;
 }
 
 * {
@@ -35,7 +54,8 @@ body {
   -moz-osx-font-smoothing: grayscale;
   color: var(--text-primary);
   background-color: var(--background);
-  background-image: radial-gradient(circle at top, rgba(39, 19, 255, 0.05), transparent 28%);
+  background-image: var(--body-gradient);
+  transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 code {

@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { Link, useLocation } from 'react-router-dom'
 import { storybookUrl } from '../../config/storybook'
+import ThemeToggle from '../ThemeToggle'
 import './component.css'
 
 interface LayoutProps {
@@ -48,6 +49,7 @@ function Layout({ children }: LayoutProps) {
             </a>
           </nav>
           <div className="header-actions">
+            <ThemeToggle />
             <a
               className="header-icon-link"
               href={githubUrl}

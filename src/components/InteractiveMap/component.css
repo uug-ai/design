@@ -415,6 +415,35 @@
   }
 }
 
+/* Also react to the manual site-wide toggle (data-theme='dark' on <html>). */
+[data-theme='dark'] .interactive-map[data-theme='auto'] {
+  --interactive-map-background: linear-gradient(180deg, rgba(4, 4, 8, 0.96) 0%, rgba(12, 12, 18, 0.98) 100%);
+  --interactive-map-border: rgba(255, 255, 255, 0.08);
+  --interactive-map-control-surface: rgba(10, 10, 16, 0.86);
+  --interactive-map-control-border: rgba(255, 255, 255, 0.08);
+  --interactive-map-control-button-border: rgba(255, 255, 255, 0.12);
+  --interactive-map-control-button-surface: linear-gradient(180deg, rgba(16, 16, 24, 0.96) 0%, rgba(8, 8, 14, 0.96) 100%);
+  --interactive-map-control-shadow: rgba(0, 0, 0, 0.35);
+  --interactive-map-grid-color: rgba(255, 255, 255, 0.26);
+  --interactive-map-hint-surface: rgba(12, 12, 18, 0.84);
+  --interactive-map-hint-border: rgba(255, 255, 255, 0.08);
+  --interactive-map-annotation-surface: rgba(10, 10, 16, 0.92);
+  --interactive-map-annotation-border: rgba(255, 255, 255, 0.08);
+  --interactive-map-annotation-shadow: rgba(0, 0, 0, 0.35);
+  --interactive-map-glow-left: radial-gradient(circle, rgba(108, 90, 255, 0.2) 0%, rgba(108, 90, 255, 0) 72%);
+  --interactive-map-glow-right: radial-gradient(circle, rgba(255, 82, 118, 0.18) 0%, rgba(255, 82, 118, 0) 72%);
+}
+
+[data-theme='dark'] .interactive-map[data-theme='auto'] .interactive-map__zoom-readout,
+[data-theme='dark'] .interactive-map[data-theme='auto'] .interactive-map__hint span {
+  color: rgba(255, 255, 255, 0.7);
+}
+
+[data-theme='dark'] .interactive-map[data-theme='auto'] .interactive-map__heading p:last-child,
+[data-theme='dark'] .interactive-map[data-theme='auto'] .interactive-map__control-button {
+  color: #ffffff;
+}
+
 @media (max-width: 900px) {
   .interactive-map__viewport {
     min-height: 600px;

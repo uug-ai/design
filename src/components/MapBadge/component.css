@@ -56,3 +56,8 @@
     --map-badge-text: #ffffff;
   }
 }
+
+[data-theme='dark'] .map-badge[data-theme='auto'] {
+  --map-badge-surface: #000000;
+  --map-badge-text: #ffffff;
+}

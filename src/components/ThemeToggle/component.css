@@ -1,0 +1,79 @@
+/* Sun setting / Moon rising dark-mode toggle.
+   Mirrors hub-frontend's login page theme-toggle visuals. */
+.theme-toggle {
+  position: relative;
+  cursor: pointer;
+  width: 36px;
+  height: 36px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  border: 0;
+  padding: 0;
+}
+
+.theme-toggle:focus-visible {
+  outline: 2px solid var(--primary-color);
+  outline-offset: 2px;
+  border-radius: 50%;
+}
+
+.theme-toggle .toggle-thumb {
+  position: relative;
+  width: 36px;
+  height: 36px;
+  background: #f8f8f8;
+  border-radius: 50%;
+  transition: background-color 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.theme-toggle .sun-icon,
+.theme-toggle .moon-icon {
+  position: absolute;
+  width: 20px;
+  height: 20px;
+  transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Light mode: Sun visible, Moon below (ready to rise) */
+.theme-toggle .sun-icon {
+  color: #333;
+  opacity: 1;
+  transform: translateY(0) rotate(0deg);
+}
+
+.theme-toggle .moon-icon {
+  color: #fff;
+  opacity: 0;
+  transform: translateY(20px) rotate(-45deg);
+}
+
+.theme-toggle:hover .toggle-thumb {
+  transform: scale(1.1);
+  transition: transform 0.2s ease;
+}
+
+.theme-toggle:active .toggle-thumb {
+  transform: scale(0.95);
+}
+
+/* Dark mode state: Sun sets down, Moon rises up */
+.theme-toggle.dark .toggle-thumb {
+  background: #2a2a2a;
+}
+
+.theme-toggle.dark .sun-icon {
+  opacity: 0;
+  transform: translateY(20px) rotate(45deg);
+}
+
+.theme-toggle.dark .moon-icon {
+  opacity: 1;
+  transform: translateY(0) rotate(0deg);
+}

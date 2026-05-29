@@ -337,3 +337,69 @@
     right: 16px;
   }
 }
+
+/* ---------------------------------------------------------------------------
+ * Dark-mode overrides: re-map the surfaces/borders that were hard-coded as
+ * white/near-white above so the components page reads correctly under
+ * [data-theme='dark']. Light-mode look is preserved.
+ * ------------------------------------------------------------------------- */
+[data-theme='dark'] .components-overview-card {
+  border-color: var(--border);
+  background: linear-gradient(135deg, var(--surface) 0%, var(--surface-strong) 100%);
+}
+
+[data-theme='dark'] .components-storybook-callout {
+  border-bottom-color: var(--border);
+}
+
+[data-theme='dark'] .components-nav-sticky.is-sticky .components-storybook-link {
+  border-color: var(--border);
+  background: var(--surface);
+  color: var(--text-secondary);
+}
+
+[data-theme='dark'] .components-nav-sticky.is-sticky .components-storybook-link:hover {
+  border-color: var(--primary-color);
+  background: var(--surface-strong);
+  color: var(--text-primary);
+  box-shadow: 0 12px 20px var(--shadow);
+}
+
+[data-theme='dark'] .components-nav-sticky.is-sticky .components-overview-card {
+  background: linear-gradient(180deg, var(--surface) 0%, var(--surface-strong) 100%);
+}
+
+@media (min-width: 641px) {
+  [data-theme='dark'] .components-nav-sticky {
+    border-bottom-color: var(--border);
+  }
+}
+
+[data-theme='dark'] .components-nav-link {
+  border-color: var(--border);
+  background: var(--surface);
+}
+
+[data-theme='dark'] .components-nav-link:hover {
+  border-color: var(--primary-color);
+  background: var(--surface-strong);
+  box-shadow: 0 12px 20px var(--shadow);
+}
+
+[data-theme='dark'] .component-storybook-button {
+  border-color: var(--border);
+  background: var(--surface);
+  color: var(--text-secondary);
+}
+
+[data-theme='dark'] .component-storybook-button:hover {
+  border-color: var(--primary-color);
+  background: var(--surface-strong);
+  color: var(--text-primary);
+  box-shadow: 0 12px 20px var(--shadow);
+}
+
+[data-theme='dark'] .loader-showcase {
+  background: linear-gradient(180deg, var(--surface) 0%, var(--surface-strong) 100%);
+  border-color: var(--border);
+}

@@ -34,26 +34,26 @@ interface InteractiveMapProps {
   badges?: MapBadge[]
   annotations?: MapAnnotation[]
   theme?: InteractiveMapTheme
+  hiddenBadgeAreaLeftPercent?: number
   className?: string
 }
 
 const DEFAULT_BADGES: MapBadge[] = [
-  { id: 'north-america-west', shortLabel: 'SF', left: '8%', top: '42%', label: 'San Francisco', cardTitle: 'San Francisco CCTV wall', cardDescription: 'Live perimeter cameras, loading dock alerts, and after-hours access events.' },
-  { id: 'north-america-central', shortLabel: 'CH', left: '26%', top: '48%', label: 'Chicago', cardTitle: 'Chicago monitoring hub', cardDescription: 'Central station reviewing motion alarms, parking lot activity, and guard escalations.' },
-  { id: 'north-america-east', shortLabel: 'NY', left: '34%', top: '33%', label: 'New York', cardTitle: 'New York command center', cardDescription: 'High-density city surveillance with incident review, playback, and operator handoff.' },
-  { id: 'south-america-north', shortLabel: 'BO', left: '18%', top: '59%', label: 'Bogota', cardTitle: 'Bogota partner rollout', cardDescription: 'Remote CCTV oversight for logistics yards, gates, and fenced perimeter breaches.' },
-  { id: 'south-america-east', shortLabel: 'SP', left: '35%', top: '75%', label: 'Sao Paulo', cardTitle: 'Sao Paulo control room', cardDescription: 'Retail camera monitoring with people flow, intrusion alerts, and evidence export.' },
-  { id: 'europe-west', shortLabel: 'LD', left: '46%', top: '32%', label: 'London', cardTitle: 'London security desk', cardDescription: 'Multi-site alarm queues, video verification, and operator dispatch coordination.' },
-  { id: 'europe-central', shortLabel: 'GH', left: '51%', top: '35%', label: 'Ghent', cardTitle: 'UUG headquarters', cardDescription: 'Headquarters monitoring for camera health, intrusion review, and secure campus watchlists.' },
-  { id: 'europe-north', shortLabel: 'OS', left: '54%', top: '22%', label: 'Oslo', cardTitle: 'Oslo resilience lab', cardDescription: 'Outdoor camera validation for low-light scenes, snow cover, and critical access points.' },
-  { id: 'middle-east', shortLabel: 'DX', left: '61%', top: '55%', label: 'Dubai', cardTitle: 'Dubai SOC layer', cardDescription: 'Integrated video monitoring across compounds, lobbies, and vehicle checkpoints.' },
-  { id: 'africa-east', shortLabel: 'NR', left: '47%', top: '64%', label: 'Nairobi', cardTitle: 'Nairobi field monitoring', cardDescription: 'Infrastructure cameras tracking trespass, roadside incidents, and perimeter movement.' },
-  { id: 'central-asia', shortLabel: 'AL', left: '71%', top: '40%', label: 'Almaty', cardTitle: 'Almaty transit watch', cardDescription: 'Station and corridor surveillance with rapid review of suspicious movement patterns.' },
-  { id: 'east-asia-north', shortLabel: 'TK', left: '86%', top: '48%', label: 'Tokyo', cardTitle: 'Tokyo dense-camera mesh', cardDescription: 'High-volume CCTV feeds with low-latency alerting for entrances and restricted zones.' },
-  { id: 'east-asia-south', shortLabel: 'SG', left: '77%', top: '55%', label: 'Singapore', cardTitle: 'Singapore video bridge', cardDescription: 'Hybrid monitoring for campuses, access control events, and remote guard response.' },
-  { id: 'south-america-south', shortLabel: 'BA', left: '29%', top: '87%', label: 'Buenos Aires', cardTitle: 'Buenos Aires patrol view', cardDescription: 'Compact control surface for patrol teams reviewing overnight camera incidents.' },
-  { id: 'southern-africa', shortLabel: 'CT', left: '56%', top: '85%', label: 'Cape Town', cardTitle: 'Cape Town failover site', cardDescription: 'Redundant video monitoring for critical facilities, coastline assets, and backup response.' },
-  { id: 'australia', shortLabel: 'SY', left: '92%', top: '80%', label: 'Sydney', cardTitle: 'Sydney regional watch', cardDescription: 'Regional security monitoring for ports, depots, and remote perimeter cameras.' },
+  { id: 'north-america-west', shortLabel: 'SF', left: '8%', top: '34%', label: 'San Francisco', cardTitle: 'San Francisco CCTV wall', cardDescription: 'Live perimeter cameras, loading dock alerts, and after-hours access events.' },
+  { id: 'north-america-east', shortLabel: 'NY', left: '22%', top: '34%', label: 'New York', cardTitle: 'New York command center', cardDescription: 'High-density city surveillance with incident review, playback, and operator handoff.' },
+  { id: 'south-america-north', shortLabel: 'BO', left: '20.0%', top: '54%', label: 'Bogota', cardTitle: 'Bogota partner rollout', cardDescription: 'Remote CCTV oversight for logistics yards, gates, and fenced perimeter breaches.' },
+  { id: 'south-america-east', shortLabel: 'SP', left: '30%', top: '69%', label: 'Sao Paulo', cardTitle: 'Sao Paulo control room', cardDescription: 'Retail camera monitoring with people flow, intrusion alerts, and evidence export.' },
+  { id: 'europe-west', shortLabel: 'LD', left: '43.6%', top: '28.1%', label: 'London', cardTitle: 'London security desk', cardDescription: 'Multi-site alarm queues, video verification, and operator dispatch coordination.' },
+  { id: 'europe-central', shortLabel: 'UH', left: '45.7%', top: '28.4%', label: 'Ghent', cardTitle: 'UUG headquarters', cardDescription: 'Headquarters monitoring for camera health, intrusion review, and secure campus watchlists.' },
+  { id: 'europe-north', shortLabel: 'OS', left: '46.8%', top: '23.5%', label: 'Oslo', cardTitle: 'Oslo resilience lab', cardDescription: 'Outdoor camera validation for low-light scenes, snow cover, and critical access points.' },
+  { id: 'middle-east', shortLabel: 'DX', left: '59.8%', top: '42.4%', label: 'Dubai', cardTitle: 'Dubai SOC layer', cardDescription: 'Integrated video monitoring across compounds, lobbies, and vehicle checkpoints.' },
+  { id: 'africa-east', shortLabel: 'NR', left: '54.4%', top: '56.9%', label: 'Nairobi', cardTitle: 'Nairobi field monitoring', cardDescription: 'Infrastructure cameras tracking trespass, roadside incidents, and perimeter movement.' },
+  { id: 'central-asia', shortLabel: 'AL', left: '66.1%', top: '32.6%', label: 'Almaty', cardTitle: 'Almaty transit watch', cardDescription: 'Station and corridor surveillance with rapid review of suspicious movement patterns.' },
+  { id: 'east-asia-north', shortLabel: 'TK', left: '89.4%', top: '36.7%', label: 'Tokyo', cardTitle: 'Tokyo dense-camera mesh', cardDescription: 'High-volume CCTV feeds with low-latency alerting for entrances and restricted zones.' },
+  { id: 'east-asia-south', shortLabel: 'SG', left: '79.0%', top: '55.4%', label: 'Singapore', cardTitle: 'Singapore video bridge', cardDescription: 'Hybrid monitoring for campuses, access control events, and remote guard response.' },
+  { id: 'south-america-south', shortLabel: 'BA', left: '26.6%', top: '75.0%', label: 'Buenos Aires', cardTitle: 'Buenos Aires patrol view', cardDescription: 'Compact control surface for patrol teams reviewing overnight camera incidents.' },
+  { id: 'southern-africa', shortLabel: 'CT', left: '50.0%', top: '74.7%', label: 'Cape Town', cardTitle: 'Cape Town failover site', cardDescription: 'Redundant video monitoring for critical facilities, coastline assets, and backup response.' },
+  { id: 'australia', shortLabel: 'SY', left: '92.8%', top: '74.6%', label: 'Sydney', cardTitle: 'Sydney regional watch', cardDescription: 'Regional security monitoring for ports, depots, and remote perimeter cameras.' },
 ]
 
 const DEFAULT_ANNOTATIONS: MapAnnotation[] = []
@@ -92,6 +92,7 @@ function InteractiveMap({
   badges = DEFAULT_BADGES,
   annotations = DEFAULT_ANNOTATIONS,
   theme = 'auto',
+  hiddenBadgeAreaLeftPercent = 0,
   className = '',
 }: InteractiveMapProps) {
   const viewportRef = useRef<HTMLDivElement | null>(null)
@@ -111,8 +112,10 @@ function InteractiveMap({
     badges.some((badge) => badge.id === DEFAULT_ACTIVE_BADGE_ID) ? DEFAULT_ACTIVE_BADGE_ID : null
   ))
   const [flippedBadgeIds, setFlippedBadgeIds] = useState<Record<string, boolean>>({})
+  const [viewportSize, setViewportSize] = useState({ width: 0, height: 0 })
   const titleId = useId()
   const descriptionId = useId()
+  const hiddenBadgeAreaBoundary = (viewportSize.width * clamp(hiddenBadgeAreaLeftPercent, 0, 95)) / 100
 
   const zoomPercent = useMemo(
     () => `${Math.round((scale / initialScale) * 100)}%`,
@@ -141,6 +144,31 @@ function InteractiveMap({
   }, [scale, minScale, maxScale, initialScale])
 
   useEffect(() => {
+    const viewport = viewportRef.current
+
+    if (!viewport) {
+      return
+    }
+
+    const resizeObserver = new ResizeObserver((entries) => {
+      const entry = entries[0]
+
+      if (!entry) {
+        return
+      }
+
+      const { width, height } = entry.contentRect
+      setViewportSize({ width, height })
+    })
+
+    resizeObserver.observe(viewport)
+
+    return () => {
+      resizeObserver.disconnect()
+    }
+  }, [])
+
+  useEffect(() => {
     if (!activeBadgeId) {
       return
     }
@@ -158,14 +186,14 @@ function InteractiveMap({
     const cardRect = cardElement.getBoundingClientRect()
     const badgeCenterX = badgeRect.left + (badgeRect.width / 2)
     const projectedLeftEdge = badgeCenterX + 18 - cardRect.width
-    const shouldFlip = projectedLeftEdge < viewportRect.left + 8
+    const shouldFlip = projectedLeftEdge < viewportRect.left + hiddenBadgeAreaBoundary + 8
 
     setFlippedBadgeIds((current) => (
       current[activeBadgeId] === shouldFlip
         ? current
         : { ...current, [activeBadgeId]: shouldFlip }
     ))
-  }, [activeBadgeId, offset, scale])
+  }, [activeBadgeId, hiddenBadgeAreaBoundary, offset, scale])
 
   const applyZoom = (nextScale: number, clientX?: number, clientY?: number) => {
     const viewport = viewportRef.current
@@ -239,6 +267,20 @@ function InteractiveMap({
     return top >= 70 ? 'above' : 'below'
   }
 
+  const getBadgeScreenPosition = (badge: MapBadge) => {
+    const leftPercent = Number.parseFloat(badge.left) / 100
+    const topPercent = Number.parseFloat(badge.top) / 100
+    const localX = viewportSize.width * leftPercent
+    const localY = viewportSize.height * topPercent
+    const viewportCenterX = viewportSize.width / 2
+    const viewportCenterY = viewportSize.height / 2
+
+    return {
+      x: viewportCenterX + offset.x + ((localX - viewportCenterX) * scale),
+      y: viewportCenterY + offset.y + ((localY - viewportCenterY) * scale),
+    }
+  }
+
   return (
     <section
       className={['interactive-map', className].filter(Boolean).join(' ')}
@@ -299,25 +341,25 @@ function InteractiveMap({
           <span>Drag to explore</span>
         </div>
 
-        <div
-          className="interactive-map__scene"
-          style={{
-            transform: `translate(${offset.x}px, ${offset.y}px) scale(${scale})`,
-          }}
-          aria-hidden="true"
-        >
-          <div className="interactive-map__glow interactive-map__glow--left" />
-          <div className="interactive-map__glow interactive-map__glow--right" />
-          <div className="interactive-map__grid" />
-
+        <div className="interactive-map__badge-layer">
           {badges.map((badge) => {
             const isActive = activeBadgeId === badge.id
+            const badgePosition = getBadgeScreenPosition(badge)
+            const isHidden = badgePosition.x < hiddenBadgeAreaBoundary
 
             return (
               <div
                 key={badge.id}
-                className={`interactive-map__badge ${isActive ? 'is-active' : ''}`}
-                style={{ left: badge.left, top: badge.top }}
+                className={[
+                  'interactive-map__badge',
+                  isActive ? 'is-active' : '',
+                  isHidden ? 'is-hidden' : '',
+                ].filter(Boolean).join(' ')}
+                style={{
+                  left: `${badgePosition.x}px`,
+                  top: `${badgePosition.y}px`,
+                  '--interactive-map-badge-scale': scale,
+                } as React.CSSProperties}
                 ref={(element) => {
                   badgeRefs.current[badge.id] = element
                 }}
@@ -327,6 +369,8 @@ function InteractiveMap({
                   className={`interactive-map__badge-trigger ${isActive ? 'is-active' : ''}`}
                   aria-expanded={isActive}
                   aria-label={isActive ? `Close ${badge.label ?? badge.id}` : `Open ${badge.label ?? badge.id}`}
+                  tabIndex={isHidden ? -1 : 0}
+                  disabled={isHidden}
                   onPointerDown={(event) => {
                     event.stopPropagation()
                   }}
@@ -345,7 +389,7 @@ function InteractiveMap({
                   />
                 </button>
 
-                {isActive ? (
+                {isActive && !isHidden ? (
                   <div
                     className={[
                       'interactive-map__badge-card',
@@ -372,6 +416,25 @@ function InteractiveMap({
               </div>
             )
           })}
+        </div>
+
+        <div
+          className="interactive-map__scene"
+          style={{
+            transform: `translate(${offset.x}px, ${offset.y}px) scale(${scale})`,
+          }}
+          aria-hidden="true"
+        >
+          <div className="interactive-map__glow interactive-map__glow--left" />
+          <div className="interactive-map__glow interactive-map__glow--right" />
+          <div className="interactive-map__surface">
+            <img
+              className="interactive-map__map-image"
+              src="/worldmap.svg"
+              alt=""
+              aria-hidden="true"
+            />
+          </div>
 
           {annotations.map((annotation) => (
             <div

@@ -1,0 +1,125 @@
+.notice,
+.notice * {
+  box-sizing: border-box;
+}
+
+.notice {
+  width: 100%;
+  overflow: hidden;
+  border: 0;
+  border-radius: var(--hub-ui-radius);
+  color: var(--notice-text);
+  background: var(--hub-ui-bg-white);
+  box-shadow: var(--hub-ui-shadow);
+  font: 500 15px/24px var(--hub-ui-font);
+}
+
+.notice__wrapper {
+  display: flex;
+  align-items: center;
+  padding: 12px 24px;
+  background: var(--notice-bg);
+}
+
+.notice--info {
+  --notice-text: var(--hub-ui-info);
+  --notice-bg: hsla(var(--hub-ui-info-hsl), 0.05);
+}
+
+.notice--success {
+  --notice-text: var(--hub-ui-success);
+  --notice-bg: hsla(var(--hub-ui-success-hsl), 0.05);
+}
+
+.notice--warning {
+  --notice-text: var(--hub-ui-text);
+  --notice-bg: hsla(var(--hub-ui-warning-hsl), 0.18);
+  border: 1px solid var(--hub-ui-warning);
+}
+
+.notice--danger {
+  --notice-text: var(--hub-ui-alert);
+  --notice-bg: hsla(var(--hub-ui-alert-hsl), 0.05);
+}
+
+.notice__icon {
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+}
+
+.notice--warning .notice__icon {
+  color: var(--hub-ui-warning);
+}
+
+.notice__body {
+  min-width: 0;
+  flex: 1;
+  margin-left: 12px;
+  overflow-wrap: anywhere;
+}
+
+.notice__title {
+  font-weight: 500;
+}
+
+.notice__content {
+  display: inline;
+}
+
+.notice__content::before {
+  content: ' ';
+}
+
+.notice__content a {
+  color: inherit;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.notice__dismiss {
+  display: inline-flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  margin-left: 12px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  cursor: pointer;
+}
+
+.notice__dismiss:focus-visible,
+.notice__content a:focus-visible {
+  outline: 2px solid currentColor;
+  outline-offset: 2px;
+}
+
+.notice[hidden] {
+  display: none;
+}
+
+[data-ui-notice-example] > button {
+  min-height: 36px;
+  margin-top: 12px;
+  padding: 0 15px;
+  border: 1px solid var(--hub-ui-bg-muted);
+  border-radius: var(--hub-ui-radius);
+  color: var(--hub-ui-text);
+  background: transparent;
+  font: 500 14px/24px var(--hub-ui-font);
+  cursor: pointer;
+}
+
+[data-ui-notice-example] > button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+[data-ui-notice-example] > button:focus-visible {
+  outline: 2px solid var(--hub-ui-accent);
+  outline-offset: 2px;
+}

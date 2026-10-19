@@ -1,4 +1,4 @@
-import { Routes, Route } from 'react-router-dom'
+import { Navigate, Routes, Route, useLocation } from 'react-router-dom'
 import Layout from './components/Layout'
 import Home from './pages/Home'
 import Colors from './pages/Colors'
@@ -9,6 +9,7 @@ import Components from './pages/Components'
 import './App.css'
 
 function App() {
+  const { hash } = useLocation()
   return (
     <Layout>
       <Routes>
@@ -18,6 +19,7 @@ function App() {
         <Route path="/spacing" element={<Spacing />} />
         <Route path="/branding" element={<Branding />} />
         <Route path="/components" element={<Components />} />
+        <Route path="/hub-patterns" element={<Navigate to={`/components${hash}`} replace />} />
       </Routes>
     </Layout>
   )

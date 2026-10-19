@@ -4,13 +4,19 @@
   "type": "module",
   "description": "UUG.AI Design System Website",
   "scripts": {
+    "predev": "npm run build:html",
     "dev": "vite",
+    "prebuild": "npm run build:html",
     "build": "tsc && vite build",
+    "build:html": "node scripts/build-html-components.mjs",
+    "test:html": "node --test scripts/test-html-components.mjs",
     "build:all": "npm run build && npm run build-storybook",
     "preview": "vite preview",
     "preview:all": "node scripts/preview-all.mjs",
     "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
+    "prestorybook": "npm run build:html",
     "storybook": "storybook dev -p 6006",
+    "prebuild-storybook": "npm run build:html",
     "build-storybook": "storybook build -o dist/storybook"
   },
   "dependencies": {

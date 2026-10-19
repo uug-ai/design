@@ -1,7 +1,13 @@
 import type { Preview } from '@storybook/react-vite'
+import { createElement } from 'react'
 import '../src/index.css'
 
 const preview: Preview = {
+  decorators: [
+    (Story, context) => context.parameters.hubVisuals
+      ? createElement('div', { className: 'hub-ui hub-ui-example', style: { padding: 12 } }, createElement(Story))
+      : createElement(Story),
+  ],
   parameters: {
     layout: 'padded',
     controls: {

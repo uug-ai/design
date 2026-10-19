@@ -1,13 +1,16 @@
 import { useEffect, useRef, useState } from 'react'
+import { useLocation } from 'react-router-dom'
 import '../components/Button/component.css'
 import '../components/Card/component.css'
 import '../components/Input/component.css'
 import InteractiveMap from '../components/InteractiveMap'
 import Loader from '../components/Loader'
+import ComponentReferences, { HTML_COMPONENT_LINKS } from './ComponentReferences'
 import { storybookEntryUrl, storybookUrl } from '../config/storybook'
 import './Components.css'
 
 const COMPONENT_LINKS = [
+  ...HTML_COMPONENT_LINKS,
   { id: 'buttons', label: 'Buttons', storybookPath: '/docs/components-buttons--docs' },
   { id: 'inputs', label: 'Inputs', storybookPath: '/docs/components-inputs--docs' },
   { id: 'cards', label: 'Cards', storybookPath: '/docs/components-cards--docs' },
@@ -18,6 +21,11 @@ const COMPONENT_LINKS = [
 type ComponentSectionId = (typeof COMPONENT_LINKS)[number]['id']
 type ComponentSectionPosition = { id: ComponentSectionId; top: number }
 
+const getHeaderOffset = () => {
+  const header = document.querySelector('.header')
+  return header instanceof HTMLElement ? header.getBoundingClientRect().height : window.innerWidth <= 640 ? 76 : 72
+}
+
 const COMPONENT_STORYBOOK_LINKS = Object.fromEntries(
   COMPONENT_LINKS.map((componentLink) => [
     componentLink.id,
@@ -26,6 +34,7 @@ const COMPONENT_STORYBOOK_LINKS = Object.fromEntries(
 ) as Record<string, string>
 
 function Components() {
+  const { hash } = useLocation()
   const pageTopRef = useRef<HTMLDivElement | null>(null)
   const navStickyRef = useRef<HTMLDivElement | null>(null)
   const sectionRefs = useRef<Record<string, HTMLElement | null>>({})
@@ -42,22 +51,21 @@ function Components() {
   const [activeComponent, setActiveComponent] = useState<string | null>(null)
   const [isNavSticky, setIsNavSticky] = useState(false)
 
-  const getHeaderOffset = () => {
-    const header = document.querySelector('.header')
-
-    if (!(header instanceof HTMLElement)) {
-      return window.innerWidth <= 640 ? 76 : 72
-    }
-
-    return header.getBoundingClientRect().height
-  }
-
   const getStickyOffset = () => {
     const headerOffset = getHeaderOffset()
     const stickyHeight = navStickyRef.current?.getBoundingClientRect().height ?? 0
 
     return headerOffset + stickyHeight
   }
+
+  useEffect(() => {
+    const section = sectionRefs.current[hash.slice(1)]
+    if (!section) return
+    const stickyHeight = navStickyRef.current?.getBoundingClientRect().height ?? 0
+    window.scrollTo({
+      top: Math.max(0, window.scrollY + section.getBoundingClientRect().top - getHeaderOffset() - stickyHeight - 16),
+    })
+  }, [hash])
 
   useEffect(() => {
     const updateStickyState = () => {
@@ -200,6 +208,11 @@ function Components() {
           Reusable UI components built with accessibility and consistency in mind.
           Each component includes a live example and a direct Storybook entry for deeper review.
         </p>
+        <p>
+          The current Hub reference starts with an application layout and its extracted widgets:
+          original typography, colours, density, surfaces and states in portable HTML/CSS.
+          These are visual extractions, not a redesign in the marketing website’s style.
+        </p>
       </div>
 
       <div
@@ -238,6 +251,14 @@ function Components() {
         </div>
       </div>
 
+      <ComponentReferences registerSection={(id, element) => { sectionRefs.current[id] = element }} />
+      <div className="components-intro">
+        <h2>Earlier design explorations</h2>
+        <p>
+          The examples below pre-date the Hub extraction and are not the visual baseline for current Hub widgets.
+          They remain available for existing consumers.
+        </p>
+      </div>
       <section
         id="buttons"
         className="component-section"

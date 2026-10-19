@@ -1,6 +1,7 @@
 import { createReadStream, existsSync, statSync } from 'node:fs'
 import { extname, join, normalize } from 'node:path'
 import { createServer } from 'node:http'
+import process from 'node:process'
 
 const port = Number(process.env.PORT || 4173)
 const distRoot = join(process.cwd(), 'dist')
@@ -22,9 +23,10 @@ const mimeTypes = {
 
 function sendFile(response, filePath) {
   const extension = extname(filePath)
+  const hashedAsset = /[\\/]assets[\\/][^\\/]+-[\w-]{8,}\.[a-z0-9]+$/i.test(filePath)
   response.writeHead(200, {
     'Content-Type': mimeTypes[extension] || 'application/octet-stream',
-    'Cache-Control': extension === '.html' ? 'no-cache' : 'public, max-age=31536000, immutable',
+    'Cache-Control': hashedAsset ? 'public, max-age=31536000, immutable' : 'no-cache',
   })
   createReadStream(filePath).pipe(response)
 }

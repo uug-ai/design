@@ -27,3 +27,13 @@ export function htmlCssSource(html: string, css: string, parameters: Record<stri
     parameters,
   )
 }
+
+export function nativeComponentSource(html: string, css: string, interactive = false, dependencies: readonly string[] = []) {
+  const base = `${import.meta.env.BASE_URL}ui/`
+  const script = interactive
+    ? `\n\n<script type="module">\n  import { enhanceComponents } from '${base}behaviors.js'\n  enhanceComponents(document)\n</script>`
+    : ''
+  const links = ['hub-tokens.css', ...dependencies.map((id) => `${id}/component.css`)]
+    .map((path) => `<link rel="stylesheet" href="${base}${path}">`).join('\n')
+  return htmlCssSource(`${links}\n\n${html.trim()}${script}`, css)
+}

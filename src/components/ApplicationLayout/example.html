@@ -1,0 +1,107 @@
+<div class="hub-layout">
+  <div class="hub-layout__shell">
+    <aside class="hub-layout__sidebar" aria-label="Example workspace">
+      <div class="hub-layout__brand">HUB</div>
+      <div class="hub-layout__workspace">
+        <span>Workspace</span>
+        <strong>Example organisation</strong>
+        <span>Default project</span>
+      </div>
+      <div class="hub-layout__nav" aria-label="Illustrative navigation">
+        <span class="hub-layout__nav-label">Monitoring</span>
+        <span class="hub-layout__nav-item">Dashboard</span>
+        <span class="hub-layout__nav-item">Latest events</span>
+        <span class="hub-layout__nav-item">Live view</span>
+        <span class="hub-layout__nav-item">Video wall</span>
+        <span class="hub-layout__nav-item">Recording</span>
+        <span class="hub-layout__nav-item">Day Overview</span>
+        <span class="hub-layout__nav-label">Configuration</span>
+        <span class="hub-layout__nav-item" aria-current="page">Devices</span>
+      </div>
+    </aside>
+    <div class="hub-layout__main">
+      <header class="hub-layout__header">
+        <div>
+          <h3 class="hub-layout__title">Devices</h3>
+          <p class="hub-layout__subtitle">Overview</p>
+        </div>
+        <button class="hub-layout__button" type="button">Add device</button>
+      </header>
+      <div class="hub-layout__body">
+        <div class="hub-layout__metrics">
+          <dl class="metric-card" aria-busy="false">
+            <dt class="metric-card__label">Devices</dt>
+            <dd class="metric-card__value"><span class="metric-card__number">12</span></dd>
+          </dl>
+          <dl class="metric-card" aria-busy="false">
+            <dt class="metric-card__label">Connected</dt>
+            <dd class="metric-card__value"><span class="metric-card__number">10</span></dd>
+          </dl>
+          <dl class="metric-card" aria-busy="false">
+            <dt class="metric-card__label">Recordings today</dt>
+            <dd class="metric-card__value"><span class="metric-card__number">248</span></dd>
+          </dl>
+        </div>
+        <div class="notice notice--warning">
+          <div class="notice__wrapper">
+            <svg aria-hidden="true" class="notice__icon" width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path fill-rule="evenodd" clip-rule="evenodd" d="M9 16C5.13401 16 2 12.866 2 9C2 5.13401 5.13401 2 9 2C12.866 2 16 5.13401 16 9C16 12.866 12.866 16 9 16ZM0 9C0 13.9706 4.02944 18 9 18C13.9706 18 18 13.9706 18 9C18 4.02944 13.9706 0 9 0C4.02944 0 0 4.02944 0 9Z" fill="currentColor"/>
+<path fill-rule="evenodd" clip-rule="evenodd" d="M9 10C9.55228 10 10 9.55228 10 9V6C10 5.44772 9.55228 5 9 5C8.44772 5 8 5.44772 8 6V9C8 9.55228 8.44772 10 9 10Z" fill="currentColor"/>
+<path d="M10 12C10 11.4477 9.55228 11 9 11C8.44772 11 8 11.4477 8 12C8 12.5523 8.44772 13 9 13C9.55228 13 10 12.5523 10 12Z" fill="currentColor"/>
+<path fill-rule="evenodd" clip-rule="evenodd" d="M9 11C9.55228 11 10 11.4477 10 12C10 12.5523 9.55228 13 9 13C8.44772 13 8 12.5523 8 12C8 11.4477 8.44772 11 9 11Z" fill="currentColor"/>
+</svg>
+            <div class="notice__body">
+              <span class="notice__title">Two devices need attention.</span>
+              <span class="notice__content">Review their connection before recording.</span>
+            </div>
+          </div>
+        </div>
+        <div class="hub-layout__block">
+          <div class="hub-layout__toolbar">
+            <div class="query-field">
+              <label for="layout-device-search" class="query-field__label">Search devices</label>
+              <div class="query-field__control">
+                <svg aria-hidden="true" width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path fill-rule="evenodd" clip-rule="evenodd" d="M7.5 15C9.39113 15 11.1188 14.3001 12.438 13.1451L13.0339 13.741C12.9448 14.0747 13.0312 14.4454 13.2929 14.7071L16.2929 17.7071C16.6834 18.0976 17.3166 18.0976 17.7071 17.7071C18.0976 17.3166 18.0976 16.6834 17.7071 16.2929L14.7071 13.2929C14.4454 13.0312 14.0747 12.9448 13.741 13.0339L13.1451 12.438C14.3001 11.1188 15 9.39113 15 7.5C15 3.35786 11.6421 0 7.5 0C3.35786 0 0 3.35786 0 7.5C0 11.6421 3.35786 15 7.5 15ZM7.5 13C10.5376 13 13 10.5376 13 7.5C13 4.46243 10.5376 2 7.5 2C4.46243 2 2 4.46243 2 7.5C2 10.5376 4.46243 13 7.5 13Z" fill="currentColor"/>
+</svg>
+                <input id="layout-device-search" type="search" placeholder="Search devices">
+              </div>
+            </div>
+            <div class="segmented-control" role="group" aria-label="Device layout"
+              data-ui-component="segmented-control">
+              <button class="segmented-control__option" type="button"
+                aria-pressed="true" data-value="list">List</button>
+              <button class="segmented-control__option" type="button"
+                aria-pressed="false" data-value="grid">Grid</button>
+            </div>
+          </div>
+          <div class="hub-layout__table-scroll">
+            <table class="hub-layout__table" aria-label="Example devices">
+              <thead><tr><th scope="col">Name</th><th scope="col">Status</th></tr></thead>
+              <tbody>
+                <tr><td>Entrance camera</td><td>
+                  <span class="status-badge status-badge--success">
+                    <span class="status-badge__dot" aria-hidden="true"></span>
+                    <span class="status-badge__label">Connected</span>
+                  </span>
+                </td></tr>
+                <tr><td>Loading dock</td><td>
+                  <span class="status-badge status-badge--warning">
+                    <span class="status-badge__dot" aria-hidden="true"></span>
+                    <span class="status-badge__label">Updating</span>
+                  </span>
+                </td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+        <div class="hub-layout__empty">
+          <div class="empty-state">
+            <h3 class="empty-state__title">No alerts for this period</h3>
+            <p class="empty-state__description">New alerts appear here when a rule matches.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

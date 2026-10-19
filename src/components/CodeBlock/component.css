@@ -49,3 +49,19 @@
   color: var(--primary-color);
   border-color: rgba(65, 105, 225, 0.32);
 }
+
+[data-theme='dark'] .copy-button {
+  background: var(--background);
+  color: var(--text-secondary);
+  border-color: var(--border);
+}
+
+[data-theme='dark'] .copy-button:hover {
+  background: var(--surface-strong);
+  color: var(--text-primary);
+}
+
+[data-theme='dark'] .copy-button.copied {
+  background: var(--surface-strong);
+  color: var(--feedback-success-text);
+}

@@ -1,0 +1,84 @@
+/* Hub's scss/_app.variables.scss values, namespaced to avoid changing the documentation theme. */
+@font-face {
+  font-family: 'Hub Inter';
+  font-style: normal;
+  font-weight: 100 900;
+  font-display: swap;
+  src: url('./fonts/Inter-roman.var.woff2') format('woff2');
+}
+
+:root,
+[data-theme='light'] {
+  --hub-ui-font: 'Hub Inter', 'Inter', sans-serif;
+  --hub-ui-accent: #84569f;
+  --hub-ui-accent-hsl: 278, 30%, 48%;
+  --hub-ui-accent-darker: hsl(278, 34%, 31%);
+  --hub-ui-text: hsl(0, 3%, 15%);
+  --hub-ui-text-muted: hsl(0, 3%, 41%);
+  --hub-ui-text-muted-hsl: 0, 3%, 41%;
+  --hub-ui-text-light: hsl(0, 5%, 63%);
+  --hub-ui-text-inverse: hsl(0, 3%, 0%);
+  --hub-ui-card: hsl(0, 0%, 100%);
+  --hub-ui-card-muted: hsl(0, 0%, 98%);
+  --hub-ui-bg: hsl(0, 5%, 93%);
+  --hub-ui-bg-muted: hsl(0, 4%, 89%);
+  --hub-ui-bg-muted-hsl: 0, 4%, 89%;
+  --hub-ui-bg-white: hsl(0, 0%, 100%);
+  --hub-ui-info: hsl(205, 74%, 53%);
+  --hub-ui-info-hsl: 205, 74%, 53%;
+  --hub-ui-success: hsl(131, 31%, 52%);
+  --hub-ui-success-hsl: 131, 31%, 52%;
+  --hub-ui-warning: hsl(47, 86%, 47%);
+  --hub-ui-warning-hsl: 47, 86%, 47%;
+  --hub-ui-alert: hsl(2, 58%, 48%);
+  --hub-ui-alert-hsl: 2, 58%, 48%;
+  --hub-ui-radius: 4px;
+  --hub-ui-shadow: 0 4px 34px rgba(0, 0, 0, 0.04), 0 3px 4px rgba(0, 0, 0, 0.1);
+  --hub-ui-upper-gradient: linear-gradient(90deg, #2713ff 0%, #ff0059 100%);
+  --hub-ui-segment-border: var(--hub-ui-bg-muted);
+  --hub-ui-segment-active-bg: hsla(var(--hub-ui-accent-hsl), 0.1);
+  --hub-ui-segment-active-text: var(--hub-ui-accent);
+}
+
+[data-theme='dark'],
+.dark-theme {
+  --hub-ui-text: hsl(0, 0%, 90%);
+  --hub-ui-text-muted: hsl(0, 0%, 70%);
+  --hub-ui-text-muted-hsl: 0, 0%, 70%;
+  --hub-ui-text-light: hsl(0, 0%, 55%);
+  --hub-ui-text-inverse: hsl(0, 0%, 100%);
+  --hub-ui-card: hsl(0, 0%, 18%);
+  --hub-ui-card-muted: hsl(0, 0%, 15%);
+  --hub-ui-bg: hsl(0, 0%, 10%);
+  --hub-ui-bg-muted: hsl(0, 0%, 20%);
+  --hub-ui-bg-muted-hsl: 0, 0%, 20%;
+  --hub-ui-bg-white: hsl(0, 0%, 15%);
+  --hub-ui-upper-gradient: linear-gradient(90deg, #6f5cff 0%, #ff4d85 100%);
+  --hub-ui-segment-border: hsla(var(--hub-ui-text-muted-hsl), 0.25);
+  --hub-ui-segment-active-bg: hsla(var(--hub-ui-accent-hsl), 0.45);
+  --hub-ui-segment-active-text: var(--hub-ui-text-inverse);
+}
+
+.hub-ui {
+  color: var(--hub-ui-text);
+  font: 400 16px/normal var(--hub-ui-font);
+}
+
+.hub-ui-example {
+  padding: 24px;
+  border-radius: var(--hub-ui-radius);
+  background: var(--hub-ui-card);
+}
+
+.hub-icon {
+  display: inline-flex;
+  flex-shrink: 0;
+  width: 18px;
+  height: 18px;
+}
+
+.hub-icon > svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+}

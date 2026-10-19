@@ -1,44 +1,11 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Outfit:wght@500;600;700;800;900&display=swap');
+@import './tokens.css';
+@import './hub-tokens.css';
 
 :root {
   font-family: 'Inter', sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-
-  /* UUG.AI Color Palette */
-  --font-family-heading: 'Outfit', sans-serif;
-  --font-family-body: 'Inter', sans-serif;
-  --primary-color: #2713ff;
-  --primary-dark: #1807c7;
-  --secondary-color: #ff0059;
-  --accent-color: #7426ff;
-  --brand-gradient: linear-gradient(90deg, #2713ff 0%, #ff0059 100%);
-  --text-primary: #0b0b12;
-  --text-secondary: #626676;
-  --background: #ffffff;
-  --surface: #f7f5fb;
-  --surface-strong: #efeafb;
-  --border: #e6e0f0;
-  --shadow: rgba(20, 11, 59, 0.08);
-  --body-gradient: radial-gradient(circle at top, rgba(39, 19, 255, 0.05), transparent 28%);
-}
-
-/* Dark mode palette — activated via [data-theme="dark"] on <html>. */
-[data-theme='dark'] {
-  --primary-color: #6f5cff;
-  --primary-dark: #4b38e6;
-  --secondary-color: #ff4d85;
-  --accent-color: #a07cff;
-  --brand-gradient: linear-gradient(90deg, #6f5cff 0%, #ff4d85 100%);
-  --text-primary: #f5f4ff;
-  --text-secondary: #a7a4bd;
-  --background: #0b0b12;
-  --surface: #14141e;
-  --surface-strong: #1c1c2a;
-  --border: #2a2a3a;
-  --shadow: rgba(0, 0, 0, 0.5);
-  --body-gradient: radial-gradient(circle at top, rgba(111, 92, 255, 0.12), transparent 32%);
-  color-scheme: dark;
 }
 
 * {

@@ -1,0 +1,97 @@
+.component-reference {
+  --component-reference-link: var(--primary-color);
+}
+
+[data-theme='dark'] .component-reference {
+  --component-reference-link: var(--accent-color);
+}
+
+.component-reference a {
+  color: var(--component-reference-link);
+  text-underline-offset: 3px;
+}
+
+.component-reference a:focus-visible,
+.component-reference summary:focus-visible {
+  outline: 2px solid var(--primary-color);
+  outline-offset: 3px;
+}
+
+.component-reference__heading,
+.component-reference__downloads {
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.component-reference__heading {
+  justify-content: space-between;
+}
+
+.component-reference__downloads a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+}
+
+.component-reference__preview {
+  padding: clamp(1rem, 3vw, 2rem);
+  margin-block: 1.5rem;
+  border: 1px solid var(--hub-ui-bg-muted);
+  border-radius: var(--hub-ui-radius);
+  background: var(--hub-ui-card);
+}
+
+.component-reference__preview--layout {
+  padding: 0;
+}
+
+.component-reference__preview .notice__content a {
+  color: inherit;
+}
+
+.component-reference .component-reference__source {
+  font-size: 0.875rem;
+}
+
+.component-reference summary {
+  padding-block: 0.75rem;
+  color: var(--text-primary);
+  cursor: pointer;
+}
+
+.component-reference__table-scroll {
+  max-width: 100%;
+  overflow-x: auto;
+}
+
+.component-reference__table-scroll table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: start;
+  font-size: 0.9375rem;
+  line-height: 1.6;
+}
+
+.component-reference__table-scroll caption {
+  padding-block: 1rem;
+  text-align: start;
+  color: var(--text-secondary);
+}
+
+.component-reference__table-scroll th,
+.component-reference__table-scroll td {
+  padding: 0.75rem;
+  border-bottom: 1px solid var(--border);
+  vertical-align: top;
+  overflow-wrap: anywhere;
+}
+
+.component-reference__table-scroll thead {
+  background: var(--surface);
+}
+
+.component-reference__table-scroll td {
+  color: var(--text-secondary);
+}

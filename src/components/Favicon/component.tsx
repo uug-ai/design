@@ -25,7 +25,7 @@ function Favicon({
     >
       <img
         className="favicon-tile__image"
-        src={`${import.meta.env.BASE_URL}favicon-32x32.png`}
+        src={`${import.meta.env.BASE_URL}android-chrome-192x192.png?v=uug-midnight`}
         alt={label}
         width={size}
         height={size}

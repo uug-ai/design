@@ -1,0 +1,46 @@
+<svg viewBox="0 0 1000 500" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="World dotted map">
+  <!--
+    Dotted world map (equirectangular projection: x = (lon+180)/360*1000,
+    y = (90-lat)/180*500). The continents are drawn as filled landmass paths
+    inside #worldMask, which clips the tiled dot pattern so only land is dotted.
+    Used as an alpha mask by the spinning globe.
+  -->
+  <defs>
+    <pattern id="dotPattern" width="10" height="10" patternUnits="userSpaceOnUse">
+      <circle cx="2" cy="2" r="1.45" fill="#000000" />
+    </pattern>
+    <mask id="worldMask">
+      <rect width="100%" height="100%" fill="#000000" />
+      <g fill="#ffffff">
+        <!-- North America -->
+        <path d="M44 80 L70 60 L110 54 L150 56 L160 70 L150 86 L186 78 L210 64 L236 58 L262 56 L300 50 L322 60 L312 84 L334 92 L352 116 L322 124 L300 132 L292 152 L276 180 L256 176 L244 158 L236 176 L224 190 L210 198 L196 184 L186 168 L172 158 L162 150 L156 130 L150 112 L138 102 L120 96 L98 90 L72 92 L54 88 Z" />
+        <!-- Central America -->
+        <path d="M210 198 L226 200 L246 212 L268 224 L286 240 L278 248 L262 234 L244 222 L226 210 L212 204 Z" />
+        <!-- South America -->
+        <path d="M292 220 L312 216 L330 222 L348 234 L372 248 L402 262 L406 278 L392 290 L382 306 L368 320 L356 338 L344 354 L332 366 L320 382 L312 398 L306 408 L298 398 L296 380 L300 360 L292 340 L284 318 L282 296 L276 280 L272 262 L278 246 L284 232 Z" />
+        <!-- Europe (Iberia, Italy, Balkans, Scandinavia, W Russia) -->
+        <path d="M489 125 L475 131 L472 151 L492 153 L514 137 L522 131 L530 150 L540 141 L548 150 L560 146 L583 140 L611 138 L625 121 L617 101 L600 86 L583 78 L569 54 L540 68 L520 90 L522 100 L508 108 L502 116 Z" />
+        <!-- Africa (Mediterranean coast, Horn, Gulf of Guinea, Cape) -->
+        <path d="M483 153 L528 149 L555 156 L578 158 L592 172 L605 196 L620 210 L645 214 L626 238 L614 254 L606 278 L600 304 L594 328 L562 348 L548 350 L538 334 L528 286 L522 258 L520 244 L505 242 L486 238 L462 230 L454 220 L451 210 L458 194 L470 174 L478 160 Z" />
+        <!-- Madagascar -->
+        <path d="M626 296 L636 300 L640 316 L634 330 L626 322 L624 308 Z" />
+        <!-- Asia (Siberia, Korea, China coast, India peninsula, Arabia, Anatolia) -->
+        <path d="M667 61 L722 56 L778 53 L833 61 L889 64 L944 69 L958 75 L944 97 L917 120 L889 131 L861 153 L847 167 L819 181 L806 197 L792 222 L764 222 L750 194 L722 222 L714 236 L708 208 L694 194 L681 181 L667 194 L639 222 L625 208 L611 181 L597 167 L583 153 L597 147 L611 139 L639 144 L653 128 L667 108 Z" />
+        <!-- Indonesia / SE Asia islands -->
+        <path d="M780 232 L800 236 L820 240 L808 250 L786 248 L772 242 Z" />
+        <path d="M828 250 L860 252 L892 256 L912 266 L890 272 L856 268 L832 260 Z" />
+        <!-- Japan -->
+        <path d="M876 132 L890 140 L894 158 L884 164 L874 150 L872 138 Z" />
+        <!-- Great Britain -->
+        <path d="M493 88 L501 94 L499 103 L506 110 L499 118 L489 113 L492 103 L487 96 Z" />
+        <!-- Ireland -->
+        <path d="M478 99 L484 98 L485 106 L479 108 L476 103 Z" />
+        <!-- Australia -->
+        <path d="M812 312 L840 296 L868 286 L898 282 L920 296 L932 318 L926 344 L902 356 L876 352 L852 344 L830 348 L816 336 L810 322 Z" />
+        <!-- New Zealand -->
+        <path d="M962 356 L974 360 L980 374 L972 388 L962 380 L958 366 Z" />
+      </g>
+    </mask>
+  </defs>
+  <rect width="100%" height="100%" fill="url(#dotPattern)" mask="url(#worldMask)" />
+</svg>

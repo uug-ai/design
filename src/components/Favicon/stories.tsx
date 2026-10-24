@@ -5,26 +5,26 @@ import Favicon from './component'
 
 const playgroundHtml = `
   <div class="favicon-tile favicon-tile--surface" style="--favicon-size: 32px;" aria-label="UUG favicon">
-    <img class="favicon-tile__image" src="favicon-32x32.png" alt="UUG favicon" width="32" height="32" />
+    <img class="favicon-tile__image" src="android-chrome-192x192.png?v=uug-midnight" alt="UUG favicon" width="32" height="32" />
   </div>
 `
 
 const contrastHtml = `
   <div class="favicon-tile favicon-tile--contrast" style="--favicon-size: 64px;" aria-label="UUG favicon on dark surfaces">
-    <img class="favicon-tile__image" src="favicon-32x32.png" alt="UUG favicon on dark surfaces" width="64" height="64" />
+    <img class="favicon-tile__image" src="android-chrome-192x192.png?v=uug-midnight" alt="UUG favicon on dark surfaces" width="64" height="64" />
   </div>
 `
 
 const sizeRampHtml = `
   <div style="display: flex; flex-wrap: wrap; gap: 16px; align-items: center;">
     <div class="favicon-tile favicon-tile--surface" style="--favicon-size: 16px;" aria-label="UUG favicon 16 pixels">
-      <img class="favicon-tile__image" src="favicon-32x32.png" alt="UUG favicon 16 pixels" width="16" height="16" />
+      <img class="favicon-tile__image" src="android-chrome-192x192.png?v=uug-midnight" alt="UUG favicon 16 pixels" width="16" height="16" />
     </div>
     <div class="favicon-tile favicon-tile--surface" style="--favicon-size: 32px;" aria-label="UUG favicon 32 pixels">
-      <img class="favicon-tile__image" src="favicon-32x32.png" alt="UUG favicon 32 pixels" width="32" height="32" />
+      <img class="favicon-tile__image" src="android-chrome-192x192.png?v=uug-midnight" alt="UUG favicon 32 pixels" width="32" height="32" />
     </div>
     <div class="favicon-tile favicon-tile--surface" style="--favicon-size: 64px;" aria-label="UUG favicon 64 pixels">
-      <img class="favicon-tile__image" src="favicon-32x32.png" alt="UUG favicon 64 pixels" width="64" height="64" />
+      <img class="favicon-tile__image" src="android-chrome-192x192.png?v=uug-midnight" alt="UUG favicon 64 pixels" width="64" height="64" />
     </div>
   </div>
 `

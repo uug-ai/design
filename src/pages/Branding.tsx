@@ -1,6 +1,55 @@
+import { useEffect, useRef, useState } from 'react'
 import CodeBlock from '../components/CodeBlock'
 import Favicon from '../components/Favicon'
+import '../components/Button/component.css'
 import './Branding.css'
+
+function BrandStudio({ kind, title }: { kind: 'banner' | 'logo'; title: string }) {
+  const frameRef = useRef<HTMLIFrameElement>(null)
+  const [error, setError] = useState('')
+
+  useEffect(() => {
+    const frame = frameRef.current
+    if (!frame) return
+    let observer: ResizeObserver | undefined
+    const connect = () => {
+      observer?.disconnect()
+      const content = frame.contentDocument?.querySelector<HTMLElement>('.studio')
+      if (!content) {
+        setError('The editor could not be loaded. Reload the Branding page to try again.')
+        return
+      }
+      setError('')
+      const resize = () => {
+        const borderHeight = frame.offsetHeight - frame.clientHeight
+        frame.style.height = `${Math.ceil(content.getBoundingClientRect().height) + borderHeight}px`
+      }
+      observer = new ResizeObserver(resize)
+      observer.observe(content)
+      resize()
+    }
+    frame.addEventListener('load', connect)
+    if (frame.contentDocument?.readyState === 'complete' &&
+        frame.contentDocument.URL !== 'about:blank') connect()
+    return () => {
+      frame.removeEventListener('load', connect)
+      observer?.disconnect()
+    }
+  }, [])
+
+  return (
+    <article className="brand-toolkit-editor">
+      {error && <p role="status">{error}</p>}
+      <iframe
+        ref={frameRef}
+        className="brand-toolkit-frame"
+        src={`/brand/${kind}.html?embed=1`}
+        title={title}
+        loading="lazy"
+      />
+    </article>
+  )
+}
 
 function Branding() {
   const brandValues = [
@@ -55,6 +104,8 @@ function Branding() {
             UUG
           </div>
         </div>
+        <BrandStudio kind="logo" title="UUG Logo Studio" />
+        <BrandStudio kind="banner" title="Social Banner Studio" />
 
         <h3>Logo Usage Guidelines</h3>
         <ul className="guidelines-list">
@@ -91,8 +142,9 @@ function Branding() {
       <section className="branding-section">
         <h2>Favicon</h2>
         <p>
-          The favicon should stay crisp at small sizes and sit inside a simple, quiet tile
-          whenever it appears in documentation or presentation surfaces.
+          The favicon uses the entire white UUG wordmark on the midnight background.
+          Keep this same artwork on light and dark surfaces, with a quiet outer tile
+          for documentation and presentations.
         </p>
         <div className="favicon-showcase" aria-label="UUG favicon examples">
           <div className="favicon-card">
@@ -105,9 +157,38 @@ function Branding() {
           </div>
         </div>
 
+        <div className="favicon-downloads">
+          <a
+            className="btn btn-primary"
+            href={`${import.meta.env.BASE_URL}brand/uug-favicon-set.zip?v=uug-midnight`}
+            download="uug-favicon-set.zip"
+          >
+            Download full favicon set (.zip)
+          </a>
+          <a
+            className="btn btn-secondary"
+            href={`${import.meta.env.BASE_URL}favicon.ico?v=uug-midnight`}
+            download="uug-favicon.ico"
+          >
+            Download favicon (.ico)
+          </a>
+          <a
+            className="btn btn-secondary"
+            href={`${import.meta.env.BASE_URL}favicon-32x32.png?v=uug-midnight`}
+            download="uug-favicon-32x32.png"
+          >
+            Download PNG (32 x 32)
+          </a>
+        </div>
+        <p>
+          The ZIP includes all browser, Apple and Android icons, a web manifest,
+          and copy-paste HTML with setup instructions.
+        </p>
+
         <h3>Favicon Usage</h3>
         <ul className="guidelines-list">
-          <li>Use the 32px asset as the default reference in UI documentation</li>
+          <li>Use the native 16px and 32px assets for browser tabs</li>
+          <li>Use the higher-resolution artwork for documentation and larger previews</li>
           <li>Keep the favicon centered inside a padded square tile</li>
           <li>Pair the icon with neutral or ink surfaces instead of decorative treatments</li>
           <li>Scale up the tile for presentations rather than stretching the image itself</li>

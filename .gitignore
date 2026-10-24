@@ -25,3 +25,5 @@ dist-ssr
 
 *storybook.log
 storybook-static
+public/ui/
+public/brand/uug-favicon-set.zip

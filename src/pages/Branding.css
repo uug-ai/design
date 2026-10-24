@@ -2,6 +2,20 @@
   margin-top: 60px;
 }
 
+.brand-toolkit-editor {
+  margin-top: 32px;
+  min-width: 0;
+}
+
+.brand-toolkit-frame {
+  display: block;
+  width: 100%;
+  height: 800px;
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  background: #101019;
+}
+
 .logo-showcase {
   background-color: var(--surface);
   border: 1px solid var(--border);
@@ -93,6 +107,13 @@
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
   gap: 24px;
+  margin: 24px 0;
+}
+
+.favicon-downloads {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
   margin: 24px 0;
 }
 

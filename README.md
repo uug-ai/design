@@ -25,6 +25,10 @@ Open [http://localhost:5173](http://localhost:5173) to view the design system in
 
 ### Build
 
+The production container uses a maintained, digest-pinned Nginx/Alpine base and
+upgrades its runtime packages for distro security fixes. Both the app and
+Storybook continue to use the existing Node builder and dependency lockfile.
+
 ```bash
 npm run build
 ```

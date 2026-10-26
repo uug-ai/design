@@ -5,11 +5,29 @@ on:
     types: [opened, synchronize, reopened]
 
 jobs:
+  hardened:
+    permissions:
+      contents: read
+      packages: write
+      id-token: write
+    uses: uug-ai/workflows/.github/workflows/release-create.yml@main
+    with:
+      project: ${{ github.event.repository.name }}
+      docker_context: "."
+      hardened: true
+      hardened_profile: frontend
+      use_private_module_auth: false
+      publish: false
+      runner_matrix: '[{"architecture":"amd64","runner":"ubuntu-24.04"},{"architecture":"arm64","runner":"ubuntu-24.04-arm"}]'
+    secrets: inherit
+
   build:
     uses: uug-ai/workflows/.github/workflows/pr-build.yml@main
     with:
       project: ${{ github.event.repository.name }}
       language: javascript
       docker_context: "."
+      use_private_module_auth: false
+      registry_login: false
       runner_matrix: '[{"architecture":"amd64","runner":"ubuntu-24.04"},{"architecture":"arm64","runner":"ubuntu-24.04-arm"}]'
     secrets: inherit

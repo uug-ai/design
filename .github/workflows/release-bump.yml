@@ -12,17 +12,28 @@ on:
           - major
           - minor
           - patch
+      existing_tag:
+        description: Existing release to retry without moving its source tag
+        type: string
+        default: ""
+      publish:
+        description: Publish verified images (false validates without creating a release)
+        type: boolean
+        default: true
 
 permissions:
   contents: write
   packages: write
+  id-token: write
 
 jobs:
   # Determine the next version, create the GitHub release and expose the tag.
   bump-release:
+    if: inputs.publish && inputs.existing_tag == ''
     uses: uug-ai/workflows/.github/workflows/release-bump.yml@main
     with:
       bump: ${{ github.event.inputs.bump }}
+      draft: true
     secrets: inherit
 
   # Run the original release pipeline for the freshly created tag.
@@ -30,13 +41,19 @@ jobs:
   # `release: created` event, so we invoke the reusable workflow directly.
   release:
     needs: bump-release
+    if: ${{ always() && !cancelled() && (needs.bump-release.result == 'success' || needs.bump-release.result == 'skipped') }}
     uses: uug-ai/workflows/.github/workflows/release-create.yml@main
     with:
       organization: uug-ai
       project: ${{ github.event.repository.name }}
-      tag: ${{ needs.bump-release.outputs.tag }}
+      tag: ${{ inputs.existing_tag || needs.bump-release.outputs.tag }}
       docker_context: "."
-      create_gitops_pr: true
+      hardened: true
+      hardened_profile: frontend
+      use_private_module_auth: false
+      publish: ${{ inputs.publish }}
+      finalize_release: true
+      create_gitops_pr: ${{ inputs.publish }}
       runner_matrix: >-
         [
           {"architecture":"amd64","runner":"ubuntu-24.04"},
@@ -45,5 +62,5 @@ jobs:
       gitops_repo: "uug-ai/gitops"
       gitops_file: "environments/staging/design/deployment.yaml"
       gitops_key: ".spec.template.spec.containers[0].image"
-      gitops_value: "ghcr.io/uug-ai/design:${{ needs.bump-release.outputs.tag }}"
+      gitops_value: "ghcr.io/uug-ai/design:${{ inputs.existing_tag || needs.bump-release.outputs.tag }}"
     secrets: inherit

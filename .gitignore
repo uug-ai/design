@@ -25,5 +25,9 @@ dist-ssr
 
 *storybook.log
 storybook-static
+.cache/
+.image-test/
+image-inventory/
+/smoke-*
 public/ui/
 public/brand/uug-favicon-set.zip

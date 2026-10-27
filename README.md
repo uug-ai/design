@@ -25,9 +25,9 @@ Open [http://localhost:5173](http://localhost:5173) to view the design system in
 
 ### Build
 
-The production container uses a maintained, digest-pinned Nginx/Alpine base and
-upgrades its runtime packages for distro security fixes. Both the app and
-Storybook continue to use the existing Node builder and dependency lockfile.
+The production container uses digest-pinned Node and Go builders and a
+shellless Chainguard nginx runtime. Both the app and Storybook use the committed
+dependency lockfile; no UI or browser configuration is generated at startup.
 
 ```bash
 npm run build
@@ -40,6 +40,62 @@ npm run build:all
 ```
 
 This builds the Vite app into `dist/` and Storybook into `dist/storybook/` in one step.
+
+### Production image contract
+
+- Registry: `ghcr.io/uug-ai/design`; release tags and immutable digests are
+  published for `linux/amd64` and `linux/arm64`.
+- UID/GID: `65532:65532`. Entrypoint `/app/main` replaces itself with nginx;
+  static assets and configuration are root-owned and read-only.
+- HTTP port: **8080** (previously 80). Keep external service port 80 if desired,
+  but change Kubernetes container ports, Service `targetPort`, and probes to
+  8080 before deploying this image. No Helm chart is maintained in this repo.
+- `/` and app deep links serve the Vite application; `/storybook/`, its iframe,
+  JSON story index, and browser assets retain their existing paths and MIME
+  types. Existing HTML, inline scripts, and CSP behavior are unchanged.
+- Liveness/readiness: `GET /healthz`, port 8080, expected `200` and `ok\n`;
+  use a two-second probe timeout. This checks nginx, not external dependencies.
+- Run with a read-only root filesystem, all capabilities dropped,
+  `no-new-privileges`, and a writable `/tmp` tmpfs (16 MiB, mode 1777,
+  `nosuid,noexec`). nginx writes its PID and temporary request files there only.
+- No environment variables, secrets, timezone data, outbound connections, or
+  runtime CA certificates are required by the server. Browser network requests
+  remain those of the existing application.
+
+`Bump release` reserves a draft release and invokes the shared hardened
+`frontend` profile. Set `publish=false` for verification without a release,
+or `existing_tag` to retry the same immutable source. PRs also run this profile
+without publication. It scans source secrets/configuration and the final image,
+extracts `/usr/share/frontend/package{,-lock}.json` from that final image and
+**separately scans it**, emits image and browser SPDX SBOMs, retains reports and
+provenance, and signs the verified multi-platform digest. Medium, high, and
+critical findings block publication under the shared policy.
+
+Storybook addons are build-time dependencies that also ship browser code.
+`scripts/image-inventory.mjs` therefore conservatively classifies the entire
+locked dependency tree as runtime inventory, including build tools; this avoids
+silently omitting Storybook through a scanner's default dev-dependency filter.
+The normalized inventory lives outside the web root and does not modify source
+manifests or bundle content. The build dependencies and React Router are updated
+to patched compatible versions; no components or route definitions are changed.
+Findings still require remediation or a centrally
+approved exception; inventory does not imply a clean scan.
+
+CI retains release evidence as `hardened-source`, `hardened-image-amd64`,
+`hardened-image-arm64`, and `hardened-release` workflow artifacts. Verify a
+published digest using:
+
+```bash
+cosign verify \
+  --certificate-oidc-issuer https://token.actions.githubusercontent.com \
+  --certificate-identity-regexp '^https://github.com/uug-ai/workflows/.github/workflows/release-create.yml@refs/heads/main$' \
+  ghcr.io/uug-ai/design@sha256:<published-digest>
+```
+
+The shared workflow must retain its `frontend` inventory scan, generic
+`image/smoke-test.sh` hook, provenance, and signing gates. The smoke test checks
+the actual app routes, Storybook iframe/index, JS/CSS MIME types, and favicons
+under the read-only runtime restrictions.
 
 ### Preview App And Storybook
 

@@ -10,6 +10,8 @@
     "build": "tsc && vite build",
     "build:favicons": "node scripts/build-favicon-set.mjs",
     "test:favicons": "node --test scripts/test-favicon-set.mjs",
+    "test:widgets": "node --test scripts/test-hub-widgets.mjs",
+    "test:widgets:browser": "playwright test",
     "build:all": "npm run build && npm run build-storybook",
     "preview": "vite preview",
     "preview:all": "node scripts/preview-all.mjs",
@@ -26,9 +28,11 @@
     "react-router-dom": "^7.18.4"
   },
   "devDependencies": {
+    "@playwright/test": "^1.64.1",
     "@storybook/addon-a11y": "^10.3.3",
     "@storybook/addon-docs": "^10.3.3",
     "@storybook/react-vite": "^10.3.3",
+    "@types/node": "^20.19.43",
     "@types/react": "^18.3.1",
     "@types/react-dom": "^18.3.0",
     "@typescript-eslint/eslint-plugin": "^7.6.0",

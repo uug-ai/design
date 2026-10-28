@@ -31,3 +31,5 @@ image-inventory/
 /smoke-*
 public/ui/
 public/brand/uug-favicon-set.zip
+test-results/
+playwright-report/

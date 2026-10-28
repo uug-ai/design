@@ -1,505 +1,361 @@
 import { useEffect, useRef, useState } from 'react'
-import '../components/Button/component.css'
-import '../components/Card/component.css'
-import '../components/Input/component.css'
-import InteractiveMap from '../components/InteractiveMap'
-import Loader from '../components/Loader'
+import { Plus, Star, Trash, Xmark } from 'iconoir-react'
+import {
+  HubBadge, HubBlock, HubButton, HubCard, HubCheckbox, HubInfobox, HubInput,
+  HubKpi, HubModal, HubMultiToggle, HubPlaceholder, HubProgress, HubSelect,
+  HubSpinner, HubStatus, HubTextarea, HubTheme, HubToggle,
+} from '../components/HubWidgets'
 import { storybookEntryUrl, storybookUrl } from '../config/storybook'
 import './Components.css'
+import {
+  AdditionalFieldsExample, DataExample, DateTimeExample, MenuExample, NavigationExample,
+  NotificationExample, SchedulingExample, SelectionExample,
+} from '../components/HubWidgets/examples'
 
 const COMPONENT_LINKS = [
-  { id: 'buttons', label: 'Buttons', storybookPath: '/docs/components-buttons--docs' },
-  { id: 'inputs', label: 'Inputs', storybookPath: '/docs/components-inputs--docs' },
-  { id: 'cards', label: 'Cards', storybookPath: '/docs/components-cards--docs' },
-  { id: 'interactive-map', label: 'Interactive Map', storybookPath: '/docs/components-interactive-map--docs' },
-  { id: 'loader', label: 'Loader', storybookPath: '/docs/components-loader--docs' },
+  { id: 'buttons', label: 'Buttons', storybookPath: '/docs/components-buttons--docs', description: 'Compact production actions with primary, neutral, success, destructive, outlined and loading states.' },
+  { id: 'forms', label: 'Forms', storybookPath: '/docs/components-forms--docs', description: 'Hub fields, searchable selection, checkboxes, switches and segmented controls.' },
+  { id: 'selection', label: 'Selection', storybookPath: '/docs/components-selection--docs', description: 'Searchable single and multi-selection, locked options, clear, overlay placement and loading states.' },
+  { id: 'datetime', label: 'Date and time', storybookPath: '/docs/components-date-and-time--docs', description: 'Calendars, date fields and precise time spinners with bounds and recording availability.' },
+  { id: 'scheduling', label: 'Scheduling', storybookPath: '/docs/components-scheduling--docs', description: 'Editable time segments and weekly schedules with keyboard controls and explicit timezones.' },
+  { id: 'menus', label: 'Menus', storybookPath: '/docs/components-menus--docs', description: 'Action menus and compact control popups with disabled, hidden and destructive actions.' },
+  { id: 'data', label: 'Data', storybookPath: '/docs/components-data--docs', description: 'Responsive tables, pagination, search, empty/loading states and load-more controls.' },
+  { id: 'navigation', label: 'Navigation', storybookPath: '/docs/components-navigation--docs', description: 'Breadcrumbs, grid and aspect-ratio controls, and language selection.' },
+  { id: 'notifications', label: 'Notifications', storybookPath: '/docs/components-notifications--docs', description: 'Toast messages, actions, dismissal, identity badges and colored labels.' },
+  { id: 'surfaces', label: 'Surfaces', storybookPath: '/docs/components-surfaces--docs', description: 'Production cards, KPI tiles and compositional blocks with expandable content.' },
+  { id: 'feedback', label: 'Feedback', storybookPath: '/docs/components-feedback--docs', description: 'Status badges, messages, progress, loading and empty states from Hub.' },
+  { id: 'modal', label: 'Modal', storybookPath: '/docs/components-modal--docs', description: 'Standard dialogs and centered confirmations with keyboard focus management.' },
 ] as const
+
+const SITE_OPTIONS = [
+  { value: 'ghent', text: 'Ghent - Bijlokehof' },
+  { value: 'new-york', text: 'New York - Midtown' },
+  { value: 'cape-town', text: 'Cape Town - Waterfront' },
+]
 
 type ComponentSectionId = (typeof COMPONENT_LINKS)[number]['id']
 type ComponentSectionPosition = { id: ComponentSectionId; top: number }
 
-const COMPONENT_STORYBOOK_LINKS = Object.fromEntries(
-  COMPONENT_LINKS.map((componentLink) => [
-    componentLink.id,
-    storybookEntryUrl(componentLink.storybookPath),
-  ])
-) as Record<string, string>
+const LEGACY_SECTION_IDS: Partial<Record<ComponentSectionId, string>> = {
+  forms: 'inputs', surfaces: 'cards', feedback: 'loader',
+}
 
 function Components() {
   const pageTopRef = useRef<HTMLDivElement | null>(null)
   const navStickyRef = useRef<HTMLDivElement | null>(null)
   const sectionRefs = useRef<Record<string, HTMLElement | null>>({})
-  const [buttonDisabled, setButtonDisabled] = useState(false)
-  const [inputValue, setInputValue] = useState('')
-  const [inputPassword, setInputPassword] = useState('')
-  const [showPassword, setShowPassword] = useState(false)
-  const [inputDate, setInputDate] = useState('')
-  const [inputDropdown, setInputDropdown] = useState('')
-  const [check1, setCheck1] = useState(false)
-  const [check2, setCheck2] = useState(true)
-  const [copied, setCopied] = useState(false)
-  const copyValue = 'npm install @design/system'
+  const [previewThemePreference, setPreviewThemePreference] = useState<'auto' | 'light' | 'dark'>('auto')
+  const [siteTheme, setSiteTheme] = useState<'light' | 'dark'>(() =>
+    document.documentElement.getAttribute('data-theme') === 'dark' ? 'dark' : 'light')
+  const previewTheme = previewThemePreference === 'auto' ? siteTheme : previewThemePreference
+  const [site, setSite] = useState('ghent')
+  const [filterSite, setFilterSite] = useState('all')
+  const [mediaView, setMediaView] = useState('recordings')
+  const [messageVisible, setMessageVisible] = useState(true)
+  const [uploadProgress, setUploadProgress] = useState(65)
+  const [preferencesSaved, setPreferencesSaved] = useState(false)
+  const [modal, setModal] = useState<'edit' | 'confirmation' | null>(null)
+  const [modalResult, setModalResult] = useState('')
   const [activeComponent, setActiveComponent] = useState<string | null>(null)
   const [isNavSticky, setIsNavSticky] = useState(false)
 
+  useEffect(() => {
+    const root = document.documentElement
+    const updateSiteTheme = () => setSiteTheme(root.getAttribute('data-theme') === 'dark' ? 'dark' : 'light')
+    const observer = new MutationObserver(updateSiteTheme)
+    observer.observe(root, { attributes: true, attributeFilter: ['data-theme'] })
+    updateSiteTheme()
+    return () => observer.disconnect()
+  }, [])
+
   const getHeaderOffset = () => {
     const header = document.querySelector('.header')
-
-    if (!(header instanceof HTMLElement)) {
-      return window.innerWidth <= 640 ? 76 : 72
-    }
-
-    return header.getBoundingClientRect().height
+    return header instanceof HTMLElement ? header.getBoundingClientRect().height : 77
   }
 
-  const getStickyOffset = () => {
-    const headerOffset = getHeaderOffset()
-    const stickyHeight = navStickyRef.current?.getBoundingClientRect().height ?? 0
-
-    return headerOffset + stickyHeight
-  }
+  const getStickyOffset = () => getHeaderOffset() + (navStickyRef.current?.getBoundingClientRect().height ?? 0)
 
   useEffect(() => {
     const updateStickyState = () => {
-      if (!navStickyRef.current) {
-        return
+      pageTopRef.current?.style.setProperty('--components-header-height', `${getHeaderOffset()}px`)
+      if (navStickyRef.current) {
+        pageTopRef.current?.style.setProperty('--components-nav-height', `${navStickyRef.current.getBoundingClientRect().height}px`)
+        setIsNavSticky(navStickyRef.current.getBoundingClientRect().top <= getHeaderOffset())
       }
-
-      const stickyOffset = getHeaderOffset()
-      setIsNavSticky(navStickyRef.current.getBoundingClientRect().top <= stickyOffset)
     }
 
+    const observer = new ResizeObserver(updateStickyState)
+    const header = document.querySelector('.header')
+    if (header) observer.observe(header)
+    if (navStickyRef.current) observer.observe(navStickyRef.current)
     updateStickyState()
     window.addEventListener('scroll', updateStickyState, { passive: true })
     window.addEventListener('resize', updateStickyState)
-
     return () => {
       window.removeEventListener('scroll', updateStickyState)
       window.removeEventListener('resize', updateStickyState)
+      observer.disconnect()
     }
   }, [])
 
   useEffect(() => {
-    const throttleMs = 80
     let timeoutId = 0
     let lastRunAt = 0
 
-    const getStickyOffset = () => {
-      const headerOffset = getHeaderOffset()
-      const stickyHeight = navStickyRef.current?.getBoundingClientRect().height ?? 0
-
-      return headerOffset + stickyHeight
-    }
-
-    const getActiveSectionId = () => {
-      const scrollAnchor = window.scrollY + getStickyOffset() + 32
-      const sections = COMPONENT_LINKS
-        .map((componentLink) => {
-          const section = sectionRefs.current[componentLink.id]
-
-          if (!section) {
-            return null
-          }
-
-          return {
-            id: componentLink.id,
-            top: section.getBoundingClientRect().top + window.scrollY,
-          }
-        })
-        .filter((section): section is ComponentSectionPosition => section !== null)
-
-      if (sections.length === 0) {
-        return null
-      }
-
-      let nextActiveSection: string | null = null
-
-      for (const section of sections) {
-        if (scrollAnchor >= section.top) {
-          nextActiveSection = section.id
-          continue
-        }
-
-        break
-      }
-
-      return nextActiveSection
-    }
-
     const updateActiveSection = () => {
-      const nextActiveSection = getActiveSectionId()
-
-      setActiveComponent((currentActiveSection) => {
-        if (currentActiveSection === nextActiveSection) {
-          return currentActiveSection
-        }
-
-        return nextActiveSection
-      })
-
+      const stickyOffset = getHeaderOffset() + (navStickyRef.current?.getBoundingClientRect().height ?? 0)
+      const scrollAnchor = window.scrollY + stickyOffset + 32
+      const sections = COMPONENT_LINKS.map(({ id }) => {
+        const section = sectionRefs.current[id]
+        return section ? { id, top: section.getBoundingClientRect().top + window.scrollY } : null
+      }).filter((section): section is ComponentSectionPosition => section !== null)
+      let nextActiveSection: string | null = null
+      for (const section of sections) {
+        if (scrollAnchor < section.top) break
+        nextActiveSection = section.id
+      }
+      setActiveComponent(nextActiveSection)
       lastRunAt = window.performance.now()
       timeoutId = 0
     }
 
     const scheduleActiveSectionUpdate = () => {
-      const now = window.performance.now()
-      const timeUntilNextRun = Math.max(0, throttleMs - (now - lastRunAt))
-
-      if (timeoutId !== 0) {
-        return
-      }
-
-      timeoutId = window.setTimeout(updateActiveSection, timeUntilNextRun)
+      const timeUntilNextRun = Math.max(0, 80 - (window.performance.now() - lastRunAt))
+      if (timeoutId === 0) timeoutId = window.setTimeout(updateActiveSection, timeUntilNextRun)
     }
 
     updateActiveSection()
     window.addEventListener('scroll', scheduleActiveSectionUpdate, { passive: true })
     window.addEventListener('resize', scheduleActiveSectionUpdate)
-
     return () => {
-      if (timeoutId !== 0) {
-        window.clearTimeout(timeoutId)
-      }
-
+      if (timeoutId !== 0) window.clearTimeout(timeoutId)
       window.removeEventListener('scroll', scheduleActiveSectionUpdate)
       window.removeEventListener('resize', scheduleActiveSectionUpdate)
     }
   }, [])
 
-  const handleComponentSelect = (componentId: string) => {
-    if (activeComponent === componentId && pageTopRef.current) {
-      const headerOffset = getHeaderOffset()
-      const top = pageTopRef.current.getBoundingClientRect().top + window.scrollY - headerOffset
-
-      window.scrollTo({
-        top: Math.max(0, top),
-        behavior: 'smooth',
-      })
-
-      return
+  useEffect(() => {
+    const scrollToFragment = () => {
+      const target = document.getElementById(window.location.hash.slice(1))
+      if (target && pageTopRef.current?.contains(target)) target.scrollIntoView({ block: 'start', behavior: 'instant' })
     }
-
-    const stickyOffset = getStickyOffset()
-    const targetSection = sectionRefs.current[componentId]
-
-    if (targetSection) {
-      const top = targetSection.getBoundingClientRect().top + window.scrollY - stickyOffset
-
-      window.scrollTo({
-        top: Math.max(0, top),
-        behavior: 'smooth',
-      })
+    let cancelled = false
+    let frame = 0
+    void document.fonts.ready.then(() => {
+      if (!cancelled) frame = window.requestAnimationFrame(scrollToFragment)
+    })
+    window.addEventListener('hashchange', scrollToFragment)
+    return () => {
+      cancelled = true
+      window.cancelAnimationFrame(frame)
+      window.removeEventListener('hashchange', scrollToFragment)
     }
+  }, [])
+
+  const handleComponentSelect = (componentId: ComponentSectionId) => {
+    const target = activeComponent === componentId ? pageTopRef.current : sectionRefs.current[componentId]
+    if (!target) return
+    const offset = activeComponent === componentId ? getHeaderOffset() : getStickyOffset()
+    window.scrollTo({
+      top: Math.max(0, target.getBoundingClientRect().top + window.scrollY - offset),
+      behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'instant' : 'smooth',
+    })
+  }
+
+  const closeModal = () => setModal(null)
+  const previews = {
+    buttons: <div className="hub-stack">
+      <div className="hub-row">
+        <HubButton icon={<Plus />}>Add camera</HubButton>
+        <HubButton variant="neutral">Cancel</HubButton>
+        <HubButton variant="success">Save settings</HubButton>
+        <HubButton variant="alert" icon={<Trash />}>Delete camera</HubButton>
+        <HubButton variant="outlined">View details</HubButton>
+        <HubButton variant="borderless">More actions</HubButton>
+        <HubButton variant="submit">Apply changes</HubButton>
+        <HubButton variant="transparent">Transparent</HubButton>
+        <HubButton variant="starred" active icon={<Star />} aria-pressed>Favourite</HubButton>
+        <HubButton variant="borderless" icon={<Xmark />} aria-label="Close panel" />
+      </div>
+      <div className="hub-row">
+        <HubButton disabled>Disabled</HubButton>
+        <HubButton loading disabled>Saving settings</HubButton>
+        <HubButton active aria-pressed>Active</HubButton>
+      </div>
+    </div>,
+    forms: <div className="hub-stack">
+      <div className="hub-demo-grid">
+        <HubInput label="Camera name" defaultValue="Entrance camera" />
+        <HubSelect label="Site" value={site} onChange={setSite} options={SITE_OPTIONS} />
+        <HubInput label="Required field" error="Camera name is required." />
+        <HubInput label="Camera ID" defaultValue="entrance-01" readOnly />
+        <HubInput label="Disabled field" defaultValue="Managed by organisation" disabled />
+        <HubInput label="Empty field" placeholder="Enter a camera name" />
+      </div>
+      <HubSelect label="Filter sites" variant="filter" value={filterSite} onChange={setFilterSite}
+        options={[{ value: 'all', text: 'All sites' }, ...SITE_OPTIONS]} />
+      <HubTextarea label="Description" placeholder="Describe this camera's location" />
+      <div className="hub-row">
+        <HubCheckbox defaultChecked>Include offline cameras</HubCheckbox>
+        <HubCheckbox defaultChecked disabled>Managed by organisation</HubCheckbox>
+      </div>
+      <HubToggle label="Motion detection" description="Record when motion is detected." defaultChecked />
+      <HubToggle label="Disabled switch" checked disabled />
+      <div className="component-segmented-preview">
+        <HubMultiToggle label="Media view" value={mediaView} onChange={setMediaView} options={[
+          { value: 'recordings', text: 'Recordings' }, { value: 'snapshots', text: 'Snapshots' }, { value: 'events', text: 'Events' },
+        ]} />
+      </div>
+      <AdditionalFieldsExample />
+    </div>,
+    selection: <SelectionExample locked />,
+    datetime: <DateTimeExample />,
+    scheduling: <SchedulingExample weekly />,
+    menus: <MenuExample />,
+    data: <DataExample />,
+    navigation: <NavigationExample />,
+    notifications: <NotificationExample />,
+    surfaces: <div className="hub-stack">
+      <div className="hub-row">
+        <h3 className="hub-demo-title">Site overview</h3>
+        <HubBadge title="Online cameras" count={25} total={25} />
+      </div>
+      <div className="hub-demo-grid">
+        <HubCard title="Storage" subtitle="Recording storage used" percentage={68} footer="Your current subscription" />
+        <HubCard title="Cameras" subtitle="Connected to this project" percentage={25} unit="" footer="All cameras are online" />
+        <HubKpi value={25} total={25} footer="Cameras online" />
+        <HubKpi value={1284} change={24} footer="Recordings today" />
+        <HubKpi value={68} unit="%" change={-3} footer="Storage used" />
+        <HubKpi value={0} footer="Loading recordings" loading />
+      </div>
+      <HubBlock title="Recording preferences" expandable footer={<>
+        <span>Project settings</span>
+        <HubButton onClick={() => setPreferencesSaved(true)}>Save settings</HubButton>
+      </>}>
+        <div style={{ padding: 24 }}>
+          <HubToggle label="Notifications" description="Notify the team when an alert rule matches." defaultChecked />
+        </div>
+      </HubBlock>
+      {preferencesSaved && <p role="status">Recording preferences saved in this demo. No Hub data was changed.</p>}
+    </div>,
+    feedback: <div className="hub-stack">
+      <div className="hub-row">
+        <HubBadge title="Online" tone="success" />
+        <HubBadge title="Offline" tone="alert" />
+        <HubBadge title="Updating" tone="updating" />
+        <HubBadge title="Neutral" />
+        <HubBadge title="Information" tone="info" />
+        <HubBadge title="Featured" tone="gold" />
+      </div>
+      <div className="hub-row">
+        <HubBadge title="Online cameras" count={25} total={25} />
+        <HubBadge title="Online cameras" count={48} total={50} />
+        <HubBadge title="No cameras" count={0} total={0} />
+      </div>
+      <div className="hub-row">
+        <HubStatus tone="success">Connected</HubStatus>
+        <HubStatus>Offline</HubStatus>
+        <HubStatus tone="updating">Idle</HubStatus>
+        <HubStatus tone="alert">Motion detected</HubStatus>
+      </div>
+      {messageVisible
+        ? <HubInfobox onDismiss={() => setMessageVisible(false)}>Settings apply to all cameras in this site.</HubInfobox>
+        : <HubButton variant="outlined" onClick={() => setMessageVisible(true)}>Restore message</HubButton>}
+      <HubInfobox tone="success">Camera settings saved successfully.</HubInfobox>
+      <HubInfobox tone="warning">Some cameras are offline. Check their connection.</HubInfobox>
+      <HubInfobox tone="error">Unable to connect to the camera. Please try again.</HubInfobox>
+      <HubProgress label="Uploading recording" value={uploadProgress} />
+      <label>Upload progress: {uploadProgress}%
+        <input aria-label="Upload progress" type="range" min={0} max={100} value={uploadProgress}
+          onChange={event => setUploadProgress(event.target.valueAsNumber)} />
+      </label>
+      <HubSpinner label="Loading recordings" />
+      <div className="hub-demo-grid">
+        <HubPlaceholder title="No recordings yet" description="Recordings will appear here when your cameras start capturing." />
+        <HubPlaceholder error title="Unable to load recordings" description="Check your connection and try again." />
+      </div>
+    </div>,
+    modal: <>
+      <div className="hub-row">
+        <HubButton onClick={() => { setModal('edit'); setModalResult('') }}>Edit camera</HubButton>
+        <HubButton variant="alert" onClick={() => { setModal('confirmation'); setModalResult('') }}>Delete camera</HubButton>
+      </div>
+      {modalResult && <p role="status">{modalResult}</p>}
+      <HubModal open={modal !== null} confirmation={modal === 'confirmation'}
+        title={modal === 'confirmation' ? 'Delete camera?' : 'Edit camera'} onClose={closeModal}
+        actions={<>
+          <HubButton variant="neutral" onClick={closeModal}>Cancel</HubButton>
+          <HubButton variant={modal === 'confirmation' ? 'alert' : 'primary'} onClick={() => {
+            setModalResult(modal === 'confirmation' ? 'Camera deleted in this demo. No Hub data was changed.' : 'Camera settings saved in this demo.')
+            closeModal()
+          }}>{modal === 'confirmation' ? 'Delete camera' : 'Save settings'}</HubButton>
+        </>}>
+        {modal === 'confirmation'
+          ? <p>This action removes the camera from this project. This is a presentation-only demo.</p>
+          : <div className="hub-stack">
+            <HubInput label="Camera name" defaultValue="Entrance camera" />
+            <HubTextarea label="Description" defaultValue="Camera at the building entrance." />
+          </div>}
+      </HubModal>
+    </>,
   }
 
   return (
     <div ref={pageTopRef} className="page components-page">
       <h1>Components</h1>
       <div className="components-intro">
-        <p>
-          Reusable UI components built with accessibility and consistency in mind.
-          Each component includes a live example and a direct Storybook entry for deeper review.
-        </p>
+        <p>The production Hub widgets are the component library. These live previews use the same
+          components as Storybook, with Hub typography, spacing, surfaces and interaction states.</p>
       </div>
 
-      <div
-        ref={navStickyRef}
-        className={`components-nav-sticky ${isNavSticky ? 'is-sticky' : ''}`}
-      >
+      <div ref={navStickyRef} className={`components-nav-sticky ${isNavSticky ? 'is-sticky' : ''}`}>
         <div className="components-overview-card">
           <div className="components-storybook-callout">
             <div>
-              <strong>Need deeper component detail?</strong>
-              <p>
-                Open the integrated Storybook for isolated states, controls, and component-level documentation.
-              </p>
+              <strong>Hub widget library</strong>
+              <p>Explore every state in Storybook. All examples use local demo data only.</p>
+              <label className="components-widget-theme">
+                Widget theme
+                <select value={previewThemePreference} onChange={event => {
+                  const theme = event.target.value
+                  if (theme === 'auto' || theme === 'light' || theme === 'dark') setPreviewThemePreference(theme)
+                }}>
+                  <option value="auto">Follow site</option>
+                  <option value="light">Light</option>
+                  <option value="dark">Dark</option>
+                </select>
+              </label>
             </div>
-            <a href={storybookUrl} className="components-storybook-link" target="_blank" rel="noreferrer">
-              Open Storybook
-            </a>
+            <a href={storybookUrl} className="components-storybook-link" target="_blank" rel="noreferrer">Open Storybook</a>
           </div>
-
           <nav className="components-nav" aria-label="Component sections">
             <ul className="components-nav-list">
-              {COMPONENT_LINKS.map((componentLink) => (
-                <li key={componentLink.id}>
-                  <button
-                    className={`components-nav-link ${activeComponent === componentLink.id ? 'is-active' : ''}`}
-                    type="button"
-                    onClick={() => handleComponentSelect(componentLink.id)}
-                    aria-pressed={activeComponent === componentLink.id}
-                  >
-                    {componentLink.label}
-                  </button>
-                </li>
-              ))}
+              {COMPONENT_LINKS.map(({ id, label }) => <li key={id}>
+                <button className={`components-nav-link ${activeComponent === id ? 'is-active' : ''}`}
+                  type="button" onClick={() => handleComponentSelect(id)} aria-pressed={activeComponent === id}>{label}</button>
+              </li>)}
             </ul>
           </nav>
         </div>
       </div>
 
-      <section
-        id="buttons"
-        className="component-section"
-        ref={(element) => {
-          sectionRefs.current.buttons = element
-        }}
-      >
-        <h2>Buttons</h2>
-        <p>
-          Buttons are the primary way users take actions in the interface. Use primary
-          buttons for main actions and secondary buttons for alternative actions.
-        </p>
-
-        <div className="component-demo">
-          <h3>Preview</h3>
-          <div className="demo-area">
-            <a href={COMPONENT_STORYBOOK_LINKS.buttons} className="component-storybook-button" target="_blank" rel="noreferrer">
-              View in Storybook
-            </a>
-            <button className="btn btn-primary">Primary Button</button>
-            <button className="btn btn-secondary">Secondary Button</button>
-            <button
-              className="btn btn-primary"
-              disabled={buttonDisabled}
-              onClick={() => setButtonDisabled(!buttonDisabled)}
-            >
-              {buttonDisabled ? 'Disabled Button' : 'Click to Disable'}
-            </button>
+      {COMPONENT_LINKS.map(({ id, label, description, storybookPath }) => (
+        <section key={id} id={id} className="component-section" ref={element => { sectionRefs.current[id] = element }}>
+          {LEGACY_SECTION_IDS[id] && <span className="component-section-anchor"
+            id={LEGACY_SECTION_IDS[id]} aria-hidden="true" />}
+          <h2>{label}</h2>
+          <p>{description}</p>
+          <div className="component-demo">
+            <div className="component-demo-toolbar">
+              <h3>Preview</h3>
+              <a href={storybookEntryUrl(storybookPath)} className="component-storybook-button" target="_blank" rel="noreferrer">
+                View in Storybook
+              </a>
+            </div>
+            <HubTheme theme={previewTheme}>{previews[id]}</HubTheme>
           </div>
-        </div>
-      </section>
-
-      <section
-        id="inputs"
-        className="component-section"
-        ref={(element) => {
-          sectionRefs.current.inputs = element
-        }}
-      >
-        <h2>Inputs</h2>
-        <p>
-          Form inputs allow users to enter data. Always include a label for accessibility.
-        </p>
-
-        <div className="component-demo">
-          <h3>Preview</h3>
-          <div className="demo-area">
-            <a href={COMPONENT_STORYBOOK_LINKS.inputs} className="component-storybook-button" target="_blank" rel="noreferrer">
-              View in Storybook
-            </a>
-            <div className="input-group">
-              <label htmlFor="demo-email" className="input-label">Email</label>
-              <input
-                type="email"
-                id="demo-email"
-                className="input"
-                placeholder="Enter your email"
-                value={inputValue}
-                onChange={(e) => setInputValue(e.target.value)}
-              />
-            </div>
-            <div className="input-group">
-              <label htmlFor="demo-password" className="input-label">Password</label>
-              <div className="input-wrapper">
-                <input
-                  type={showPassword ? 'text' : 'password'}
-                  id="demo-password"
-                  className="input input--has-icon"
-                  placeholder="Enter your password"
-                  value={inputPassword}
-                  onChange={(e) => setInputPassword(e.target.value)}
-                />
-                <button
-                  type="button"
-                  className="input-icon-btn"
-                  onClick={() => setShowPassword(!showPassword)}
-                  aria-label={showPassword ? 'Hide password' : 'Show password'}
-                >
-                  {showPassword ? (
-                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M9.88 9.88a3 3 0 1 0 4.24 4.24"/><path d="M10.73 5.08A10.43 10.43 0 0 1 12 5c7 0 10 7 10 7a13.16 13.16 0 0 1-1.67 2.68"/><path d="M6.61 6.61A13.526 13.526 0 0 0 2 12s3 7 10 7a9.74 9.74 0 0 0 5.39-1.61"/><line x1="2" x2="22" y1="2" y2="22"/></svg>
-                  ) : (
-                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg>
-                  )}
-                </button>
-              </div>
-            </div>
-            <div className="input-group">
-              <label htmlFor="demo-copy" className="input-label">Copy field</label>
-              <div className="input-wrapper">
-                <input
-                  type="text"
-                  id="demo-copy"
-                  className="input input--has-icon"
-                  value={copyValue}
-                  readOnly
-                />
-                <button
-                  type="button"
-                  className={`input-icon-btn${copied ? ' input-icon-btn--success' : ''}`}
-                  onClick={async () => {
-                    try { await navigator.clipboard.writeText(copyValue); setCopied(true); setTimeout(() => setCopied(false), 2000) } catch { /* */ }
-                  }}
-                  aria-label="Copy to clipboard"
-                >
-                  {copied ? (
-                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg>
-                  ) : (
-                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>
-                  )}
-                </button>
-              </div>
-            </div>
-            <div className="input-group">
-              <label htmlFor="demo-date" className="input-label">Date</label>
-              <input
-                type="date"
-                id="demo-date"
-                className="input input--date"
-                value={inputDate}
-                onChange={(e) => setInputDate(e.target.value)}
-              />
-            </div>
-            <div className="input-group">
-              <label htmlFor="demo-role" className="input-label">Role</label>
-              <div className="select-wrapper">
-                <select
-                  id="demo-role"
-                  className="select"
-                  value={inputDropdown}
-                  onChange={(e) => setInputDropdown(e.target.value)}
-                >
-                  <option value="" disabled>Select a role…</option>
-                  <option value="admin">Admin</option>
-                  <option value="editor">Editor</option>
-                  <option value="viewer">Viewer</option>
-                </select>
-              </div>
-            </div>
-            <div className="input-group">
-              <span className="input-label">Preferences</span>
-              <label className="checkbox-label">
-                <input type="checkbox" className="checkbox" checked={check1} onChange={(e) => setCheck1(e.target.checked)} />
-                <span className="checkbox-text">Email notifications</span>
-              </label>
-              <label className="checkbox-label">
-                <input type="checkbox" className="checkbox" checked={check2} onChange={(e) => setCheck2(e.target.checked)} />
-                <span className="checkbox-text">Marketing emails</span>
-              </label>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <section
-        id="cards"
-        className="component-section"
-        ref={(element) => {
-          sectionRefs.current.cards = element
-        }}
-      >
-        <h2>Cards</h2>
-        <p>
-          Cards are flexible containers for grouping related content and actions.
-        </p>
-
-        <div className="component-demo">
-          <h3>Preview</h3>
-          <div className="demo-area">
-            <a href={COMPONENT_STORYBOOK_LINKS.cards} className="component-storybook-button" target="_blank" rel="noreferrer">
-              View in Storybook
-            </a>
-            <div className="card">
-              <h3 style={{ marginTop: 0 }}>Card Title</h3>
-              <p>Card content goes here with descriptive text that explains the card's purpose.</p>
-              <button className="btn btn-primary">Action</button>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <section
-        id="interactive-map"
-        className="component-section"
-        ref={(element) => {
-          sectionRefs.current['interactive-map'] = element
-        }}
-      >
-        <h2>Interactive Map</h2>
-        <p>
-          An animated geographic-style visualization adapted from the public website hero.
-          It now supports scroll-to-zoom, drag-to-pan, and inline controls so teams can use
-          it as a reusable storytelling component instead of a one-off landing page effect.
-        </p>
-
-        <div className="component-demo">
-          <h3>Preview</h3>
-          <div className="demo-area">
-            <a href={COMPONENT_STORYBOOK_LINKS['interactive-map']} className="component-storybook-button" target="_blank" rel="noreferrer">
-              View in Storybook
-            </a>
-            <InteractiveMap />
-          </div>
-        </div>
-      </section>
-
-      <section
-        id="loader"
-        className="component-section"
-        ref={(element) => {
-          sectionRefs.current.loader = element
-        }}
-      >
-        <h2>Loader</h2>
-        <p>
-          Loaders communicate progress without blocking the interface. This library now
-          uses a single circular spinner with a rotating gradient indicator so loading
-          states stay visually consistent across the product.
-        </p>
-
-        <div className="component-demo">
-          <h3>Preview</h3>
-          <div className="demo-area loader-demo-area">
-            <a href={COMPONENT_STORYBOOK_LINKS.loader} className="component-storybook-button" target="_blank" rel="noreferrer">
-              View in Storybook
-            </a>
-            <div className="loader-showcase">
-              <span className="loader-showcase-label">Sizes</span>
-              <div className="loader-row">
-                <Loader size="sm" tone="primary" label="Loading small content" />
-                <Loader size="md" tone="accent" label="Loading medium content" />
-                <Loader size="lg" tone="secondary" label="Loading large content" />
-              </div>
-            </div>
-
-            <div className="loader-showcase">
-              <span className="loader-showcase-label">Inline</span>
-              <div className="loader-column">
-                <Loader inline size="sm" tone="primary" label="Syncing records" />
-                <Loader inline size="sm" tone="secondary" label="Uploading assets" />
-                <Loader inline size="sm" tone="accent" label="Preparing dashboard" />
-              </div>
-            </div>
-
-            <div className="loader-showcase">
-              <span className="loader-showcase-label">Colorful</span>
-              <div className="loader-row">
-                <Loader tone="neutral" label="Loading neutral state" />
-                <Loader tone="primary" label="Loading primary state" />
-                <Loader tone="accent" label="Loading accent state" />
-              </div>
-            </div>
-
-            <div className="loader-showcase loader-showcase--dark">
-              <span className="loader-showcase-label">Inverted</span>
-              <div className="loader-row">
-                <Loader inverted tone="accent" label="Loading dark surface" />
-                <Loader inverted inline size="sm" tone="secondary" label="Publishing update" />
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
+        </section>
+      ))}
     </div>
   )
 }

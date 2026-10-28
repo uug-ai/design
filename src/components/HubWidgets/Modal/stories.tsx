@@ -2,6 +2,7 @@ import { useState } from 'react'
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import { HubButton, HubInput, HubSelect, HubTextarea } from '../controls'
 import { HubModal } from '../surfaces'
+import { ModalPreviewExample } from '../examples'
 
 type ModalStoryArgs = {
   title: string; confirmation: boolean; fullWidth?: boolean; centered?: boolean
@@ -18,8 +19,9 @@ const meta = {
   },
   parameters: {
     docs: {
+      story: { inline: false, height: 600 },
       description: {
-        component: 'Hub Modal, its header/body/actions and ShowConfirm presentations. Includes standard, full-width, centered, theater, pointer/keyboard drag and resize, and dirty-close confirmation. Native dialog supplies focus containment, Escape handling and restoration. Resize supports double-click reset. Theater is a presentation surface, not a Hub media-player port.',
+        component: 'Hub Modal, its header/body/actions and ShowConfirm presentations. Overlay variants start open in isolated preview frames, so their complete layout is visible without clicking a trigger or covering the documentation. Close a dialog to reveal its reopen button. The inline preview shows the complete layout without opening an overlay or trapping focus. Includes standard, full-width, centered, theater and dirty-close confirmation. On desktop, drag the header to move and use the right edge, bottom edge or corner to resize, matching Hub. The header and resize handles also support arrow keys. Drag/resize are disabled in mobile, full-width and theater presentations. Native dialog supplies focus containment, Escape handling and restoration. Double-click the corner to reset. Theater is a presentation surface, not a Hub media-player port.',
       },
     },
   },
@@ -28,10 +30,15 @@ const meta = {
 export default meta
 type Story = StoryObj<ModalStoryArgs>
 
+export const InlinePreview: Story = {
+  render: () => <ModalPreviewExample />,
+  parameters: { controls: { disable: true } },
+}
+
 export const EditCamera: Story = {
   args: { title: 'Edit camera', confirmation: false },
   render: function EditCameraStory(args) {
-    const [open, setOpen] = useState(false)
+    const [open, setOpen] = useState(true)
     const [saved, setSaved] = useState(false)
     return <>
       <HubButton onClick={() => { setOpen(true); setSaved(false) }}>Edit camera</HubButton>
@@ -54,7 +61,7 @@ export const DraggableAndResizable: Story = { ...EditCamera, args: { title: 'Mov
 export const Theater: Story = {
   args: { title: 'Recording preview', confirmation: false, theaterMode: true },
   render: function TheaterStory(args) {
-    const [open, setOpen] = useState(false)
+    const [open, setOpen] = useState(true)
     return <><HubButton onClick={() => setOpen(true)}>Open theater</HubButton>
       <HubModal {...args} open={open} onClose={() => setOpen(false)}>
         <div className="hub-theater-preview">Recording preview surface. Media playback remains in Hub.</div>
@@ -64,7 +71,7 @@ export const Theater: Story = {
 export const UnsavedChanges: Story = {
   args: { title: 'Edit camera', confirmation: false },
   render: function UnsavedStory(args) {
-    const [open, setOpen] = useState(false)
+    const [open, setOpen] = useState(true)
     const [dirty, setDirty] = useState(false)
     return <><HubButton onClick={() => { setDirty(false); setOpen(true) }}>Edit with unsaved changes</HubButton>
       <HubModal {...args} open={open} onClose={() => setOpen(false)} confirmCloseWhenDirty isDirty={dirty}
@@ -78,7 +85,7 @@ export const UnsavedChanges: Story = {
 export const SelectionInDialog: Story = {
   args: { title: 'Edit camera site', confirmation: false },
   render: function SelectionDialogStory(args) {
-    const [open, setOpen] = useState(false)
+    const [open, setOpen] = useState(true)
     const [site, setSite] = useState('ghent')
     return <><HubButton onClick={() => setOpen(true)}>Edit camera site</HubButton>
       <HubModal {...args} open={open} onClose={() => setOpen(false)}>
@@ -91,7 +98,7 @@ export const SelectionInDialog: Story = {
 export const Confirmation: Story = {
   args: { title: 'Delete camera?', confirmation: true },
   render: function ConfirmationStory(args) {
-    const [open, setOpen] = useState(false)
+    const [open, setOpen] = useState(true)
     const [deleted, setDeleted] = useState(false)
     return <>
       <HubButton variant="alert" onClick={() => { setOpen(true); setDeleted(false) }}>Delete camera</HubButton>

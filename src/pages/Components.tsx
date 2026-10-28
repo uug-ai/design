@@ -8,7 +8,7 @@ import {
 import { storybookEntryUrl, storybookUrl } from '../config/storybook'
 import './Components.css'
 import {
-  AdditionalFieldsExample, DataExample, DateTimeExample, MenuExample, NavigationExample,
+  AdditionalFieldsExample, DataExample, DateTimeExample, MenuExample, ModalPreviewExample, NavigationExample,
   NotificationExample, SchedulingExample, SelectionExample,
 } from '../components/HubWidgets/examples'
 
@@ -24,7 +24,7 @@ const COMPONENT_LINKS = [
   { id: 'notifications', label: 'Notifications', storybookPath: '/docs/components-notifications--docs', description: 'Toast messages, actions, dismissal, identity badges and colored labels.' },
   { id: 'surfaces', label: 'Surfaces', storybookPath: '/docs/components-surfaces--docs', description: 'Production cards, KPI tiles and compositional blocks with expandable content.' },
   { id: 'feedback', label: 'Feedback', storybookPath: '/docs/components-feedback--docs', description: 'Status badges, messages, progress, loading and empty states from Hub.' },
-  { id: 'modal', label: 'Modal', storybookPath: '/docs/components-modal--docs', description: 'Standard dialogs and centered confirmations with keyboard focus management.' },
+  { id: 'modal', label: 'Modal', storybookPath: '/docs/components-modal--docs', description: 'Complete header, body and footer preview, plus overlay dialogs and centered confirmations with keyboard focus management.' },
 ] as const
 
 const SITE_OPTIONS = [
@@ -275,7 +275,9 @@ function Components() {
         <HubPlaceholder error title="Unable to load recordings" description="Check your connection and try again." />
       </div>
     </div>,
-    modal: <>
+    modal: <div className="hub-stack">
+      <ModalPreviewExample />
+      <p>Try the overlay dialogs:</p>
       <div className="hub-row">
         <HubButton onClick={() => { setModal('edit'); setModalResult('') }}>Edit camera</HubButton>
         <HubButton variant="alert" onClick={() => { setModal('confirmation'); setModalResult('') }}>Delete camera</HubButton>
@@ -297,7 +299,7 @@ function Components() {
             <HubTextarea label="Description" defaultValue="Camera at the building entrance." />
           </div>}
       </HubModal>
-    </>,
+    </div>,
   }
 
   return (

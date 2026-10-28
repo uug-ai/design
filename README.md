@@ -133,7 +133,8 @@ from the header theme toggle. Its **Widget theme** selector can override all
 previews to light or dark; choose **Follow site** to resume automatic matching.
 The public page covers all button variants, editable and disabled form
 states, searchable site filters, a composed site overview, feedback and loading
-states, and working edit/confirmation dialogs. Upload progress and saved-state
+states, a complete inline modal preview with header/body/footer, and working
+edit/confirmation overlay dialogs. Upload progress and saved-state
 feedback are interactive demos, without calling Hub APIs. All 12 Storybook groups
 are represented, with the extended widgets sharing their Storybook examples.
 Each section links
@@ -155,14 +156,14 @@ import { HubButton, HubTheme } from './components/HubWidgets'
 </HubTheme>
 ```
 
-The reusable-component catalog includes 92 stories in 12 groups:
+The reusable-component catalog includes 94 stories in 12 groups:
 
 | Story group | Hub source widgets |
 | --- | --- |
 | Buttons | `button`, `inlinebutton`, `block-button`, success flash and mobile text states |
 | Forms | `input`/textarea, `search`, `colorinput`, `tags`, `checkbox`, `slider` switch, icon/text `multitoggle`, filter sizes |
 | Selection | `selectinput`, `radioselect`, `select-overlay`, `multiselect`, `multiselect-overlay`; search, clear, locked options, errors, readonly and loading |
-| Date and time | `dateinput`, `datepicker`, `time-spinner`; bounds, available dates, localized calendar labels and keyboard navigation |
+| Date and time | `dateinput`, `datepicker`, `time-spinner`; recordings-toolbar filter, field/button appearances, bounds, available dates, localized calendar labels and keyboard navigation |
 | Scheduling | `range-slider`, `weekly-schedule`; pointer/keyboard editing, exact-minute readouts, add/remove and non-overlapping segments |
 | Menus | `actions-menu`, `controls-popup`; single/no-action behavior, disabled/hidden/destructive items and keyboard focus |
 | Data | `table` with pagination, emphasis/alignment and empty/loading states, plus `loadmore` |
@@ -170,7 +171,7 @@ The reusable-component catalog includes 92 stories in 12 groups:
 | Notifications | `toast-container`, `label`, `sitebadge`, `groupbadge`, `camerabadge`; actions, dismissal and pausable timers |
 | Feedback | `badge`, `status`, `infobox`, `block-status`, `progressbar`, `spinner`, `placeholder` |
 | Surfaces | `card`, `block`, `block-header`, `block-body`, `block-footer`, `kpi` |
-| Modal | `modal`, `modalheader`, `modalbody`, `modalactions`, `showconfirm`; full-width/centered/theater, move/resize and dirty-close confirmation |
+| Modal | `modal`, `modalheader`, `modalbody`, `modalactions`, `showconfirm`; complete inline preview, full-width/centered/theater, move/resize and dirty-close confirmation |
 
 Colors, shadows, breakpoints, the 4px radius, and the 12px spacing unit come from
 [app.variables.scss](../hub-frontend/kerberos.ng/src/scss/_app.variables.scss).
@@ -191,6 +192,12 @@ Native controls/dialog supply keyboard operation, dialog focus containment and
 restoration; reduced-motion users see static loading indicators. These are
 intentional accessibility adaptations, not ports of Hub's runtime internals.
 
+The recordings date-filter story and public preview use Hub's left-side calendar/
+clear control and dropdown arrow. All picker variants share its 296px calendar,
+48px month buttons, square cells, recording dots and selected/today styling.
+Popovers use their rendered content height when deciding whether to open above
+or below the trigger.
+The calendar uses the design system's Hub brand token for primary accents.
 Calendar values are local `YYYY-MM-DD` dates (not UTC timestamps). Range-slider
 values are minutes in `[0, 1440]`. Weekly schedules use the Hub shape: Sunday=0,
 seconds in `[0, 86400]`, `enabled`, and explicit IANA timezones. Editing a day
@@ -200,10 +207,19 @@ explicit errors rather than silently normalizing data.
 
 On narrow screens, segmented controls scroll within their container without
 compressing option buttons, and schedule readouts wrap within the available width.
-Popup panels fit the viewport and reposition on scroll/resize. Modal move/resize
-handles work with pointer input and arrow keys. Theater mode retains an
-accessible close/header control, and resizing uses a corner handle rather than
-porting Hub's Angular drag/resize implementation. For dirty-close protection,
+Popup panels fit the viewport and reposition on scroll/resize. `HubModal inline`
+renders the same header, body and footer as an in-flow labelled section, without
+an overlay, automatic focus or focus trapping. It still supports controlled
+close/save actions; move/resize and viewport positioning are overlay-only.
+Storybook's overlay variants start open. Documentation renders each in its own
+600px-tall iframe, keeping the complete modal visible and interactive without
+covering other examples; closing it reveals its reopen button.
+Modal dragging uses the whole header without an extra Move button. Resizing uses
+Hub's 6px right/bottom edges and 16px corner grip, with the same muted grip styling.
+Both are desktop-only (768px and wider) and disabled in full-width/theater/inline
+presentations. The focusable header and resize handles support arrow keys; Shift
+uses larger steps. Pointer capture keeps gestures active outside the handle.
+Theater mode retains an accessible close/header control. For dirty-close protection,
 pass `actions={requestClose => ...}` and use `requestClose` for cancellation;
 successful save actions can close directly.
 

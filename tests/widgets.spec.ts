@@ -1,6 +1,6 @@
 import { readFileSync } from 'node:fs'
 import { expect, test } from '@playwright/test'
-import type { Page } from '@playwright/test'
+import type { Locator, Page } from '@playwright/test'
 
 const index: { entries: Record<string, { id: string; title: string; type: string }> } =
   JSON.parse(readFileSync('dist/storybook/index.json', 'utf8'))
@@ -11,12 +11,32 @@ async function openStory(page: Page, id: string) {
   await expect(page.locator('#storybook-root .hub-widgets')).toBeVisible()
 }
 
+async function dragBy(page: Page, target: Locator, x: number, y: number) {
+  const bounds = await target.boundingBox()
+  if (!bounds) throw new Error('Drag target is not visible')
+  const startX = bounds.x + bounds.width / 2
+  const startY = bounds.y + bounds.height / 2
+  await page.mouse.move(startX, startY)
+  await page.mouse.down()
+  await page.mouse.move(startX + x, startY + y, { steps: 5 })
+  await page.mouse.up()
+}
+
 for (const story of stories) {
   test(`renders ${story.id}`, async ({ page }) => {
     const errors: string[] = []
     page.on('pageerror', error => errors.push(error.message))
     await openStory(page, story.id)
     await expect(page.locator('#storybook-root .hub-widgets > *').first()).toBeVisible()
+    if (story.id.startsWith('components-modal--') && story.id !== 'components-modal--inline-preview') {
+      const dialog = page.getByRole('dialog')
+      await expect(dialog).toBeVisible()
+      await expect(dialog.locator('.hub-modal-header')).toBeVisible()
+      await expect(dialog.locator('.hub-modal-body')).toBeVisible()
+      if (!['components-modal--theater', 'components-modal--selection-in-dialog'].includes(story.id)) {
+        await expect(dialog.locator('.hub-modal-actions')).toBeVisible()
+      }
+    }
     expect(errors).toEqual([])
   })
 }
@@ -64,6 +84,105 @@ test('calendar skips unavailable dates and month navigation stays keyboard acces
   await page.getByRole('button', { name: 'Recording date: 2026-10-28', exact: true }).click()
   await page.getByRole('button', { name: 'Next month' }).click()
   await expect(page.getByRole('gridcell', { name: 'Sunday, 1 November 2026', exact: true })).toBeFocused()
+})
+
+for (const theme of ['light', 'dark']) {
+  for (const width of [1280, 390, 320]) {
+    test(`recordings date filter matches Hub geometry and states in ${theme} at ${width}px`, async ({ page }) => {
+      await page.setViewportSize({ width, height: 900 })
+      await page.goto(`/storybook/iframe.html?id=components-date-and-time--recordings-filter&viewMode=story&globals=hubTheme:${theme}`)
+      const root = page.locator('.hub-widgets')
+      await expect(root).toHaveAttribute('data-hub-theme', theme)
+      const picker = page.locator('.hub-datepicker--filter')
+      const trigger = picker.getByRole('button', { name: /^Date:/ })
+      await expect(picker.locator('.hub-datepicker-control')).toHaveCSS('min-height', '60px')
+      await expect(trigger).toHaveCSS('padding-inline-start', '54px')
+      await expect(trigger).toHaveCSS('padding-inline-end', '24px')
+      await expect(picker.locator('.hub-datepicker-title')).toHaveText('Date')
+      await expect(picker.locator('.hub-datepicker-icon')).toBeVisible()
+      await expect(picker.locator('.hub-datepicker-arrow')).toBeVisible()
+      await trigger.press('ArrowDown')
+      const calendar = page.getByRole('dialog', { name: 'Choose Date', exact: true })
+      await expect(calendar).toBeVisible()
+      await expect(calendar).toHaveCSS('width', `${Math.min(296, width - 48)}px`)
+      await expect(calendar).toHaveCSS('padding', width <= 420 ? '12px' : '18px')
+      await expect(calendar).toHaveCSS('box-shadow', 'rgba(0, 0, 0, 0.04) 0px 4px 34px 0px, rgba(0, 0, 0, 0.1) 0px 3px 4px 0px')
+      await expect(calendar.getByRole('button', { name: 'Previous month', exact: true })).toHaveCSS('width', '48px')
+      await expect(calendar.getByRole('button', { name: 'Next month', exact: true })).toHaveCSS('height', '48px')
+      await expect(calendar.getByRole('columnheader')).toHaveCount(7)
+      await expect(calendar.getByRole('columnheader').first()).toHaveCSS('line-height', '36px')
+      await expect(calendar.getByRole('columnheader').first()).toHaveCSS('text-transform', 'uppercase')
+      await expect(calendar.getByRole('gridcell')).toHaveCount(42)
+      const cells = await calendar.getByRole('gridcell').evaluateAll(elements => elements.map(element => {
+        const bounds = element.getBoundingClientRect()
+        return { x: bounds.x, y: bounds.y, width: bounds.width, height: bounds.height }
+      }))
+      expect(cells.every(cell => Math.abs(cell.width - cell.height) < 0.1)).toBe(true)
+      expect(cells[1].x - cells[0].x - cells[0].width).toBeCloseTo(2, 1)
+      expect(cells[7].y - cells[0].y - cells[0].height).toBeCloseTo(2, 1)
+      const recordingDay = calendar.getByRole('gridcell', { name: 'Wednesday, 28 October 2026, Recording', exact: true })
+      await expect(recordingDay).toHaveAttribute('title', 'Recording')
+      const dot = await recordingDay.evaluate(element => {
+        const css = getComputedStyle(element, '::after')
+        return { width: css.width, height: css.height, bottom: css.bottom, color: css.backgroundColor }
+      })
+      expect(dot).toEqual({ width: '3px', height: '3px', bottom: '4px', color: 'rgb(132, 86, 159)' })
+      const bounds = await calendar.boundingBox()
+      if (!bounds) throw new Error('Calendar is not visible')
+      expect(bounds.x).toBeGreaterThanOrEqual(8)
+      expect(bounds.x + bounds.width).toBeLessThanOrEqual(width - 8)
+      await recordingDay.click()
+      await expect(calendar).toHaveCount(0)
+      await expect(trigger).toBeFocused()
+      await expect(picker.locator('.hub-datepicker-title')).toHaveText('28 Oct 2026')
+      await expect(picker.locator('.hub-datepicker-icon')).toHaveCount(0)
+      const clear = picker.getByRole('button', { name: 'Clear Date', exact: true })
+      const clearBounds = await clear.boundingBox()
+      const controlBounds = await picker.locator('.hub-datepicker-control').boundingBox()
+      expect(clearBounds?.x).toBe(controlBounds?.x)
+      expect(clearBounds?.width).toBe(54)
+      await trigger.press('ArrowDown')
+      const selected = calendar.getByRole('gridcell', { selected: true })
+      await expect(selected).toBeFocused()
+      await expect(selected).toHaveCSS('font-weight', '600')
+      const selection = await selected.evaluate(element => {
+        const css = getComputedStyle(element)
+        return { color: css.color, shadow: css.boxShadow, dot: getComputedStyle(element, '::after').backgroundColor }
+      })
+      expect(selection.shadow).toBe(`${selection.color} 0px 0px 0px 2px inset`)
+      expect(selection.dot).toBe(selection.color)
+      await calendar.getByRole('gridcell', { name: 'Thursday, 1 October 2026', exact: true }).click()
+      await expect(picker.locator('.hub-datepicker-title')).toHaveText('01 Oct 2026')
+      await trigger.press('ArrowDown')
+      await clear.click()
+      await expect(calendar).toHaveCount(0)
+      await expect(trigger).toBeFocused()
+      await expect(picker.locator('.hub-datepicker-title')).toHaveText('Date')
+      await expect(picker.locator('.hub-datepicker-icon')).toBeVisible()
+    })
+  }
+}
+
+test('recordings calendar uses its full height when flipping above a low trigger', async ({ page }) => {
+  await openStory(page, 'components-date-and-time--recordings-filter')
+  const picker = page.locator('.hub-datepicker--filter')
+  const trigger = picker.getByRole('button', { name: /^Date:/ })
+  await trigger.click()
+  const calendar = page.getByRole('dialog', { name: 'Choose Date', exact: true })
+  const fullHeight = await calendar.evaluate(element => element.getBoundingClientRect().height)
+  await page.keyboard.press('Escape')
+  await expect(calendar).toHaveCount(0)
+  await picker.evaluate(element => { element.style.marginTop = '460px' })
+  await trigger.click()
+  const triggerBounds = await trigger.boundingBox()
+  const calendarBounds = await calendar.boundingBox()
+  const gridBounds = await calendar.locator('.hub-calendar-grid').boundingBox()
+  if (!triggerBounds || !calendarBounds || !gridBounds) throw new Error('Calendar geometry is not available')
+  expect(calendarBounds.height).toBeCloseTo(fullHeight, 1)
+  expect(calendarBounds.y).toBeGreaterThanOrEqual(8)
+  expect(calendarBounds.y + calendarBounds.height).toBeCloseTo(triggerBounds.y - 8, 0)
+  expect(gridBounds.y + gridBounds.height).toBeLessThan(calendarBounds.y + calendarBounds.height)
+  expect(await calendar.evaluate(element => element.scrollHeight <= element.clientHeight)).toBe(true)
 })
 
 test('native date bounds and time-spinners retain working controls', async ({ page }) => {
@@ -194,16 +313,68 @@ test('toast actions and dismissal work, with independent hover/focus timer pause
   await expect(page.locator('.hub-toast')).toHaveCount(0)
 })
 
+test('inline modal story exposes the complete layout without opening or trapping a dialog', async ({ page }) => {
+  await openStory(page, 'components-modal--inline-preview')
+  const preview = page.getByRole('region', { name: 'Edit camera preview', exact: true })
+  await expect(preview.locator('.hub-modal-header')).toBeVisible()
+  await expect(preview.locator('.hub-modal-body')).toBeVisible()
+  await expect(preview.locator('.hub-modal-actions')).toBeVisible()
+  await expect(page.getByRole('dialog')).toHaveCount(0)
+  await page.keyboard.press('Escape')
+  await expect(preview).toBeVisible()
+  await preview.getByRole('button', { name: 'Close preview', exact: true }).click()
+  await expect(preview).toHaveCount(0)
+  await page.getByRole('button', { name: 'Restore modal preview', exact: true }).click()
+  await expect(preview).toBeVisible()
+})
+
+test('modal documentation shows open variants in isolated frames without covering the page', async ({ page }) => {
+  await page.goto('/storybook/iframe.html?id=components-modal--docs&viewMode=docs')
+  await expect(page.getByRole('heading', { level: 1 })).toContainText('Modal')
+  await expect(page.getByRole('dialog')).toHaveCount(0)
+  for (const id of ['edit-camera', 'full-width', 'draggable-and-resizable']) {
+    const selector = `iframe[id="iframe--components-modal--${id}"]`
+    await expect(page.locator(selector)).toHaveCSS('height', '600px')
+    const dialog = page.frameLocator(selector).getByRole('dialog')
+    await expect(dialog).toBeVisible()
+    await expect(dialog.locator('.hub-modal-header')).toBeVisible()
+    await expect(dialog.locator('.hub-modal-body')).toBeVisible()
+    await expect(dialog.locator('.hub-modal-actions')).toBeVisible()
+    if (id === 'full-width') {
+      const bounds = await dialog.evaluate(element => ({
+        width: element.getBoundingClientRect().width, viewport: window.innerWidth,
+      }))
+      expect(bounds.width).toBeCloseTo(bounds.viewport - 48, 0)
+    }
+    if (id === 'draggable-and-resizable') {
+      await expect(dialog.getByRole('group', { name: 'Move dialog', exact: true })).toBeVisible()
+      await expect(dialog.getByRole('button', { name: 'Move dialog', exact: true })).toHaveCount(0)
+      await expect(dialog.getByRole('button', { name: 'Resize dialog horizontally', exact: true })).toBeVisible()
+      await expect(dialog.getByRole('button', { name: 'Resize dialog vertically', exact: true })).toBeVisible()
+      await expect(dialog.getByRole('button', { name: 'Resize dialog', exact: true })).toBeVisible()
+    }
+  }
+  await expect.poll(() => page.evaluate(() => window.scrollY)).toBe(0)
+  await page.locator('iframe[id="iframe--components-modal--edit-camera"]').scrollIntoViewIfNeeded()
+  const firstFrame = page.frameLocator('iframe[id="iframe--components-modal--edit-camera"]')
+  await firstFrame.getByRole('button', { name: 'Close dialog', exact: true }).click()
+  await expect(firstFrame.getByRole('dialog')).toHaveCount(0)
+  await expect(firstFrame.getByRole('button', { name: 'Edit camera', exact: true })).toBeVisible()
+  await expect(page.frameLocator('iframe[id="iframe--components-modal--full-width"]').getByRole('dialog')).toBeVisible()
+  await expect(page.getByRole('heading', { level: 1 })).toContainText('Modal')
+})
+
 test('modal Escape closes and restores focus; dirty cancellation can keep or discard', async ({ page }) => {
   await openStory(page, 'components-modal--edit-camera')
   const trigger = page.getByRole('button', { name: 'Edit camera', exact: true })
+  await expect(page.getByRole('dialog')).toBeVisible()
+  await page.keyboard.press('Escape')
   await trigger.click()
   await expect(page.getByRole('dialog')).toBeVisible()
   await page.keyboard.press('Escape')
   await expect(page.getByRole('dialog')).toHaveCount(0)
   await expect(trigger).toBeFocused()
   await openStory(page, 'components-modal--unsaved-changes')
-  await page.getByRole('button', { name: 'Edit with unsaved changes' }).click()
   await page.getByRole('textbox', { name: 'Camera name' }).fill('Changed camera')
   await page.keyboard.press('Escape')
   await expect(page.getByRole('dialog', { name: 'Discard changes?' })).toBeVisible()
@@ -217,7 +388,6 @@ test('modal Escape closes and restores focus; dirty cancellation can keep or dis
 
 test('popup Escape does not close its parent dialog and backdrop respects dirty protection', async ({ page }) => {
   await openStory(page, 'components-modal--selection-in-dialog')
-  await page.getByRole('button', { name: 'Edit camera site', exact: true }).click()
   const site = page.getByRole('button', { name: 'Site: Ghent', exact: true })
   await site.click()
   await page.getByRole('textbox', { name: 'Search site' }).press('Escape')
@@ -227,7 +397,6 @@ test('popup Escape does not close its parent dialog and backdrop respects dirty 
   await site.press('Escape')
   await expect(page.getByRole('dialog')).toHaveCount(0)
   await openStory(page, 'components-modal--unsaved-changes')
-  await page.getByRole('button', { name: 'Edit with unsaved changes' }).click()
   await page.getByRole('textbox', { name: 'Camera name' }).fill('Changed camera')
   await page.mouse.click(10, 890)
   await expect(page.getByRole('dialog', { name: 'Discard changes?' })).toBeVisible()
@@ -249,29 +418,136 @@ test('button save feedback flashes temporarily and mobile text remains named', a
   await expect(button.locator('.hub-button-text')).toHaveCSS('width', '1px')
 })
 
-test('modal move/resize work with keyboard and pointer; theater remains dismissible', async ({ page }) => {
+test('modal header matches Hub dragging without a Move button and keeps close independent', async ({ page }) => {
   await openStory(page, 'components-modal--draggable-and-resizable')
-  await page.getByRole('button', { name: 'Edit camera', exact: true }).click()
+  await page.evaluate(() => document.fonts.ready)
   const dialog = page.getByRole('dialog')
+  const header = dialog.getByRole('group', { name: 'Move dialog', exact: true })
   const before = await dialog.boundingBox()
   if (!before) throw new Error('Dialog is not visible')
-  await page.getByRole('button', { name: 'Move dialog' }).press('ArrowRight')
-  expect((await dialog.boundingBox())?.x).toBe(before.x + 10)
-  await page.getByRole('button', { name: 'Resize dialog' }).press('ArrowDown')
-  expect((await dialog.boundingBox())?.height).toBe(before.height + 10)
-  const handle = await page.getByRole('button', { name: 'Resize dialog' }).boundingBox()
-  if (!handle) throw new Error('Resize handle is not visible')
-  await page.mouse.move(handle.x + handle.width / 2, handle.y + handle.height / 2)
-  await page.mouse.down()
-  await page.mouse.move(handle.x + handle.width / 2 + 30, handle.y + handle.height / 2 + 30)
-  await page.mouse.up()
-  expect((await dialog.boundingBox())?.width).toBeGreaterThan(before.width)
-  await openStory(page, 'components-modal--theater')
-  await page.getByRole('button', { name: 'Open theater' }).click()
-  await expect(page.getByRole('dialog')).toBeVisible()
-  await page.getByRole('button', { name: 'Close dialog' }).click()
-  await expect(page.getByRole('dialog')).toHaveCount(0)
+  await expect(dialog.getByRole('button', { name: 'Move dialog', exact: true })).toHaveCount(0)
+  await expect(header).toHaveCSS('cursor', 'move')
+  await dragBy(page, header, 30, 40)
+  await expect.poll(() => dialog.boundingBox()).toEqual({ ...before, x: before.x + 30, y: before.y + 40 })
+  await header.press('ArrowRight')
+  await header.press('Shift+ArrowDown')
+  const moved = { ...before, x: before.x + 40, y: before.y + 90 }
+  await expect.poll(() => dialog.boundingBox()).toEqual(moved)
+  const close = dialog.getByRole('button', { name: 'Close dialog', exact: true })
+  await close.press('ArrowLeft')
+  await expect.poll(() => dialog.boundingBox()).toEqual(moved)
+  await close.locator('svg').click()
+  await expect(dialog).toHaveCount(0)
+  await expect.poll(() => page.evaluate(() => document.body.style.userSelect)).toBe('')
+  await expect.poll(() => page.evaluate(() => document.body.style.cursor)).toBe('')
 })
+
+test('modal right, bottom and corner resize handles match Hub geometry and resize only their axes', async ({ page }) => {
+  await openStory(page, 'components-modal--draggable-and-resizable')
+  await page.evaluate(() => document.fonts.ready)
+  const dialog = page.getByRole('dialog')
+  const horizontal = dialog.getByRole('button', { name: 'Resize dialog horizontally', exact: true })
+  const vertical = dialog.getByRole('button', { name: 'Resize dialog vertically', exact: true })
+  const corner = dialog.getByRole('button', { name: 'Resize dialog', exact: true })
+  const before = await dialog.boundingBox()
+  if (!before) throw new Error('Dialog is not visible')
+  await expect(horizontal).toHaveCSS('width', '6px')
+  await expect(vertical).toHaveCSS('height', '6px')
+  await expect(corner).toHaveCSS('width', '16px')
+  await expect(corner).toHaveCSS('height', '16px')
+  await expect(corner).toHaveCSS('opacity', '0.5')
+  await dragBy(page, horizontal, 40, 40)
+  await expect.poll(() => dialog.boundingBox()).toEqual({ ...before, width: before.width + 40 })
+  await dragBy(page, vertical, 40, 40)
+  await expect.poll(() => dialog.boundingBox()).toEqual({ ...before, width: before.width + 40, height: before.height + 40 })
+  await dragBy(page, corner, 30, 30)
+  await expect.poll(() => dialog.boundingBox()).toEqual({ ...before, width: before.width + 70, height: before.height + 70 })
+  await corner.press('Shift+ArrowRight')
+  await corner.press('ArrowDown')
+  await expect.poll(() => dialog.boundingBox()).toEqual({ ...before, width: before.width + 120, height: before.height + 80 })
+  await corner.dblclick()
+  await expect.poll(() => dialog.boundingBox()).toEqual(before)
+})
+
+test('modal gestures preserve minimum sizes, viewport bounds and release after cancellation', async ({ page }) => {
+  await openStory(page, 'components-modal--draggable-and-resizable')
+  await page.evaluate(() => document.fonts.ready)
+  const dialog = page.getByRole('dialog')
+  const corner = dialog.getByRole('button', { name: 'Resize dialog', exact: true })
+  await dragBy(page, corner, -1000, -1000)
+  await expect.poll(async () => (await dialog.boundingBox())?.width).toBe(500)
+  await expect.poll(async () => (await dialog.boundingBox())?.height).toBe(360)
+  for (let step = 0; step < 20; step++) {
+    await corner.press('Shift+ArrowRight')
+    await corner.press('Shift+ArrowDown')
+  }
+  const resized = await dialog.boundingBox()
+  if (!resized) throw new Error('Dialog is not visible')
+  expect(resized.x + resized.width).toBe(1280 - 8)
+  expect(resized.y + resized.height).toBe(900 - 8)
+  await corner.dblclick()
+  const header = dialog.getByRole('group', { name: 'Move dialog', exact: true })
+  await dragBy(page, header, -1000, -1000)
+  await expect.poll(async () => (await dialog.boundingBox())?.x).toBe(8)
+  await expect.poll(async () => (await dialog.boundingBox())?.y).toBe(8)
+  const headerBounds = await header.boundingBox()
+  if (!headerBounds) throw new Error('Header is not visible')
+  await page.mouse.move(headerBounds.x + 100, headerBounds.y + 20)
+  await page.mouse.down()
+  await expect(dialog).toHaveClass(/is-dragging/)
+  await expect(header).toHaveCSS('cursor', 'grabbing')
+  await expect.poll(() => page.evaluate(() => document.body.style.userSelect)).toBe('none')
+  await header.dispatchEvent('pointercancel', { pointerId: 1 })
+  await expect(dialog).not.toHaveClass(/is-dragging/)
+  await expect.poll(() => page.evaluate(() => document.body.style.userSelect)).toBe('')
+  await page.mouse.move(headerBounds.x + 150, headerBounds.y + 50)
+  await page.mouse.up()
+  await expect.poll(async () => (await dialog.boundingBox())?.x).toBe(8)
+  await expect.poll(async () => (await dialog.boundingBox())?.y).toBe(8)
+})
+
+for (const width of [390, 767, 768]) {
+  test(`modal drag and resize use Hub's desktop breakpoint at ${width}px`, async ({ page }) => {
+    await page.setViewportSize({ width, height: 900 })
+    await openStory(page, 'components-modal--draggable-and-resizable')
+    const dialog = page.getByRole('dialog')
+    await expect(dialog.getByRole('group', { name: 'Move dialog', exact: true })).toHaveCount(width >= 768 ? 1 : 0)
+    await expect(dialog.locator('.hub-modal-resize')).toHaveCount(width >= 768 ? 3 : 0)
+    await dialog.getByRole('button', { name: 'Close dialog', exact: true }).click()
+    await expect(dialog).toHaveCount(0)
+  })
+}
+
+test('modal Escape ends an active drag before showing dirty-close confirmation', async ({ page }) => {
+  await page.goto('/storybook/iframe.html?id=components-modal--unsaved-changes&viewMode=story&args=draggable:true;resizable:true')
+  const dialog = page.getByRole('dialog', { name: 'Edit camera', exact: true })
+  await dialog.getByRole('textbox', { name: 'Camera name', exact: true }).fill('Changed camera')
+  const header = await dialog.getByRole('group', { name: 'Move dialog', exact: true }).boundingBox()
+  if (!header) throw new Error('Header is not visible')
+  await page.mouse.move(header.x + 100, header.y + 20)
+  await page.mouse.down()
+  await expect(dialog).toHaveClass(/is-dragging/)
+  await page.keyboard.press('Escape')
+  await expect(page.getByRole('dialog', { name: 'Discard changes?', exact: true })).toBeVisible()
+  await expect(dialog).not.toHaveClass(/is-dragging/)
+  await expect.poll(() => page.evaluate(() => document.body.style.userSelect)).toBe('')
+  await expect.poll(() => page.evaluate(() => document.body.style.cursor)).toBe('')
+  await page.mouse.up()
+  await page.getByRole('button', { name: 'Keep editing', exact: true }).click()
+  await expect(dialog.getByRole('textbox', { name: 'Camera name', exact: true })).toHaveValue('Changed camera')
+})
+
+for (const presentation of ['fullWidth', 'theaterMode']) {
+  test(`modal ${presentation} disables drag and resize while remaining dismissible`, async ({ page }) => {
+    await page.goto(`/storybook/iframe.html?id=components-modal--draggable-and-resizable&viewMode=story&args=${presentation}:true`)
+    const dialog = page.getByRole('dialog')
+    await expect(dialog).toBeVisible()
+    await expect(dialog.getByRole('group', { name: 'Move dialog', exact: true })).toHaveCount(0)
+    await expect(dialog.locator('.hub-modal-resize')).toHaveCount(0)
+    await dialog.getByRole('button', { name: 'Close dialog', exact: true }).click()
+    await expect(dialog).toHaveCount(0)
+  })
+}
 
 for (const width of [1280, 390]) {
   test(`public Components page preserves previews, themes and layout at ${width}px`, async ({ page }, testInfo) => {

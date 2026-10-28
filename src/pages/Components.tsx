@@ -512,7 +512,7 @@ function Components() {
       >
         <h2>Iso Illustrations</h2>
         <p>
-          Isometric hairline figures for empty states and hero backgrounds. Faces use the
+          Isometric hairline figures for empty states, hero backgrounds and explaining the Hub. Faces use the
           neutral surface tokens and only live parts use the accent: lit windows, a pulse
           travelling along a wire, a blinking beacon. In the dark theme those parts glow;
           in the light theme they stay flat accent. Illustrations are decorative, so they
@@ -528,6 +528,10 @@ function Components() {
             <div className="iso-showcase">
               <span className="loader-showcase-label">Agent · empty states</span>
               <IsoIllustration figure="agent" className="iso-showcase-figure" />
+            </div>
+            <div className="iso-showcase iso-showcase--wide">
+              <span className="loader-showcase-label">Hub · event flow</span>
+              <IsoIllustration figure="hub" className="iso-showcase-figure iso-showcase-figure--wide" />
             </div>
             <div className="iso-showcase">
               <span className="loader-showcase-label">Control tower · hero background</span>

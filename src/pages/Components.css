@@ -430,6 +430,14 @@
   max-width: 100%;
 }
 
+.iso-showcase--wide {
+  grid-column: 1 / -1;
+}
+
+.iso-showcase-figure--wide {
+  width: 560px;
+}
+
 .iso-showcase-figure--tall {
   width: 150px;
   mask-image: linear-gradient(to bottom, #000 72%, transparent);

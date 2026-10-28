@@ -2,9 +2,9 @@ import type { Meta, StoryObj } from '@storybook/react-vite'
 import { htmlCssSource } from '../../config/storybookSource'
 import componentCss from './component.css?raw'
 import IsoIllustration from './component'
-import { renderIsoSvg } from './figures'
+import { ISO_FIGURE_NAMES, renderIsoSvg, type IsoFigure } from './figures'
 
-const sourceHtml = (figure: 'agent' | 'control-tower', glow: string, style = '') => `
+const sourceHtml = (figure: IsoFigure, glow: string, style = '') => `
   <div class="iso-illustration iso-illustration--glow-${glow}" aria-hidden="true"${style ? ` style="${style}"` : ''}>
     ${renderIsoSvg(figure, `iso-${figure}`)}
   </div>
@@ -20,7 +20,7 @@ const meta = {
   argTypes: {
     figure: {
       control: 'inline-radio',
-      options: ['agent', 'control-tower'],
+      options: ISO_FIGURE_NAMES,
     },
     glow: {
       control: 'inline-radio',
@@ -32,8 +32,8 @@ const meta = {
     glow: 'auto',
   },
   decorators: [
-    (Story) => (
-      <div style={{ width: '280px' }}>
+    (Story, { parameters }) => (
+      <div style={{ width: parameters.isoWidth ?? '280px', maxWidth: '100%' }}>
         <Story />
       </div>
     ),
@@ -52,6 +52,15 @@ export const ControlTower: Story = {
   parameters: htmlCssSource(sourceHtml('control-tower', 'auto', 'width: 260px'), componentCss),
   args: {
     figure: 'control-tower',
+  },
+}
+
+export const Hub: Story = {
+  parameters: htmlCssSource(sourceHtml('hub', 'auto', 'width: 520px'), componentCss, {
+    isoWidth: '520px',
+  }),
+  args: {
+    figure: 'hub',
   },
 }
 

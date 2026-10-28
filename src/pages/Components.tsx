@@ -539,10 +539,10 @@ function Components() {
         <div className="component-demo">
           <h3>Guidelines</h3>
           <ul className="iso-guidelines">
-            <li>One accent per figure, only on what is live. Set <code>--iso-accent</code> to recolour it (the Hub uses <code>--hub</code>, product pages use <code>--product-accent</code>).</li>
+            <li>One accent per figure, only on what is live. Set <code>--iso-accent</code> to recolour it (the Hub frontend uses <code>--hub</code>).</li>
             <li>Glow follows the theme with <code>glow=&quot;auto&quot;</code>; use <code>on</code> or <code>off</code> only for fixed dark or light surfaces.</li>
             <li>Animations are slow loops and stop under reduced motion, holding the lit state.</li>
-            <li>The figures are plain SVG strings (<code>renderIsoSvg</code>), so the Angular Hub frontend and the website reuse the same drawing and stylesheet.</li>
+            <li>The figures are plain SVG strings (<code>renderIsoSvg</code>), so non-React apps such as the Angular Hub frontend can reuse the same drawing and stylesheet.</li>
           </ul>
         </div>
       </section>

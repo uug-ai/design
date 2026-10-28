@@ -85,7 +85,7 @@ function agent(): FigureDrawing {
   }
 }
 
-// A tall air-traffic control tower for hero backgrounds (the Hub product page).
+// A tall air-traffic control tower for hero backgrounds.
 // Cab panes light up one after another, the radar sweeps, the mast beacon blinks
 // and pulses run along four ground wires into the podium. The ground wires
 // start outside the viewBox on purpose, so they enter from beyond the frame.

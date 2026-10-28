@@ -1,6 +1,6 @@
 // Isometric projection kernel for the iso illustrations (after the iso-figure /
 // iso-glow kernel). Framework free: everything returns SVG strings, so the
-// Angular Hub frontend and the website can reuse it as is.
+// Angular Hub frontend (or any non-React page) can reuse it as is.
 // +x runs down-right, +y down-left, +z up. Faces are drawn as ordinary SVG
 // inside a plane transform, so rects, lines and circles land on the face.
 // Paint order is the only depth sort: draw back to front.

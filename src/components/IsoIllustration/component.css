@@ -2,7 +2,7 @@
    Only live parts (.iso-lit) use the accent, and they only glow when the
    illustration glows: in a dark theme with glow="auto", or always with
    glow="on". Recolour a figure by setting --iso-accent on it or an ancestor
-   (the Hub frontend maps it to --hub, the website to --product-accent). */
+   (the Hub frontend maps it to --hub). */
 .iso-illustration {
   --iso-color: var(--iso-accent, var(--accent-color));
   --iso-top: var(--background);

@@ -12,8 +12,7 @@
 .hub-widgets .hub-popup-done { width: 100%; padding: 10px; border: 0; border-top: 1px solid var(--bg-muted); background: var(--card-muted); color: var(--hub); font-weight: 600; }
 .hub-widgets[data-hub-theme='dark'] .hub-select-option.is-selected { background: hsla(var(--hub-hsl), 0.25); color: var(--text); }
 .hub-widgets[data-hub-theme='dark'] .hub-popup-done { color: var(--text); }
-.hub-widgets .hub-select.has-error .hub-select-trigger,
-.hub-widgets .hub-datepicker.has-error .hub-select-trigger { border-color: var(--alert); color: var(--alert); background: hsla(var(--alert-hsl), 0.1); }
+.hub-widgets .hub-select.has-error .hub-select-trigger { border-color: var(--alert); color: var(--alert); background: hsla(var(--alert-hsl), 0.1); }
 .hub-widgets .hub-select-trigger[aria-readonly='true'] { background: var(--bg-muted); color: var(--text-light); cursor: default; }
 .hub-widgets .hub-select--filter.hub-select--small .hub-select-trigger { line-height: 36px; }
 .hub-widgets .hub-select--filter.hub-select--large .hub-select-trigger { line-height: 72px; font-size: 16px; }
@@ -48,22 +47,64 @@
 .hub-widgets .hub-tags button:focus-visible { outline: 2px solid white; }
 .hub-widgets .hub-label-tag { display: inline-block; padding: 2px 8px; border: 2px solid transparent; border-radius: 4px; font-size: 13px; font-weight: 500; }
 .hub-widgets .hub-datepicker { min-width: 0; }
-.hub-widgets .hub-datepicker--filter .hub-select-trigger { border: 0; background: transparent; min-height: 60px; }
+.hub-widgets .hub-datepicker-control { position: relative; display: flex; align-items: stretch; min-width: 0; min-height: 60px; color: var(--text-muted); transition: all 0.1s; }
+.hub-widgets .hub-datepicker-control:hover { background: hsla(var(--card-hsl), 0.5); }
+.hub-widgets .hub-datepicker.is-open .hub-datepicker-control { background: hsla(var(--card-hsl), 0.7); }
+.hub-widgets .hub-datepicker-trigger { position: relative; flex: 1 1 auto; min-width: 0; display: flex; align-items: center; text-align: start; }
+.hub-widgets .hub-datepicker-trigger:not(.hub-button) { padding: 0; padding-inline: 54px 24px; border: 0; background: transparent; color: inherit; font: inherit; cursor: pointer; }
+.hub-widgets .hub-datepicker-trigger:focus-visible,
+.hub-widgets .hub-datepicker-clear:focus-visible { outline: 2px solid var(--hub); outline-offset: -2px; }
+.hub-widgets .hub-datepicker-trigger:disabled,
+.hub-widgets .hub-datepicker-clear:disabled { opacity: 0.5; cursor: not-allowed; }
+.hub-widgets .hub-datepicker-title { min-width: 0; flex: 1 1 auto; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; color: var(--text); font-size: 14px; line-height: 60px; }
+.hub-widgets .hub-datepicker-title.is-placeholder { color: var(--text-muted); }
+.hub-widgets .hub-datepicker-trigger:not(.hub-button) .hub-datepicker-icon { position: absolute; top: 50%; inset-inline-start: 24px; transform: translateY(-50%); }
+.hub-widgets .hub-datepicker-arrow { display: flex; flex: 0 0 12px; align-items: center; justify-content: flex-end; }
+.hub-widgets .hub-datepicker-arrow::after { content: ''; width: 0; height: 0; border-inline: 4px solid transparent; border-top: 5px solid currentColor; }
+.hub-widgets .hub-datepicker-clear { position: absolute; top: 0; bottom: 0; inset-inline-start: 0; z-index: 1; width: 54px; padding: 0; padding-inline-start: 24px; display: flex; align-items: center; border: 0; background: transparent; color: inherit; cursor: pointer; }
+.hub-widgets .hub-datepicker-clear svg { transform: scale(0.7); transform-origin: center; }
+.hub-widgets .hub-datepicker-clear:is(:hover, :focus-visible) { color: var(--text); }
+.hub-widgets .hub-datepicker--field .hub-datepicker-control { box-sizing: border-box; min-height: 50px; border: 1px solid var(--bg-muted); border-radius: var(--radius); background: var(--card); }
+.hub-widgets .hub-datepicker--field .hub-datepicker-trigger { border-radius: inherit; }
+.hub-widgets .hub-datepicker--field .hub-datepicker-title { font-size: 15px; line-height: 48px; }
+.hub-widgets .hub-datepicker--field .hub-datepicker-control:hover { border-color: var(--text-light); background: var(--card); }
+.hub-widgets .hub-datepicker--field .hub-datepicker-control:focus-within,
+.hub-widgets .hub-datepicker--field.is-open .hub-datepicker-control { border-color: var(--hub); background: var(--card); box-shadow: 0 0 0 3px hsla(var(--hub-hsl), 0.2); }
+.hub-widgets .hub-datepicker--field .hub-datepicker-trigger:focus-visible { outline: none; }
 .hub-widgets .hub-datepicker--button { display: inline-block; }
-.hub-widgets .hub-calendar { padding: 18px; }
-.hub-widgets .hub-calendar-header { display: grid; grid-template-columns: 36px 1fr 36px; align-items: center; gap: 6px; margin-bottom: 12px; font-size: 14px; text-align: center; }
-.hub-widgets .hub-calendar-header button { display: grid; place-items: center; width: 36px; height: 36px; padding: 0; border: 0; border-radius: var(--radius); background: transparent; color: var(--text); }
+.hub-widgets .hub-datepicker--button .hub-datepicker-control,
+.hub-widgets .hub-datepicker--button.is-open .hub-datepicker-control { min-height: 0; background: transparent; }
+.hub-widgets .hub-datepicker--button .hub-datepicker-trigger { gap: 12px; margin: 0; }
+.hub-widgets .hub-datepicker--button .hub-datepicker-title { line-height: inherit; }
+.hub-widgets .hub-datepicker--button .hub-datepicker-clear + .hub-datepicker-trigger { padding-inline-start: 54px; }
+.hub-widgets .hub-datepicker.has-error .hub-datepicker-control { border: 1px solid var(--alert); color: var(--alert); background: hsla(var(--alert-hsl), 0.1); box-shadow: 0 0 0 3px hsla(var(--alert-hsl), 0.2); }
+.hub-widgets .hub-calendar { max-width: calc(100vw - 48px); padding: 18px; box-shadow: var(--hub-card-shadow); }
+.hub-widgets .hub-calendar-header { display: grid; grid-template-columns: 48px minmax(0, 1fr) 48px; align-items: center; min-height: 48px; margin-bottom: 12px; }
+.hub-widgets .hub-calendar-header strong { overflow: hidden; font-size: 14px; font-weight: 600; line-height: 36px; text-align: center; text-overflow: ellipsis; white-space: nowrap; }
+.hub-widgets .hub-calendar-header button { display: grid; place-items: center; width: 48px; height: 48px; padding: 0; border: 0; border-radius: var(--radius); background: transparent; color: var(--text-muted); }
+.hub-widgets .hub-calendar-header button span { width: 7px; height: 7px; border-top: 2px solid currentColor; border-left: 2px solid currentColor; }
+.hub-widgets .hub-calendar-header button:first-child span { transform: rotate(-45deg); }
+.hub-widgets .hub-calendar-header button:last-child span { transform: rotate(135deg); }
+.hub-widgets .hub-calendar-header button:disabled { opacity: 0.3; cursor: default; }
+.hub-widgets .hub-calendar-header button:hover:not(:disabled) { background: var(--card-muted); color: var(--text); }
 .hub-widgets .hub-calendar-weekdays,
-.hub-widgets .hub-calendar-grid > div { display: grid; grid-template-columns: repeat(7, 1fr); gap: 2px; }
-.hub-widgets .hub-calendar-weekdays { color: var(--text-light); font-size: 11px; text-align: center; margin-bottom: 6px; }
-.hub-widgets .hub-calendar-grid button { position: relative; min-width: 0; height: 32px; border: 0; border-radius: 4px; background: transparent; color: var(--text); font-size: 13px; }
-.hub-widgets .hub-calendar-grid button.is-outside { color: var(--text-light); }
-.hub-widgets .hub-calendar button:disabled { opacity: 0.35; }
-.hub-widgets .hub-calendar button:not(:disabled):hover { background: var(--card-muted); }
+.hub-widgets .hub-calendar-grid > div { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); }
+.hub-widgets .hub-calendar-weekdays { margin-bottom: 6px; }
+.hub-widgets .hub-calendar-weekdays span { overflow: hidden; color: var(--text-muted); font-size: 11px; font-weight: 600; line-height: 36px; text-align: center; text-transform: uppercase; white-space: nowrap; }
+.hub-widgets .hub-calendar-grid,
+.hub-widgets .hub-calendar-grid > div { display: grid; gap: 2px; }
+.hub-widgets .hub-calendar-grid button { position: relative; aspect-ratio: 1; min-width: 0; padding: 0; border: 0; border-radius: var(--radius); background: transparent; color: var(--text); font: inherit; font-size: 13px; }
+.hub-widgets .hub-calendar-grid button:hover:not(:disabled) { background: var(--card-muted); }
+.hub-widgets .hub-calendar-grid button.is-outside { color: var(--text-muted); opacity: 0.55; }
 .hub-widgets .hub-calendar-grid button[aria-current='date'] { box-shadow: inset 0 0 0 1px var(--hub); }
-.hub-widgets .hub-calendar-grid button.has-recordings::after { content: ''; position: absolute; bottom: 3px; left: calc(50% - 2px); width: 4px; height: 4px; border-radius: 50%; background: var(--success); }
-.hub-widgets .hub-calendar-grid button[aria-selected='true'] { background: var(--hub); color: white; }
+.hub-widgets .hub-calendar-grid button.has-recordings::after { content: ''; position: absolute; right: 50%; bottom: 4px; width: 3px; height: 3px; border-radius: 50%; background: var(--hub); transform: translateX(50%); }
+.hub-widgets .hub-calendar-grid button[aria-selected='true'] { background: var(--hub); color: var(--text); font-weight: 600; box-shadow: inset 0 0 0 2px var(--text); }
+.hub-widgets .hub-calendar-grid button[aria-selected='true']::after { background: var(--text); }
+.hub-widgets .hub-calendar-grid button:disabled { color: var(--text-muted); opacity: 0.25; cursor: default; }
 .hub-widgets .hub-calendar button:focus-visible { outline: 2px solid var(--hub); outline-offset: -2px; }
+@media (max-width: 420px) {
+  .hub-widgets .hub-calendar { padding: 12px; }
+}
 .hub-widgets .hub-time-spinner { display: inline-flex; width: fit-content; padding: 8px 12px; border: 1px solid var(--bg-muted); border-radius: var(--radius); background: var(--card); color: var(--text); }
 .hub-widgets .hub-time-spinner.is-embedded { padding: 0; border: 0; background: transparent; }
 .hub-widgets .hub-time-spinner input { box-sizing: border-box; width: 48px; padding: 4px; border: 0; border-radius: 3px; background: transparent; color: inherit; text-align: center; font: inherit; font-variant-numeric: tabular-nums; }
@@ -147,13 +188,21 @@
 .hub-widgets .hub-modal.is-full-width { width: calc(100vw - 48px); }
 .hub-widgets .hub-modal.is-theater { width: calc(100vw - 24px); height: calc(100dvh - 24px); max-height: calc(100dvh - 24px); margin: 12px auto; }
 .hub-widgets .hub-modal.is-theater .hub-modal-body { flex: 1; background: #000; color: #fff; }
+.hub-widgets .hub-modal.is-inline { position: static; inset: auto; display: flex; flex-direction: column; width: 100%; min-width: 0; max-width: 900px; max-height: none; margin: 0; }
+.hub-widgets .hub-modal.is-inline .hub-modal-actions { flex-wrap: wrap; }
 .hub-widgets .hub-modal-header { flex-shrink: 0; }
+.hub-widgets .hub-modal-header h2 { padding-inline-end: 24px; }
 .hub-widgets .hub-modal-body { flex: 1 1 auto; }
-.hub-widgets .hub-modal.is-resizable .hub-modal-actions { padding-inline-end: 40px; }
-.hub-widgets .hub-modal-move { padding: 4px 8px; border: 0; border-radius: 4px; background: transparent; color: var(--text-light); cursor: grab; touch-action: none; }
-.hub-widgets .hub-modal-resize { position: absolute; right: 0; bottom: 0; width: 32px; height: 32px; overflow: hidden; color: transparent; border: 0; background: linear-gradient(135deg, transparent 64%, var(--text-light) 66%, transparent 69%, transparent 76%, var(--text-light) 78%, transparent 81%); cursor: nwse-resize; touch-action: none; }
+.hub-widgets .hub-modal.is-draggable .hub-modal-header { cursor: move; user-select: none; touch-action: none; }
+.hub-widgets .hub-modal.is-dragging .hub-modal-header { cursor: grabbing; }
+.hub-widgets .hub-modal.is-resizing { user-select: none; }
+.hub-widgets .hub-modal-resize { position: absolute; z-index: 3; padding: 0; border: 0; background: transparent; touch-action: none; }
+.hub-widgets .hub-modal-resize--e { top: 0; right: 0; bottom: 16px; width: 6px; cursor: ew-resize; }
+.hub-widgets .hub-modal-resize--s { right: 16px; bottom: 0; left: 0; height: 6px; cursor: ns-resize; }
+.hub-widgets .hub-modal-resize--se { right: 0; bottom: 0; width: 16px; height: 16px; cursor: nwse-resize; background: linear-gradient(135deg, transparent 0 55%, var(--text-muted) 55% 62%, transparent 62% 72%, var(--text-muted) 72% 79%, transparent 79%); opacity: 0.5; }
+.hub-widgets .hub-modal-resize--se:is(:hover, :focus-visible) { opacity: 1; }
 .hub-widgets .hub-modal-resize:focus-visible,
-.hub-widgets .hub-modal-move:focus-visible { outline: 2px solid var(--hub); outline-offset: -2px; }
+.hub-widgets .hub-modal.is-draggable .hub-modal-header:focus-visible { outline: 2px solid var(--hub); outline-offset: -2px; }
 .hub-widgets .hub-demo-output { max-height: 200px; overflow: auto; margin: 0; padding: 12px; border-radius: var(--radius); background: var(--card); color: var(--text-muted); font-size: 12px; white-space: pre-wrap; }
 .hub-widgets .hub-theater-preview { display: grid; place-items: center; min-height: 60vh; color: white; text-align: center; }
 

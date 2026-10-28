@@ -122,6 +122,53 @@ test('public edit and confirmation dialogs retain working demo feedback and focu
   await expect(section.getByRole('status')).toContainText('No Hub data was changed.')
 })
 
+for (const width of [320, 1280]) {
+  test(`modal section displays a complete in-flow preview at ${width}px`, async ({ page }) => {
+    await page.setViewportSize({ width, height: 900 })
+    await page.goto('/components')
+    const section = page.locator('#modal')
+    const preview = section.getByRole('region', { name: 'Edit camera preview', exact: true })
+    await expect(preview.locator('.hub-modal-header').getByRole('heading', { name: 'Edit camera preview' })).toBeVisible()
+    await expect(preview.locator('.hub-modal-body').getByRole('textbox', { name: 'Camera name', exact: true })).toBeVisible()
+    await expect(preview.locator('.hub-modal-body').getByRole('textbox', { name: 'Description', exact: true })).toBeVisible()
+    await expect(preview.locator('.hub-modal-actions').getByRole('button', { name: 'Cancel', exact: true })).toBeVisible()
+    await expect(preview.locator('.hub-modal-actions').getByRole('button', { name: 'Save settings', exact: true })).toBeVisible()
+    await expect(page.getByRole('dialog')).toHaveCount(0)
+    await expect(preview.getByRole('textbox', { name: 'Camera name', exact: true })).not.toBeFocused()
+    await expect(preview).toHaveCSS('position', 'static')
+
+    for (const theme of ['light', 'dark']) {
+      await page.getByLabel('Widget theme').selectOption(theme)
+      await expect(preview).toHaveCSS('background-color', theme === 'dark' ? 'rgb(38, 38, 38)' : 'rgb(255, 255, 255)')
+      const bounds = await preview.evaluate(element => ({
+        left: element.getBoundingClientRect().left,
+        right: element.getBoundingClientRect().right,
+        scroll: document.documentElement.scrollWidth,
+        viewport: document.documentElement.clientWidth,
+      }))
+      expect(bounds.left).toBeGreaterThanOrEqual(0)
+      expect(bounds.right).toBeLessThanOrEqual(width)
+      expect(bounds.scroll).toBeLessThanOrEqual(bounds.viewport)
+    }
+
+    await preview.getByRole('textbox', { name: 'Camera name', exact: true }).fill('Loading bay')
+    await preview.getByRole('button', { name: 'Save settings', exact: true }).click()
+    await expect(preview).toHaveCount(0)
+    await expect(section.getByRole('status')).toContainText('Preview settings saved in this demo.')
+    const restore = section.getByRole('button', { name: 'Restore modal preview', exact: true })
+    await expect(restore).toBeFocused()
+    await restore.click()
+    await expect(preview.getByRole('textbox', { name: 'Camera name', exact: true })).toHaveValue('Entrance camera')
+    await expect(preview.getByRole('textbox', { name: 'Camera name', exact: true })).toBeFocused()
+    await preview.getByRole('button', { name: 'Cancel', exact: true }).click()
+    await expect(preview).toHaveCount(0)
+    await restore.click()
+    await preview.getByRole('button', { name: 'Close preview', exact: true }).click()
+    await expect(preview).toHaveCount(0)
+    await expect(restore).toBeFocused()
+  })
+}
+
 test('public progress and dismissible messages remain interactive', async ({ page }) => {
   await page.goto('/components')
   const feedback = page.locator('#feedback')

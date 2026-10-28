@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { EditPencil, Plus, Trash } from 'iconoir-react'
 import {
-  HubButton, HubColorInput, HubMultiSelect, HubSearch, HubSelect, HubTags,
+  HubButton, HubColorInput, HubInput, HubMultiSelect, HubSearch, HubSelect, HubTags, HubTextarea,
 } from './controls'
 import { HubDateInput, HubDatePicker, HubTimeSpinner } from './datetime'
 import { HubRangeSlider, HubWeeklySchedule } from './scheduling'
@@ -11,6 +11,7 @@ import { HubBlockStatus } from './feedback'
 import { HubIdentityBadge, HubLabelTag, HubToastContainer } from './notifications'
 import type { HubToastItem } from './notifications'
 import type { HubRangeSegment, HubScheduleDay } from './widget-utils'
+import { HubModal } from './surfaces'
 
 const sites = [{ value: 'ghent', text: 'Ghent - Bijlokehof' }, { value: 'new-york', text: 'New York - Midtown' },
   { value: 'cape-town', text: 'Cape Town - Waterfront' }, { value: 'locked', text: 'Managed site', disabled: true }]
@@ -46,15 +47,18 @@ export function AdditionalFieldsExample({ view = 'all', disabled = false, error 
 }
 
 export function DateTimeExample({ view = 'all', disabled = false, locale = 'en-GB', appearance = 'field', error = '' }: {
-  view?: 'all' | 'calendar' | 'available' | 'input' | 'time'
+  view?: 'all' | 'calendar' | 'available' | 'recordings' | 'input' | 'time'
   disabled?: boolean; locale?: string; appearance?: 'field' | 'filter' | 'button'; error?: string
 }) {
-  const [date, setDate] = useState('2026-10-28')
+  const [date, setDate] = useState(view === 'recordings' ? '' : '2026-10-28')
   const [time, setTime] = useState(9 * 3600 + 30 * 60)
   return <div className="hub-stack">
     {(view === 'all' || view === 'calendar' || view === 'available') && <HubDatePicker label="Recording date" value={date}
       onChange={setDate} min="2026-10-01" max="2026-12-31" availableDates={['2026-10-26', '2026-10-28', '2026-10-30']}
       disableUnavailable={view === 'available'} clearable locale={locale} appearance={appearance} disabled={disabled} error={error} />}
+    {(view === 'all' || view === 'recordings') && <HubDatePicker label="Date" value={date} onChange={setDate}
+      min="2026-10-01" max="2026-12-31" availableDates={['2026-10-26', '2026-10-28', '2026-10-30']}
+      availableDateText="Recording" clearable locale={locale} appearance="filter" disabled={disabled} error={error} />}
     {(view === 'all' || view === 'input') && <HubDateInput label="Retention date" value={date} onChange={setDate}
       min="2026-10-01" max="2026-12-31" disabled={disabled} error={error} />}
     {(view === 'all' || view === 'time') && <HubTimeSpinner label="Playback time" value={time} onChange={setTime} disabled={disabled} />}
@@ -136,6 +140,30 @@ export function NavigationExample({ disabled = false }: { disabled?: boolean }) 
       <HubAspectRatioToggle value={ratio} onChange={setRatio} disabled={disabled} /></div>
     <HubLanguageSwitcher value={language} onChange={setLanguage} disabled={disabled} />
     <output>Grid: {grid}; aspect ratio: {ratio}; selected language: {language}. {result}</output>
+  </div>
+}
+
+export function ModalPreviewExample() {
+  const [open, setOpen] = useState(true)
+  const [saved, setSaved] = useState(false)
+  const [restored, setRestored] = useState(false)
+  return <div className="hub-stack">
+    <HubModal inline open={open} title="Edit camera preview" onClose={() => setOpen(false)}
+      actions={<>
+        <HubButton variant="neutral" onClick={() => setOpen(false)}>Cancel</HubButton>
+        <HubButton onClick={() => { setSaved(true); setOpen(false) }}>Save settings</HubButton>
+      </>}>
+      <div className="hub-stack">
+        <HubInput label="Camera name" defaultValue="Entrance camera" autoFocus={restored} />
+        <HubTextarea label="Description" defaultValue="Camera at the building entrance." />
+      </div>
+    </HubModal>
+    {!open && <HubButton autoFocus variant="outlined" onClick={() => {
+      setSaved(false)
+      setRestored(true)
+      setOpen(true)
+    }}>Restore modal preview</HubButton>}
+    {saved && <p role="status">Preview settings saved in this demo. No Hub data was changed.</p>}
   </div>
 }
 

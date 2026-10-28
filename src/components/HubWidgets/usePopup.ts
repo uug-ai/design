@@ -18,7 +18,9 @@ export function usePopup(disabled = false, width?: number) {
       const panelWidth = Math.min(width ?? Math.max(rect.width, 240), window.innerWidth - 24)
       const below = window.innerHeight - rect.bottom - 20
       const above = rect.top - 20
-      const flip = below < 240 && above > below
+      const panel = panelRef.current
+      const panelHeight = panel ? panel.scrollHeight + panel.offsetHeight - panel.clientHeight : 240
+      const flip = below < panelHeight && above > below
       setStyle({
         position: 'fixed', width: panelWidth,
         left: Math.max(12, Math.min(rect.left, window.innerWidth - panelWidth - 12)),

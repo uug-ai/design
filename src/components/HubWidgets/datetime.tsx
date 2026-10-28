@@ -1,5 +1,5 @@
 import { useId, useLayoutEffect, useState } from 'react'
-import { Calendar, NavArrowLeft, NavArrowRight, Xmark } from 'iconoir-react'
+import { Calendar, Xmark } from 'iconoir-react'
 import { HubInput } from './controls'
 import { usePopup } from './usePopup'
 import { addDays, addMonths, calendarDays, dateKey, parseDate } from './widget-utils'
@@ -13,10 +13,10 @@ export function HubDateInput({ label, value, onChange, min, max, error, disabled
 }
 
 export function HubDatePicker({ label, value, onChange, min, max, availableDates = [], disableUnavailable = false,
-  clearable = false, disabled = false, error, appearance = 'field', locale = 'en-GB',
+  availableDateText = '', clearable = false, disabled = false, error, appearance = 'field', locale = 'en-GB',
 }: {
   label: string; value: string; onChange: (value: string) => void; min?: string; max?: string
-  availableDates?: string[]; disableUnavailable?: boolean; clearable?: boolean; disabled?: boolean
+  availableDates?: string[]; availableDateText?: string; disableUnavailable?: boolean; clearable?: boolean; disabled?: boolean
   error?: string; appearance?: 'field' | 'filter' | 'button'; locale?: string
 }) {
   for (const date of [value, min, max, ...availableDates]) if (date) parseDate(date)
@@ -48,37 +48,45 @@ export function HubDatePicker({ label, value, onChange, min, max, availableDates
     setActive(calendarDays(next).find(day => day.slice(0, 7) === next.slice(0, 7) && enabled(day)) ?? next)
   }
   const nextMonth = addMonths(`${month.slice(0, 7)}-01`, 1)
-  return <div ref={popup.rootRef} className={`hub-datepicker hub-datepicker--${appearance} ${error ? 'has-error' : ''}`}>
+  return <div ref={popup.rootRef} className={`hub-datepicker hub-datepicker--${appearance} ${value ? 'has-value' : ''} ${popup.open ? 'is-open' : ''} ${error ? 'has-error' : ''}`}>
     {appearance === 'field' && <span className="hub-select-label">{label}</span>}
-    <div className="hub-selection-trigger">
-      <button ref={popup.triggerRef} type="button" className={appearance === 'button' ? 'hub-button hub-button--outlined' : 'hub-select-trigger'}
+    <div className="hub-datepicker-control">
+      {value && clearable && <button type="button" className="hub-datepicker-clear" disabled={disabled}
+        aria-label={`Clear ${label}`} onClick={() => { onChange(''); close() }}>
+        <Xmark width={18} height={18} aria-hidden="true" /></button>}
+      <button ref={popup.triggerRef} type="button" className={`hub-datepicker-trigger ${appearance === 'button' ? 'hub-button hub-button--outlined' : ''}`}
         disabled={disabled} aria-label={`${label}: ${value || 'Select date'}`} aria-haspopup="dialog"
         aria-expanded={popup.open} aria-controls={popup.open ? id : undefined} aria-invalid={!!error}
-        aria-describedby={error ? `${id}-error` : undefined} onClick={open}>
-        <Calendar width={18} height={18} aria-hidden="true" />
-        <span>{value ? new Intl.DateTimeFormat(locale, { dateStyle: 'medium' }).format(parseDate(value)) : 'Select date'}</span>
+        aria-describedby={error ? `${id}-error` : undefined} onClick={open} onKeyDown={event => {
+          if (event.key === 'ArrowDown') { event.preventDefault(); if (!popup.open) open() }
+        }}>
+        {(!value || !clearable) && <Calendar className="hub-datepicker-icon" width={18} height={18} aria-hidden="true" />}
+        <span className={`hub-datepicker-title ${value ? '' : 'is-placeholder'}`}>
+          {value ? new Intl.DateTimeFormat(locale, { day: '2-digit', month: 'short', year: 'numeric' }).format(parseDate(value)) : label}
+        </span>
+        {appearance !== 'button' && <span className="hub-datepicker-arrow" aria-hidden="true" />}
       </button>
-      {value && clearable && <button type="button" className="hub-selection-clear" disabled={disabled}
-        aria-label={`Clear ${label}`} onClick={() => { onChange(''); popup.triggerRef.current?.focus() }}>
-        <Xmark width={16} height={16} aria-hidden="true" /></button>}
     </div>
     {error && <span id={`${id}-error`} className="hub-field-error">{error}</span>}
     {popup.open && <div ref={popup.panelRef} id={id} role="dialog" aria-label={`Choose ${label}`}
       className="hub-popup hub-calendar" style={popup.style}>
       <div className="hub-calendar-header">
         <button type="button" aria-label="Previous month" disabled={!!min && addDays(`${month.slice(0, 7)}-01`, -1) < min}
-          onClick={() => navigate(-1)}><NavArrowLeft width={18} height={18} aria-hidden="true" /></button>
+          onClick={() => navigate(-1)}><span aria-hidden="true" /></button>
         <strong aria-live="polite">{monthLabel}</strong>
         <button type="button" aria-label="Next month" disabled={!!max && nextMonth > max}
-          onClick={() => navigate(1)}><NavArrowRight width={18} height={18} aria-hidden="true" /></button>
+          onClick={() => navigate(1)}><span aria-hidden="true" /></button>
       </div>
-      <div className="hub-calendar-weekdays" aria-hidden="true">
-        {days.slice(0, 7).map(day => <span key={day}>{weekday.format(parseDate(day))}</span>)}
-      </div>
-      <div role="grid" aria-label={monthLabel} className="hub-calendar-grid">
+      <div role="grid" aria-label={monthLabel}>
+        <div className="hub-calendar-weekdays" role="row">
+          {days.slice(0, 7).map(day => <span key={day} role="columnheader">{weekday.format(parseDate(day))}</span>)}
+        </div>
+        <div className="hub-calendar-grid">
         {Array.from({ length: 6 }, (_, row) => <div role="row" key={row}>
           {days.slice(row * 7, row * 7 + 7).map(day => <button key={day} type="button" role="gridcell" data-date={day}
-            tabIndex={active === day ? 0 : -1} disabled={!enabled(day)} aria-label={formatter.format(parseDate(day))}
+            tabIndex={active === day ? 0 : -1} disabled={!enabled(day)}
+            aria-label={`${formatter.format(parseDate(day))}${availableDates.includes(day) && availableDateText ? `, ${availableDateText}` : ''}`}
+            title={availableDates.includes(day) && availableDateText ? availableDateText : undefined}
             aria-selected={value === day} aria-current={day === dateKey(new Date()) ? 'date' : undefined}
             className={`${day.slice(0, 7) !== month.slice(0, 7) ? 'is-outside' : ''} ${availableDates.includes(day) ? 'has-recordings' : ''}`}
             onFocus={() => setActive(day)} onClick={() => { onChange(day); close() }}
@@ -103,6 +111,7 @@ export function HubDatePicker({ label, value, onChange, min, max, availableDates
               if (enabled(target)) { setActive(target); setMonth(target) }
             }}>{new Intl.NumberFormat(locale).format(parseDate(day).getDate())}</button>)}
         </div>)}
+        </div>
       </div>
       {disableUnavailable && !days.some(enabled) && <p role="status">No available dates in this month.</p>}
     </div>}

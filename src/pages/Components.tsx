@@ -3,6 +3,7 @@ import '../components/Button/component.css'
 import '../components/Card/component.css'
 import '../components/Input/component.css'
 import InteractiveMap from '../components/InteractiveMap'
+import IsoIllustration from '../components/IsoIllustration'
 import Loader from '../components/Loader'
 import { storybookEntryUrl, storybookUrl } from '../config/storybook'
 import './Components.css'
@@ -13,6 +14,7 @@ const COMPONENT_LINKS = [
   { id: 'cards', label: 'Cards', storybookPath: '/docs/components-cards--docs' },
   { id: 'interactive-map', label: 'Interactive Map', storybookPath: '/docs/components-interactive-map--docs' },
   { id: 'loader', label: 'Loader', storybookPath: '/docs/components-loader--docs' },
+  { id: 'iso-illustrations', label: 'Iso Illustrations', storybookPath: '/docs/components-iso-illustration--docs' },
 ] as const
 
 type ComponentSectionId = (typeof COMPONENT_LINKS)[number]['id']
@@ -498,6 +500,50 @@ function Components() {
               </div>
             </div>
           </div>
+        </div>
+      </section>
+
+      <section
+        id="iso-illustrations"
+        className="component-section"
+        ref={(element) => {
+          sectionRefs.current['iso-illustrations'] = element
+        }}
+      >
+        <h2>Iso Illustrations</h2>
+        <p>
+          Isometric hairline figures for empty states and hero backgrounds. Faces use the
+          neutral surface tokens and only live parts use the accent: lit windows, a pulse
+          travelling along a wire, a blinking beacon. In the dark theme those parts glow;
+          in the light theme they stay flat accent. Illustrations are decorative, so they
+          are hidden from screen readers unless a label is passed.
+        </p>
+
+        <div className="component-demo">
+          <h3>Preview</h3>
+          <div className="demo-area iso-demo-area">
+            <a href={COMPONENT_STORYBOOK_LINKS['iso-illustrations']} className="component-storybook-button" target="_blank" rel="noreferrer">
+              View in Storybook
+            </a>
+            <div className="iso-showcase">
+              <span className="loader-showcase-label">Agent · empty states</span>
+              <IsoIllustration figure="agent" className="iso-showcase-figure" />
+            </div>
+            <div className="iso-showcase">
+              <span className="loader-showcase-label">Control tower · hero background</span>
+              <IsoIllustration figure="control-tower" className="iso-showcase-figure iso-showcase-figure--tall" />
+            </div>
+          </div>
+        </div>
+
+        <div className="component-demo">
+          <h3>Guidelines</h3>
+          <ul className="iso-guidelines">
+            <li>One accent per figure, only on what is live. Set <code>--iso-accent</code> to recolour it (the Hub uses <code>--hub</code>, product pages use <code>--product-accent</code>).</li>
+            <li>Glow follows the theme with <code>glow=&quot;auto&quot;</code>; use <code>on</code> or <code>off</code> only for fixed dark or light surfaces.</li>
+            <li>Animations are slow loops and stop under reduced motion, holding the lit state.</li>
+            <li>The figures are plain SVG strings (<code>renderIsoSvg</code>), so the Angular Hub frontend and the website reuse the same drawing and stylesheet.</li>
+          </ul>
         </div>
       </section>
     </div>

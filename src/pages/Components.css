@@ -403,3 +403,43 @@
   background: linear-gradient(180deg, var(--surface) 0%, var(--surface-strong) 100%);
   border-color: var(--border);
 }
+
+.iso-demo-area {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 20px;
+}
+
+.iso-showcase {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 18px;
+  padding: 22px;
+  background: var(--background);
+  border: 1px solid var(--border);
+  border-radius: 18px;
+}
+
+.iso-showcase .loader-showcase-label {
+  align-self: flex-start;
+}
+
+.iso-showcase-figure {
+  width: 240px;
+  max-width: 100%;
+}
+
+.iso-showcase-figure--tall {
+  width: 150px;
+  mask-image: linear-gradient(to bottom, #000 72%, transparent);
+}
+
+.iso-guidelines {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding-left: 20px;
+  color: var(--text-secondary);
+  line-height: 1.6;
+}

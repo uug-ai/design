@@ -20,8 +20,8 @@
 }
 
 /* Dark pages: the top face is the lightest, as if lit from above.
-   .dark-theme is the Hub frontend's theme class. */
-:is([data-theme='dark'], .dark-theme) .iso-illustration {
+   .dark-theme is the Hub frontend's theme class, .dark the Tailwind / Hextra one (learn). */
+:is([data-theme='dark'], .dark-theme, .dark) .iso-illustration {
   --iso-top: var(--surface-strong);
   --iso-front: var(--surface);
   --iso-side: var(--background);
@@ -146,19 +146,19 @@
 
 /* Glow: lit parts get the instance's glow filter and halos appear. Without it
    lit parts stay flat accent. */
-:is([data-theme='dark'], .dark-theme) .iso-illustration--glow-auto,
+:is([data-theme='dark'], .dark-theme, .dark) .iso-illustration--glow-auto,
 .iso-illustration--glow-on {
   --iso-pane: color-mix(in srgb, var(--iso-color) 18%, var(--background));
   --iso-pane-on: var(--iso-color);
   --iso-sweep: 0.32;
 }
 
-:is([data-theme='dark'], .dark-theme) .iso-illustration--glow-auto .iso-lit,
+:is([data-theme='dark'], .dark-theme, .dark) .iso-illustration--glow-auto .iso-lit,
 .iso-illustration--glow-on .iso-lit {
   filter: var(--iso-glow);
 }
 
-:is([data-theme='dark'], .dark-theme) .iso-illustration--glow-auto :is(.iso-halo, .iso-beacon-halo),
+:is([data-theme='dark'], .dark-theme, .dark) .iso-illustration--glow-auto :is(.iso-halo, .iso-beacon-halo),
 .iso-illustration--glow-on :is(.iso-halo, .iso-beacon-halo) {
   display: block;
   filter: var(--iso-bloom);

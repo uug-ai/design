@@ -10,6 +10,9 @@ interface FigureDrawing {
   // Glow and bloom blur radius in scene units, so large scenes glow as softly as small ones.
   glow: number
   bloom: number
+  // Length of the animation round in seconds. Parts marked data-iso-at (seconds
+  // into the round where their moment starts) let a page seek the figure there.
+  loop?: number
 }
 
 // A camera on a pole with an Agent box at its foot, wired to a small Hub control
@@ -182,6 +185,9 @@ function hub(): FigureDrawing {
   const detections = ['PERSON 94%', 'VEHICLE 91%', 'PERSON 88%']
   const floors = ['WORKFLOWS', 'ANALYSE', 'NOTIFY']
   const delay = (seconds: number) => `style="animation-delay: ${seconds}s"`
+  // Each camera and its Agent mark the moment its event starts (the scene walks
+  // in 0.6s before the camera fires), so a page can replay that event on click.
+  const at = (i: number) => `data-iso-at="${round1(i * 3 - 0.6)}"`
   const pulse = (d: string, cls: string, extra = '') =>
     `<path class="iso-wire" d="${d}"/><path class="iso-pulse iso-lit ${cls}" d="${d}" pathLength="1000" ${extra}/>`
 
@@ -272,24 +278,28 @@ function hub(): FigureDrawing {
     // Site: three cameras on poles, each with what triggers it in front of
     // the lens, and each wired to its own Agent; the Agents run side by side on
     // one gateway machine with a single uplink to Hub.
-    cams.map((cy, i) => box(20, cy, 8, 4, 4, 42)
+    cams.map((cy, i) => `<g class="iso-trigger" ${at(i)}>`
+      + box(20, cy, 8, 4, 4, 42)
       + box(17, cy - 16, 50, 10, 22, 10)
       + onPlane(FRONT(17, cy + 6, 60), '<circle class="iso-face iso-top" cx="5" cy="5" r="3.4"/>'
         + '<circle class="iso-detail" cx="5" cy="5" r="1.8"/>')
       + onPlane(SIDE(27, cy + 6, 60), `<circle class="iso-led iso-lit iso-hub-rec" cx="4" cy="3" r="1.2" ${delay(i * 3)}/>`
         + `<text class="iso-label" x="9" y="7.5" font-size="5">${i + 1}</text>`)
+      + '</g>'
       + `<g class="iso-hub-event" ${delay(i * 3 - 9)}>${scenes[i] === 'car' ? car(cy) : person(cy)}</g>`,
     ).join(''),
     box(70, 116, 8, 36, 150, 12),
     onPlane(SIDE(106, 266, 20), '<rect class="iso-led iso-lit iso-hub-uplink-led" x="4" y="4.5" width="4" height="2.4"/>'
       + '<text class="iso-label" x="11" y="7.6" font-size="4.6">GATEWAY</text>'
       + range(52, 140, 4).map((u) => `<line class="iso-detail" x1="${u}" y1="3" x2="${u}" y2="9"/>`).join('')),
-    cams.map((cy, i) => box(74, cy - 9, 20, 28, 20, 12)
+    cams.map((cy, i) => `<g class="iso-trigger" ${at(i)}>`
+      + box(74, cy - 9, 20, 28, 20, 12)
       + onPlane(FRONT(74, cy + 11, 32), `<rect class="iso-led iso-lit iso-hub-agent-led" x="3" y="4.5" width="4" height="2.4" ${delay(i * 3)}/>`
         + `<text class="iso-label" x="9.5" y="7.6" font-size="4.2">AGENT ${i + 1}</text>`)
       + onPlane(SIDE(102, cy + 11, 32), range(4, 16, 3).map((u) =>
         `<line class="iso-detail" x1="${u}" y1="4" x2="${u}" y2="9"/>`,
-      ).join('')),
+      ).join(''))
+      + '</g>',
     ).join(''),
   ].join('')
 
@@ -298,6 +308,7 @@ function hub(): FigureDrawing {
     markup,
     glow: 2,
     bloom: 14,
+    loop: 9,
   }
 }
 
@@ -318,13 +329,13 @@ export function renderIsoSvg(figure: IsoFigure, id: string) {
     return ''
   }
 
-  const { viewBox, markup, glow, bloom } = build()
+  const { viewBox, markup, glow, bloom, loop } = build()
   const [x, y, width, height] = viewBox.split(' ').map(Number)
   // Filters work in scene units over a generous region: a perfectly straight
   // wire has a zero-height bounding box and would vanish under the default one.
   const region = `filterUnits="userSpaceOnUse" x="${x - width}" y="${y - height}" width="${width * 3}" height="${height * 3}"`
 
-  return `<svg class="iso-figure iso-figure--${figure}" viewBox="${viewBox}" focusable="false"`
+  return `<svg class="iso-figure iso-figure--${figure}" viewBox="${viewBox}" focusable="false"${loop ? ` data-iso-loop="${loop}"` : ''}`
     + ` style="--iso-glow: url(#${id}); --iso-bloom: url(#${id}-bloom)">`
     + `<defs><filter id="${id}" ${region}>`
     + `<feGaussianBlur stdDeviation="${glow}" result="blur"/>`

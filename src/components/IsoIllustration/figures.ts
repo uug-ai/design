@@ -184,6 +184,31 @@ function hull(points: [number, number][]) {
   return [...lower.slice(0, -1), ...upper.slice(0, -1)]
 }
 
+// Round solids for small parts such as cameras. A cylinder stands on z with
+// its axis up; a sphere (or its upper half) is the hull of points on it.
+function cylinder(cx: number, cy: number, z: number, r: number, h: number) {
+  const ring = (zz: number) => range(0, 35, 1).map((k) => {
+    const a = (k * Math.PI) / 18
+    return P(cx + r * Math.cos(a), cy + r * Math.sin(a), zz)
+  })
+  const top = ring(z + h)
+  return `<polygon class="iso-face iso-side" points="${hull([...ring(z), ...top]).map(([x, y]) => `${x},${y}`).join(' ')}"/>`
+    + `<polygon class="iso-face iso-top" points="${top.map(([x, y]) => `${x},${y}`).join(' ')}"/>`
+}
+
+function sphere(cx: number, cy: number, cz: number, r: number, cls: string, upperHalf = false) {
+  const points = range(upperHalf ? 0 : -6, 6, 1).flatMap((lat) => range(0, 23, 1).map((lon) => {
+    const [a, b] = [(lat * Math.PI) / 12, (lon * Math.PI) / 12]
+    return P(cx + r * Math.cos(a) * Math.cos(b), cy + r * Math.cos(a) * Math.sin(b), cz + r * Math.sin(a))
+  }))
+  return `<polygon class="${cls}" points="${hull(points).map(([x, y]) => `${x},${y}`).join(' ')}"/>`
+}
+
+// A lens seen from the front: a rim and a pupil around a projected point.
+function lens([x, y]: [number, number], r: number) {
+  return `<circle class="iso-face iso-top" cx="${x}" cy="${y}" r="${r}"/><circle class="iso-detail" cx="${x}" cy="${y}" r="${round1(r / 2)}"/>`
+}
+
 // The Hub building: a podium, three pipeline floors (workflows, analyse,
 // notify) whose window panes take `pane(floor)` as their attributes, and a
 // roof core with an antenna whose beacon takes `beacon`. Pass labels = false
@@ -455,6 +480,26 @@ function vault(): FigureDrawing {
       + range(5, 25, 5).map((u) => `<line class="iso-detail" x1="${u}" y1="10" x2="${u}" y2="36"/>`).join(''))
   }
 
+  // Each Agent has a different kind of camera on top, all facing +y.
+  const cameras = ['bullet', 'dome', 'ptz', 'turret'] as const
+  const camera = (kind: typeof cameras[number], cy: number) => {
+    const [x, y] = [41, cy + 12]
+    switch (kind) {
+      case 'bullet':
+        return box(36, cy + 9, 24, 3, 3, 10)
+          + box(31, cy + 2, 34, 12, 16, 9)
+          + onPlane(FRONT(31, cy + 18, 43), '<circle class="iso-face iso-top" cx="4.5" cy="4.5" r="3"/><circle class="iso-detail" cx="4.5" cy="4.5" r="1.5"/>')
+      case 'dome':
+        return cylinder(x, y, 24, 8, 2) + sphere(x, y, 26, 7, 'iso-face iso-front', true) + lens(P(x, y + 4.6, 30.5), 1.6)
+      case 'ptz':
+        return cylinder(x, y, 24, 3.5, 7) + cylinder(x, y, 31, 7, 2)
+          + box(33, y - 2, 33, 2, 4, 11) + sphere(x, y, 39, 5.5, 'iso-face iso-top') + box(47, y - 2, 33, 2, 4, 11)
+          + lens(P(x, y + 5.2, 39), 2)
+      case 'turret':
+        return cylinder(x, y, 24, 7.5, 3) + sphere(x, y, 32, 6, 'iso-face iso-top') + lens(P(x, y + 5.6, 33), 2.1)
+    }
+  }
+
   const [cableX, cableTop] = P(pickup, 112, 80)
   const [, cableBottom] = P(pickup, 112, 28)
 
@@ -503,14 +548,13 @@ function vault(): FigureDrawing {
       false,
     ), [160, 80, 0], [300, 215, 0], 0.5),
 
-    // Site: four Agents, each with its camera, uploading their recordings.
+    // Site: four Agents, each with its own kind of camera, uploading their
+    // recordings.
     agents.map((cy, i) => box(24, cy, 8, 34, 24, 16)
       + onPlane(FRONT(24, cy + 24, 24), `<rect class="iso-led iso-lit iso-vault-agent-led" x="3" y="4.5" width="4" height="2.4" ${delay(i * 3)}/>`
         + `<text class="iso-label" x="9.5" y="7.6" font-size="4.6">AGENT ${i + 1}</text>`)
       + onPlane(SIDE(58, cy + 24, 24), range(4, 20, 3).map((u) => `<line class="iso-detail" x1="${u}" y1="4" x2="${u}" y2="11"/>`).join(''))
-      + box(36, cy + 9, 24, 3, 3, 10)
-      + box(31, cy + 2, 34, 12, 16, 9)
-      + onPlane(FRONT(31, cy + 18, 43), '<circle class="iso-face iso-top" cx="4.5" cy="4.5" r="3"/><circle class="iso-detail" cx="4.5" cy="4.5" r="1.5"/>')).join(''),
+      + camera(cameras[i], cy)).join(''),
   ].join('')
 
   return {

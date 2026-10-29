@@ -170,23 +170,33 @@ const round1 = (value: number) => Math.round(value * 10) / 10
 // The Hub end to end: three cameras on site, each wired to its own Agent (the
 // three Agents share one gateway machine), the Hub with its three pipeline
 // floors (ingest, analyse, notify), and the operators' videowall and phone.
-// Every 3s one camera fires in turn: a pulse runs to that camera's Agent, then
+// Every 3s something happens in front of one camera in turn (a person walks or
+// a car drives into its field of view), the camera fires, a pulse runs to that
+// camera's Agent, then
 // over the gateway's uplink into the Hub, the floors light bottom to top, then the detection appears on
 // that camera's videowall tile and the phone shows an alert. The stylesheet
 // times it all; per-camera parts carry their own animation delay.
 function hub(): FigureDrawing {
-  const cams = [160, 215, 270]
+  const cams = [130, 190, 250]
+  const scenes = ['person', 'car', 'person']
   const detections = ['PERSON 94%', 'VEHICLE 91%', 'PERSON 88%']
   const floors = ['INGEST', 'ANALYSE', 'NOTIFY']
   const delay = (seconds: number) => `style="animation-delay: ${seconds}s"`
   const pulse = (d: string, cls: string, extra = '') =>
     `<path class="iso-wire" d="${d}"/><path class="iso-pulse iso-lit ${cls}" d="${d}" pathLength="1000" ${extra}/>`
 
+  // What a camera sees: a person walking or a car driving past its lens.
+  const person = (cy: number) => box(28, cy + 28, 8, 6, 5, 15) + box(28.5, cy + 28.5, 23, 5, 4, 5)
+  const car = (cy: number) => box(8, cy + 22, 8, 40, 17, 9)
+    + box(17, cy + 24, 17, 20, 14, 7)
+    + onPlane(FRONT(17, cy + 38, 24), '<line class="iso-detail" x1="10" y1="1" x2="10" y2="7"/>')
+    + onPlane(FRONT(8, cy + 39, 17), '<line class="iso-detail" x1="2" y1="4" x2="38" y2="4"/>')
+
   const grid = range(30, 390, 30).map((x) => `<line class="iso-grid" x1="${x}" y1="10" x2="${x}" y2="290"/>`).join('')
     + range(30, 270, 30).map((y) => `<line class="iso-grid" x1="10" y1="${y}" x2="410" y2="${y}"/>`).join('')
 
-  const wires = cams.map((cy, i) => pulse(`M 24 ${cy + 2} H 56`, 'iso-hub-cam-pulse', delay(i * 3))).join('')
-    + pulse('M 92 200 H 205 V 190', 'iso-hub-uplink-pulse')
+  const wires = cams.map((cy, i) => pulse(`M 24 ${cy + 2} H 70`, 'iso-hub-cam-pulse', delay(i * 3))).join('')
+    + pulse('M 106 200 H 205 V 190', 'iso-hub-uplink-pulse')
     + pulse('M 270 100 H 355 V 26', 'iso-hub-out-pulse')
     + pulse('M 270 160 H 351 V 144', 'iso-hub-out-pulse')
 
@@ -223,9 +233,12 @@ function hub(): FigureDrawing {
     box(0, 0, 0, 420, 300, 8),
     onPlane(TOP(0, 0, 8), '<rect class="iso-detail" x="8" y="8" width="404" height="284" rx="10"/>'
       + grid
-      + '<text class="iso-label iso-label--zone" x="20" y="296" font-size="7">SITE · AGENTS</text>'
+      + '<text class="iso-label iso-label--zone" x="70" y="290" font-size="7">SITE · AGENTS</text>'
       + '<text class="iso-label iso-label--zone" x="160" y="214" font-size="7">HUB · PIPELINE</text>'
       + '<text class="iso-label iso-label--zone" x="300" y="182" font-size="7">OPERATORS</text>'
+      + cams.map((cy, i) =>
+        `<path class="iso-hub-fov" d="M 22 ${cy + 8} L 4 ${cy + 44} H 56 Z" ${delay(i * 3)}/>`,
+      ).join('')
       + wires),
 
     // Videowall at the back right, facing the Hub.
@@ -256,30 +269,32 @@ function hub(): FigureDrawing {
       + '<text class="iso-screen-text" x="10" y="19" font-size="3.2" text-anchor="middle">event</text>'
       + '</g>'),
 
-    // Site: three cameras on poles, each wired to its own Agent; the Agents
-    // run side by side on one gateway machine with a single uplink to Hub.
+    // Site: three cameras on poles, each with what triggers it in front of
+    // the lens, and each wired to its own Agent; the Agents run side by side on
+    // one gateway machine with a single uplink to Hub.
     cams.map((cy, i) => box(20, cy, 8, 4, 4, 42)
       + box(17, cy - 16, 50, 10, 22, 10)
       + onPlane(FRONT(17, cy + 6, 60), '<circle class="iso-face iso-top" cx="5" cy="5" r="3.4"/>'
         + '<circle class="iso-detail" cx="5" cy="5" r="1.8"/>')
       + onPlane(SIDE(27, cy + 6, 60), `<circle class="iso-led iso-lit iso-hub-rec" cx="4" cy="3" r="1.2" ${delay(i * 3)}/>`
-        + `<text class="iso-label" x="9" y="7.5" font-size="5">${i + 1}</text>`),
+        + `<text class="iso-label" x="9" y="7.5" font-size="5">${i + 1}</text>`)
+      + `<g class="iso-hub-event" ${delay(i * 3 - 9)}>${scenes[i] === 'car' ? car(cy) : person(cy)}</g>`,
     ).join(''),
-    box(56, 146, 8, 36, 138, 12),
-    onPlane(SIDE(92, 284, 20), '<rect class="iso-led iso-lit iso-hub-uplink-led" x="4" y="4.5" width="4" height="2.4"/>'
+    box(70, 116, 8, 36, 150, 12),
+    onPlane(SIDE(106, 266, 20), '<rect class="iso-led iso-lit iso-hub-uplink-led" x="4" y="4.5" width="4" height="2.4"/>'
       + '<text class="iso-label" x="11" y="7.6" font-size="4.6">GATEWAY</text>'
-      + range(52, 128, 4).map((u) => `<line class="iso-detail" x1="${u}" y1="3" x2="${u}" y2="9"/>`).join('')),
-    cams.map((cy, i) => box(60, cy - 9, 20, 28, 20, 12)
-      + onPlane(FRONT(60, cy + 11, 32), `<rect class="iso-led iso-lit iso-hub-agent-led" x="3" y="4.5" width="4" height="2.4" ${delay(i * 3)}/>`
+      + range(52, 140, 4).map((u) => `<line class="iso-detail" x1="${u}" y1="3" x2="${u}" y2="9"/>`).join('')),
+    cams.map((cy, i) => box(74, cy - 9, 20, 28, 20, 12)
+      + onPlane(FRONT(74, cy + 11, 32), `<rect class="iso-led iso-lit iso-hub-agent-led" x="3" y="4.5" width="4" height="2.4" ${delay(i * 3)}/>`
         + `<text class="iso-label" x="9.5" y="7.6" font-size="4.2">AGENT ${i + 1}</text>`)
-      + onPlane(SIDE(88, cy + 11, 32), range(4, 16, 3).map((u) =>
+      + onPlane(SIDE(102, cy + 11, 32), range(4, 16, 3).map((u) =>
         `<line class="iso-detail" x1="${u}" y1="4" x2="${u}" y2="9"/>`,
       ).join('')),
     ).join(''),
   ].join('')
 
   return {
-    viewBox: frame([[0, 0, 0], [420, 0, 0], [0, 300, 0], [420, 300, 0], [223, 123, 140], [310, 20, 78], [400, 20, 78], [20, 160, 62]], 10),
+    viewBox: frame([[0, 0, 0], [420, 0, 0], [0, 300, 0], [420, 300, 0], [223, 123, 140], [310, 20, 78], [400, 20, 78], [20, 130, 62]], 10),
     markup,
     glow: 2,
     bloom: 14,

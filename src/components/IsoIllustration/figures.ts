@@ -167,10 +167,11 @@ function controlTower(): FigureDrawing {
 
 const round1 = (value: number) => Math.round(value * 10) / 10
 
-// The Hub end to end: three cameras on site wired to an Agent, the Hub with its
-// three pipeline floors (ingest, analyse, notify), and the operators' videowall
-// and phone. Every 3s one camera fires in turn: a pulse runs to the Agent and
-// into the Hub, the floors light bottom to top, then the detection appears on
+// The Hub end to end: three cameras on site, each wired to its own Agent (the
+// three Agents share one gateway machine), the Hub with its three pipeline
+// floors (ingest, analyse, notify), and the operators' videowall and phone.
+// Every 3s one camera fires in turn: a pulse runs to that camera's Agent, then
+// over the gateway's uplink into the Hub, the floors light bottom to top, then the detection appears on
 // that camera's videowall tile and the phone shows an alert. The stylesheet
 // times it all; per-camera parts carry their own animation delay.
 function hub(): FigureDrawing {
@@ -184,8 +185,8 @@ function hub(): FigureDrawing {
   const grid = range(30, 390, 30).map((x) => `<line class="iso-grid" x1="${x}" y1="10" x2="${x}" y2="290"/>`).join('')
     + range(30, 270, 30).map((y) => `<line class="iso-grid" x1="10" y1="${y}" x2="410" y2="${y}"/>`).join('')
 
-  const wires = cams.map((cy, i) => pulse(`M 24 ${cy + 2} H 44 V 202 H 60`, 'iso-hub-cam-pulse', delay(i * 3))).join('')
-    + pulse('M 90 202 H 205 V 190', 'iso-hub-agent-pulse')
+  const wires = cams.map((cy, i) => pulse(`M 24 ${cy + 2} H 56`, 'iso-hub-cam-pulse', delay(i * 3))).join('')
+    + pulse('M 92 200 H 205 V 190', 'iso-hub-uplink-pulse')
     + pulse('M 270 100 H 355 V 26', 'iso-hub-out-pulse')
     + pulse('M 270 160 H 351 V 144', 'iso-hub-out-pulse')
 
@@ -222,7 +223,7 @@ function hub(): FigureDrawing {
     box(0, 0, 0, 420, 300, 8),
     onPlane(TOP(0, 0, 8), '<rect class="iso-detail" x="8" y="8" width="404" height="284" rx="10"/>'
       + grid
-      + '<text class="iso-label iso-label--zone" x="52" y="290" font-size="7">SITE · AGENT</text>'
+      + '<text class="iso-label iso-label--zone" x="20" y="296" font-size="7">SITE · AGENTS</text>'
       + '<text class="iso-label iso-label--zone" x="160" y="214" font-size="7">HUB · PIPELINE</text>'
       + '<text class="iso-label iso-label--zone" x="300" y="182" font-size="7">OPERATORS</text>'
       + wires),
@@ -255,7 +256,8 @@ function hub(): FigureDrawing {
       + '<text class="iso-screen-text" x="10" y="19" font-size="3.2" text-anchor="middle">event</text>'
       + '</g>'),
 
-    // Site: three cameras on poles and the Agent they are wired to.
+    // Site: three cameras on poles, each wired to its own Agent; the Agents
+    // run side by side on one gateway machine with a single uplink to Hub.
     cams.map((cy, i) => box(20, cy, 8, 4, 4, 42)
       + box(17, cy - 16, 50, 10, 22, 10)
       + onPlane(FRONT(17, cy + 6, 60), '<circle class="iso-face iso-top" cx="5" cy="5" r="3.4"/>'
@@ -263,12 +265,17 @@ function hub(): FigureDrawing {
       + onPlane(SIDE(27, cy + 6, 60), `<circle class="iso-led iso-lit iso-hub-rec" cx="4" cy="3" r="1.2" ${delay(i * 3)}/>`
         + `<text class="iso-label" x="9" y="7.5" font-size="5">${i + 1}</text>`),
     ).join(''),
-    box(60, 190, 8, 30, 24, 16),
-    onPlane(FRONT(60, 214, 24), '<rect class="iso-led iso-lit iso-hub-agent-led" x="3" y="4" width="4" height="2.4"/>'
-      + '<text class="iso-label" x="10" y="7" font-size="4.6">AGENT</text>'),
-    onPlane(SIDE(90, 214, 24), range(3, 18, 3).map((u) =>
-      `<line class="iso-detail" x1="${u}" y1="4" x2="${u}" y2="12"/>`,
-    ).join('')),
+    box(56, 146, 8, 36, 138, 12),
+    onPlane(SIDE(92, 284, 20), '<rect class="iso-led iso-lit iso-hub-uplink-led" x="4" y="4.5" width="4" height="2.4"/>'
+      + '<text class="iso-label" x="11" y="7.6" font-size="4.6">GATEWAY</text>'
+      + range(52, 128, 4).map((u) => `<line class="iso-detail" x1="${u}" y1="3" x2="${u}" y2="9"/>`).join('')),
+    cams.map((cy, i) => box(60, cy - 9, 20, 28, 20, 12)
+      + onPlane(FRONT(60, cy + 11, 32), `<rect class="iso-led iso-lit iso-hub-agent-led" x="3" y="4.5" width="4" height="2.4" ${delay(i * 3)}/>`
+        + `<text class="iso-label" x="9.5" y="7.6" font-size="4.2">AGENT ${i + 1}</text>`)
+      + onPlane(SIDE(88, cy + 11, 32), range(4, 16, 3).map((u) =>
+        `<line class="iso-detail" x1="${u}" y1="4" x2="${u}" y2="9"/>`,
+      ).join('')),
+    ).join(''),
   ].join('')
 
   return {

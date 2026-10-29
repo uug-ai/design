@@ -393,20 +393,23 @@
   }
 }
 
-/* Hub: a 3s beat, one camera per beat over a 9s round. Camera parts and
-   videowall tiles run on the 9s round with a 3s delay per camera; the Agent,
-   the pipeline floors (0.35s apart), the outputs and the phone run on the beat. */
+/* Hub: a 3s beat, one camera per beat over a 9s round. Camera parts, their
+   Agents and the videowall tiles run on the 9s round with a 3s delay per
+   camera; the gateway uplink, the pipeline floors (0.35s apart), the outputs
+   and the phone run on the beat. */
 .iso-figure--hub .iso-pulse {
   stroke-dasharray: 70 2000;
   stroke-dashoffset: 70;
 }
 
 .iso-figure--hub .iso-hub-cam-pulse {
+  stroke-dasharray: 220 2000;
+  stroke-dashoffset: 220;
   animation: iso-hub-cam-pulse 9s linear infinite;
 }
 
-.iso-figure--hub .iso-hub-agent-pulse {
-  animation: iso-hub-agent-pulse 3s linear infinite;
+.iso-figure--hub .iso-hub-uplink-pulse {
+  animation: iso-hub-uplink-pulse 3s linear infinite;
 }
 
 .iso-figure--hub .iso-hub-out-pulse {
@@ -420,7 +423,12 @@
 
 .iso-figure--hub .iso-hub-agent-led {
   opacity: 0.3;
-  animation: iso-hub-agent-led 3s ease-out infinite;
+  animation: iso-hub-agent-led 9s ease-out infinite;
+}
+
+.iso-figure--hub .iso-hub-uplink-led {
+  opacity: 0.3;
+  animation: iso-hub-uplink-led 3s ease-out infinite;
 }
 
 .iso-figure--hub .iso-hub-floor {
@@ -459,7 +467,7 @@
 
 @keyframes iso-hub-cam-pulse {
   0% {
-    stroke-dashoffset: 70;
+    stroke-dashoffset: 220;
   }
 
   6%,
@@ -468,7 +476,7 @@
   }
 }
 
-@keyframes iso-hub-agent-pulse {
+@keyframes iso-hub-uplink-pulse {
   0%,
   17% {
     stroke-dashoffset: 70;
@@ -505,6 +513,23 @@
 }
 
 @keyframes iso-hub-agent-led {
+  0%,
+  4% {
+    opacity: 0.3;
+  }
+
+  6%,
+  10% {
+    opacity: 1;
+  }
+
+  13%,
+  100% {
+    opacity: 0.3;
+  }
+}
+
+@keyframes iso-hub-uplink-led {
   0%,
   15% {
     opacity: 0.3;
@@ -628,7 +653,7 @@
     animation: none;
   }
 
-  .iso-figure--hub :is(.iso-hub-reveal, .iso-hub-rec, .iso-hub-agent-led, .iso-beacon) {
+  .iso-figure--hub :is(.iso-hub-reveal, .iso-hub-rec, .iso-hub-agent-led, .iso-hub-uplink-led, .iso-beacon) {
     opacity: 1;
   }
 

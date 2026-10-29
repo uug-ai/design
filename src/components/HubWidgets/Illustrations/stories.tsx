@@ -26,7 +26,7 @@ type Story = StoryObj<typeof meta>
 export const Agent: Story = {}
 export const ControlTower: Story = { args: { figure: 'control-tower' }, parameters: { isoWidth: '160px' } }
 export const Hub: Story = {
-  args: { figure: 'hub', label: 'Hub event flow: a camera event travels through the Agent and the Hub pipeline to a videowall tile and a phone alert.' },
+  args: { figure: 'hub', label: 'Hub event flow: a camera event travels through its own Agent on the site gateway and the Hub pipeline to a videowall tile and a phone alert.' },
   parameters: { isoWidth: '640px' },
 }
 export const AccentOverride: Story = {

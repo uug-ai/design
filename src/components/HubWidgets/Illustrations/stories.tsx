@@ -17,7 +17,7 @@ const meta = {
       <Story />
     </div>,
   ],
-  parameters: { docs: { description: { component: 'Isometric line art for empty states (agent), hero backgrounds (control-tower) and explaining Hub (hub). Faces use the Hub card tones and only live parts use the --hub accent, so white-label themes recolour them; set --iso-accent to override. With glow="auto" lit parts glow in the dark Hub theme and stay flat in light. Decorative unless a label is passed. The figures render plain SVG strings (renderIsoSvg), which the Angular Hub frontend and the docs reuse.' } } },
+  parameters: { docs: { description: { component: 'Isometric line art for empty states (agent), hero backgrounds (control-tower) and explaining Hub (hub) and Vault (vault). Faces use the Hub card tones and only live parts use the --hub accent, so white-label themes recolour them; set --iso-accent to override. With glow="auto" lit parts glow in the dark Hub theme and stay flat in light. Decorative unless a label is passed. The figures render plain SVG strings (renderIsoSvg), which the Angular Hub frontend and the docs reuse.' } } },
 } satisfies Meta<typeof IsoIllustration>
 
 export default meta
@@ -27,6 +27,10 @@ export const Agent: Story = {}
 export const ControlTower: Story = { args: { figure: 'control-tower' }, parameters: { isoWidth: '160px' } }
 export const Hub: Story = {
   args: { figure: 'hub', label: 'Hub event flow: a camera event travels through its own Agent on the site gateway and the Hub pipeline to a videowall tile and a phone alert.' },
+  parameters: { isoWidth: '640px' },
+}
+export const Vault: Story = {
+  args: { figure: 'vault', label: 'Vault: four Agents upload recordings to the Vault, a crane drops each one into the S3, Azure or Ceph bucket its account uses, and Hub reads a recording straight from its bucket.' },
   parameters: { isoWidth: '640px' },
 }
 export const AccentOverride: Story = {

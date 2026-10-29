@@ -1,8 +1,8 @@
-import { box, frame, FRONT, onPlane, P, range, SIDE, TOP } from './iso'
+import { box, frame, FRONT, onPlane, P, range, SIDE, TOP, type Vec3 } from './iso'
 
-export type IsoFigure = 'agent' | 'control-tower' | 'hub'
+export type IsoFigure = 'agent' | 'control-tower' | 'hub' | 'vault'
 
-export const ISO_FIGURE_NAMES: IsoFigure[] = ['agent', 'control-tower', 'hub']
+export const ISO_FIGURE_NAMES: IsoFigure[] = ['agent', 'control-tower', 'hub', 'vault']
 
 interface FigureDrawing {
   viewBox: string
@@ -167,6 +167,64 @@ function controlTower(): FigureDrawing {
 
 const round1 = (value: number) => Math.round(value * 10) / 10
 
+// Convex hull of projected points (monotone chain), for round solids.
+function hull(points: [number, number][]) {
+  const sorted = [...points].sort(([ax, ay], [bx, by]) => ax - bx || ay - by)
+  const cross = (o: [number, number], a: [number, number], b: [number, number]) =>
+    (a[0] - o[0]) * (b[1] - o[1]) - (a[1] - o[1]) * (b[0] - o[0])
+  const half = (list: [number, number][]) => list.reduce<[number, number][]>((chain, point) => {
+    while (chain.length >= 2 && cross(chain[chain.length - 2], chain[chain.length - 1], point) <= 0) {
+      chain.pop()
+    }
+    chain.push(point)
+    return chain
+  }, [])
+  const lower = half(sorted)
+  const upper = half([...sorted].reverse())
+  return [...lower.slice(0, -1), ...upper.slice(0, -1)]
+}
+
+// The Hub building: a podium, three pipeline floors (workflows, analyse,
+// notify) whose window panes take `pane(floor)` as their attributes, and a
+// roof core with an antenna whose beacon takes `beacon`. Pass labels = false
+// for a plain building, with windows across the whole front. Drawn with its podium at (160, 80); other figures
+// place and scale it with placeAt().
+const HUB_FLOORS = ['WORKFLOWS', 'ANALYSE', 'NOTIFY']
+
+function hubBuilding(pane: (floor: number) => string, beacon: string, labels = true) {
+  const [beaconX, beaconY] = P(223, 123, 136)
+  const floors = HUB_FLOORS.map((name, f) => {
+    const z = 18 + f * 28
+    const panes = (count: number, step: number) => range(0, count - 1, 1).map((i) =>
+      `<rect ${pane(f)} x="${4 + i * step}" y="7" width="9" height="13"/>`,
+    ).join('')
+    return box(176, 96, z, 78, 78, 26)
+      + onPlane(FRONT(176, 174, z + 26), labels
+        ? `<text class="iso-label" x="39" y="17" font-size="6">${name}</text>${panes(3, 11)}`
+        : panes(6, 12.2))
+      + onPlane(SIDE(254, 174, z + 26), panes(6, 12.2))
+      + box(172, 92, z + 26, 86, 86, 2)
+  }).join('')
+
+  return box(160, 80, 8, 110, 110, 10)
+    + onPlane(FRONT(160, 190, 18), (labels ? '<text class="iso-label" x="6" y="7.5" font-size="6">HUB</text>' : '')
+      + '<line class="iso-detail" x1="30" y1="5" x2="104" y2="5"/>')
+    + floors
+    + box(200, 120, 102, 30, 30, 14)
+    + onPlane(SIDE(230, 150, 116), '<line class="iso-detail" x1="4" y1="5" x2="26" y2="5"/>'
+      + '<line class="iso-detail" x1="4" y1="9" x2="26" y2="9"/>')
+    + box(222, 122, 116, 2, 2, 18)
+    + `<circle ${beacon} cx="${beaconX}" cy="${beaconY}" r="2.2"/>`
+}
+
+// Moves a drawing made around `from` to `to`, scaled by `scale`. The
+// projection is linear, so a uniform scale in space is the same scale on screen.
+function placeAt(markup: string, from: Vec3, to: Vec3, scale: number) {
+  const [fx, fy] = P(...from)
+  const [tx, ty] = P(...to)
+  return `<g transform="translate(${round1(tx - fx * scale)} ${round1(ty - fy * scale)}) scale(${scale})">${markup}</g>`
+}
+
 // The Hub end to end: three cameras on site, each wired to its own Agent (the
 // three Agents share one gateway machine), the Hub with its three pipeline
 // floors (workflows, analyse, notify), and the operators' videowall and phone.
@@ -180,7 +238,6 @@ function hub(): FigureDrawing {
   const cams = [130, 190, 250]
   const scenes = ['person', 'car', 'person']
   const detections = ['PERSON 94%', 'VEHICLE 91%', 'PERSON 88%']
-  const floors = ['WORKFLOWS', 'ANALYSE', 'NOTIFY']
   const delay = (seconds: number) => `style="animation-delay: ${seconds}s"`
   const pulse = (d: string, cls: string, extra = '') =>
     `<path class="iso-wire" d="${d}"/><path class="iso-pulse iso-lit ${cls}" d="${d}" pathLength="1000" ${extra}/>`
@@ -214,20 +271,7 @@ function hub(): FigureDrawing {
           : '')
     }).join('')
 
-  const floorMarkup = floors.map((name, f) => {
-    const z = 18 + f * 28
-    const panes = (count: number, step: number) => range(0, count - 1, 1).map((i) =>
-      `<rect class="iso-pane iso-lit iso-hub-floor" x="${4 + i * step}" y="7" width="9" height="13" ${delay(f * 0.35)}/>`,
-    ).join('')
-    return box(176, 96, z, 78, 78, 26)
-      + onPlane(FRONT(176, 174, z + 26), `<text class="iso-label" x="39" y="17" font-size="6">${name}</text>${panes(3, 11)}`)
-      + onPlane(SIDE(254, 174, z + 26), panes(6, 12.2))
-      + box(172, 92, z + 26, 86, 86, 2)
-  }).join('')
-
   const [haloX, haloY] = P(215, 135, 90)
-  const [beaconX, beaconY] = P(223, 123, 136)
-
   const markup = [
     // Ground plate with a grid and the three zones.
     box(0, 0, 0, 420, 300, 8),
@@ -249,15 +293,7 @@ function hub(): FigureDrawing {
 
     // Hub: podium, pipeline floors, roof core with an antenna beacon.
     `<ellipse class="iso-halo" cx="${haloX}" cy="${haloY}" rx="70" ry="48"/>`,
-    box(160, 80, 8, 110, 110, 10),
-    onPlane(FRONT(160, 190, 18), '<text class="iso-label" x="6" y="7.5" font-size="6">HUB</text>'
-      + '<line class="iso-detail" x1="30" y1="5" x2="104" y2="5"/>'),
-    floorMarkup,
-    box(200, 120, 102, 30, 30, 14),
-    onPlane(SIDE(230, 150, 116), '<line class="iso-detail" x1="4" y1="5" x2="26" y2="5"/>'
-      + '<line class="iso-detail" x1="4" y1="9" x2="26" y2="9"/>'),
-    box(222, 122, 116, 2, 2, 18),
-    `<circle class="iso-beacon iso-lit" cx="${beaconX}" cy="${beaconY}" r="2.2"/>`,
+    hubBuilding((f) => `class="iso-pane iso-lit iso-hub-floor" ${delay(f * 0.35)}`, 'class="iso-beacon iso-lit"'),
 
     // Phone on a dock: the operator's alert.
     box(336, 128, 8, 32, 16, 4),
@@ -301,10 +337,195 @@ function hub(): FigureDrawing {
   }
 }
 
+// Vault, recordings only: four Agents on site upload their recordings to the
+// Vault, which sends each one out of a hatch as a crate; a gantry crane drops
+// it into the bucket of the storage provider its account uses (bring your own
+// storage). Alongside the fourth upload Hub fetches a recording straight
+// from its bucket. A 12s round of four 3s beats; per-Agent parts run on the
+// round with a 3s delay, the fetch with a 9s one (written -3s, so it is
+// already running when the figure appears).
+function vault(): FigureDrawing {
+  // Agents sit so their wires leave on the grid (every 30 units).
+  const agents = [48, 108, 168, 228]
+  // Buckets in a row under the crane, which picks crates up at x = 246.
+  const buckets = [['S3', 266], ['AZURE', 312], ['CEPH', 358]] as const
+  const pickup = 246
+  const files = ['CAM1_0412.MP4', 'CAM2_0413.MP4', 'CAM3_0414.MP4', 'CAM4_0415.MP4']
+  // The bucket each Agent's account stores into (Agent 4 shares Azure).
+  const targets = [0, 1, 2, 1]
+  // Hub fetches from the middle bucket; its wire leaves the bucket's front on the grid.
+  const source = 1
+  const sourceX = buckets[source][1] + 18
+  const fetch = -3
+  const delay = (seconds: number) => `style="animation-delay: ${seconds}s"`
+
+  const grid = range(30, 390, 30).map((x) => `<line class="iso-grid" x1="${x}" y1="10" x2="${x}" y2="290"/>`).join('')
+    + range(30, 270, 30).map((y) => `<line class="iso-grid" x1="10" y1="${y}" x2="410" y2="${y}"/>`).join('')
+
+  // Upload wires share one trunk to the Vault: draw each Agent's stub, the
+  // trunk past every stub and its run to the Vault once (overlapping strokes
+  // would draw it darker), with a pulse per Agent.
+  const wires = agents.map((cy) => `<path class="iso-wire" d="M 58 ${cy + 12} H 90"/>`).join('')
+    + `<path class="iso-wire" d="M 90 ${agents[0] + 12} V ${agents[agents.length - 1] + 12}"/>`
+    + '<path class="iso-wire" d="M 90 210 H 180 V 180"/>'
+    + agents.map((cy, i) => `<path class="iso-pulse iso-lit iso-vault-upload" d="M 58 ${cy + 12} H 90 V 210 H 180 V 180" pathLength="1000" ${delay(i * 3)}/>`).join('')
+    + `<path class="iso-wire" d="M ${sourceX} 127 V 150 H 390 V 240 H 355"/>`
+    + `<path class="iso-pulse iso-lit iso-vault-request" d="M 355 240 H 390 V 150 H ${sourceX} V 127" pathLength="1000" ${delay(fetch)}/>`
+    + `<path class="iso-pulse iso-lit iso-vault-stream" d="M ${sourceX} 127 V 150 H 390 V 240 H 355" pathLength="1000" ${delay(fetch)}/>`
+
+  // A drum whose axis runs along +y (toward the viewer): its outline is the
+  // hull of its back and front rims. The caller draws the front face on top.
+  const drum = (cx: number, y: number, cz: number, r: number, depth: number) => {
+    const rims = range(0, 35, 1).flatMap((k) => {
+      const a = (k * Math.PI) / 18
+      return [P(cx + r * Math.cos(a), y, cz + r * Math.sin(a)), P(cx + r * Math.cos(a), y + depth, cz + r * Math.sin(a))]
+    })
+    return `<polygon class="iso-face iso-side" points="${hull(rims).map(([x, z]) => `${x},${z}`).join(' ')}"/>`
+  }
+
+  // Main door: a heavy drum in a recessed frame, with bolts, a
+  // combination dial and a raised wheel that turns as the Vault works.
+  const bolts = range(0, 11, 1).map((k) => {
+    const a = (k * Math.PI) / 6
+    return `<circle class="iso-detail" cx="${round1(40 + Math.cos(a) * 21)}" cy="${round1(34 + Math.sin(a) * 21)}" r="1"/>`
+  }).join('')
+  const spokes = range(0, 2, 1).map((k) => {
+    const a = (k * Math.PI) / 3
+    const [dx, dy] = [round1(Math.cos(a) * 16), round1(Math.sin(a) * 16)]
+    return `<line class="iso-detail iso-vault-spoke" x1="${40 - dx}" y1="${34 - dy}" x2="${40 + dx}" y2="${34 + dy}"/>`
+      + `<circle class="iso-face iso-top" cx="${40 - dx}" cy="${34 - dy}" r="1.8"/><circle class="iso-face iso-top" cx="${40 + dx}" cy="${34 + dy}" r="1.8"/>`
+  }).join('')
+  const ticks = range(0, 11, 1).map((k) => {
+    const a = (k * Math.PI) / 6
+    return `<line class="iso-detail" x1="${round1(66 + Math.cos(a) * 3.2)}" y1="${round1(14 + Math.sin(a) * 3.2)}" x2="${round1(66 + Math.cos(a) * 4.4)}" y2="${round1(14 + Math.sin(a) * 4.4)}"/>`
+  }).join('')
+  const door = onPlane(FRONT(140, 180, 72), '<text class="iso-label" x="5" y="8" font-size="6">VAULT</text>'
+      + '<circle class="iso-face iso-side" cx="40" cy="34" r="27"/><circle class="iso-detail" cx="40" cy="34" r="25"/>')
+    + drum(180, 180, 38, 23, 5)
+    + onPlane(FRONT(140, 185, 72), '<circle class="iso-face iso-top" cx="40" cy="34" r="23"/>'
+      + '<circle class="iso-pane iso-lit iso-vault-ring" cx="40" cy="34" r="19"/>'
+      + '<circle class="iso-face iso-top" cx="40" cy="34" r="15"/>'
+      + '<circle class="iso-detail" cx="40" cy="34" r="11"/><circle class="iso-detail" cx="40" cy="34" r="7"/>'
+      + bolts)
+    + drum(206, 180, 58, 5, 3)
+    + onPlane(FRONT(140, 183, 72), `<circle class="iso-face iso-top" cx="66" cy="14" r="5"/>${ticks}`
+      + '<line class="iso-detail" x1="66" y1="14" x2="66" y2="10.5"/>')
+    + drum(180, 185, 38, 4, 3)
+    + onPlane(FRONT(140, 188, 72), `<g class="iso-vault-wheel">${spokes}<circle class="iso-face iso-top" cx="40" cy="34" r="4"/></g>`)
+
+  // Side: the display, vents and the hatch the conveyor runs out of.
+  const side = onPlane(SIDE(220, 180, 72), '<rect class="iso-pane" x="8" y="8" width="64" height="18" rx="1.5"/>'
+    + files.map((name, i) => `<g class="iso-vault-reveal iso-vault-file" ${delay(i * 3)}>`
+      + '<text class="iso-label" x="11" y="13.5" font-size="3.6">STORED</text>'
+      + `<text class="iso-screen-text" x="11" y="21.5" font-size="5">${name}</text></g>`).join('')
+    + range(10, 50, 4).map((u) => `<line class="iso-detail" x1="${u}" y1="38" x2="${u}" y2="56"/>`).join('')
+    + '<rect class="iso-face iso-front" x="58" y="40" width="20" height="21"/>'
+    + '<rect class="iso-face iso-side" x="60" y="42" width="16" height="19"/>'
+    + '<g class="iso-vault-hatch"><rect class="iso-face iso-top" x="60" y="42" width="16" height="19"/>'
+    + range(46, 60, 3).map((v) => `<line class="iso-detail" x1="60" y1="${v}" x2="76" y2="${v}"/>`).join('') + '</g>')
+
+  // Crates leave through the hatch (x 221 → 239) for the crane; --tx / --ty
+  // carry each one's trip along x to its bucket.
+  const crate = (x: number, cls: string, style: string) => `<g class="${cls}" style="${style}">`
+    + box(x, 105, 13, 14, 14, 12)
+    + onPlane(FRONT(x, 119, 25), '<text class="iso-screen-text" x="2.5" y="7.5" font-size="4.2">MP4</text>')
+    + '</g>'
+  const uploadCrate = (i: number, x0: number) => {
+    const [tx, ty] = P(x0 + 18 - pickup, 0, 0)
+    return crate(221, `iso-vault-crate${i === 0 ? ' iso-vault-crate--rest' : ''}`, `animation-delay: ${i * 3}s; --tx: ${tx}px; --ty: ${ty}px`)
+  }
+
+  // An open bucket: rim and opening (lit by each crate that lands in it, and
+  // for the source bucket by Hub's fetch), then its crates, then the walls that hide them.
+  const bucket = ([name, x0]: readonly [string, number], b: number) => {
+    const uploads = range(0, agents.length - 1, 1).filter((i) => targets[i] === b)
+    const opening = '<rect class="iso-pane" x="3" y="3" width="30" height="24" rx="1"/>'
+    const lit = (cls: string, seconds: number) =>
+      `<rect class="iso-pane iso-lit ${cls}" x="3" y="3" width="30" height="24" rx="1" ${delay(seconds)}/>`
+    return onPlane(TOP(x0, 97, 48), '<rect class="iso-face iso-top" width="36" height="30"/>' + opening
+      + uploads.map((i) => lit('iso-vault-fill', i * 3)).join('')
+      + (b === source ? lit('iso-vault-fetch-fill', fetch) : ''))
+    + uploads.map((i) => uploadCrate(i, x0)).join('')
+    + `<rect class="iso-face iso-front" transform="${FRONT(x0, 127, 48)}" width="36" height="40"/>`
+    + `<rect class="iso-face iso-side" transform="${SIDE(x0 + 36, 127, 48)}" width="30" height="40"/>`
+    + onPlane(FRONT(x0, 127, 48), '<line class="iso-detail" x1="0" y1="4" x2="36" y2="4"/>'
+      + `<text class="iso-label" x="4" y="12" font-size="5.5">${name}</text>`
+      + range(6, 30, 6).map((u) => `<line class="iso-detail" x1="${u}" y1="18" x2="${u}" y2="36"/>`).join(''))
+    + onPlane(SIDE(x0 + 36, 127, 48), '<line class="iso-detail" x1="0" y1="4" x2="30" y2="4"/>'
+      + range(5, 25, 5).map((u) => `<line class="iso-detail" x1="${u}" y1="10" x2="${u}" y2="36"/>`).join(''))
+  }
+
+  const [cableX, cableTop] = P(pickup, 112, 80)
+  const [, cableBottom] = P(pickup, 112, 28)
+
+  const markup = [
+    // Ground plate with a grid and the zones.
+    box(0, 0, 0, 420, 300, 8),
+    onPlane(TOP(0, 0, 8), '<rect class="iso-detail" x="8" y="8" width="404" height="284" rx="10"/>'
+      + grid
+      + '<text class="iso-label iso-label--zone" x="20" y="286" font-size="7">SITE · AGENTS</text>'
+      + '<text class="iso-label iso-label--zone" x="96" y="232" font-size="7">BRING YOUR OWN STORAGE</text>'
+      + '<text class="iso-label iso-label--zone" x="300" y="172" font-size="7">YOUR BUCKETS</text>'
+      + '<text class="iso-label iso-label--zone" x="292" y="286" font-size="7">HUB · PLAYBACK</text>'
+      + wires),
+
+    // Back legs of the crane's two portals.
+    box(258, 90, 8, 4, 4, 84),
+    box(400, 90, 8, 4, 4, 84),
+
+    // The Vault: a safe with its main door, the display and the hatch.
+    box(140, 100, 8, 80, 80, 64),
+    door,
+    side,
+
+    // Conveyor out of the hatch, the buckets, then the rest of the crane.
+    box(220, 104, 8, 36, 16, 5),
+    onPlane(TOP(220, 104, 13), range(4, 34, 5).map((u) => `<line class="iso-detail" x1="${u}" y1="1" x2="${u}" y2="15"/>`).join('')),
+    buckets.map(bucket).join(''),
+    box(258, 132, 8, 4, 4, 84),
+    box(400, 132, 8, 4, 4, 84),
+    // The rail hangs under the two arches; the trolley runs beneath it.
+    box(226, 108, 86, 180, 8, 6),
+    onPlane(FRONT(226, 116, 92), range(8, 174, 12).map((u) => `<line class="iso-detail" x1="${u}" y1="1" x2="${u + 6}" y2="5"/>`).join('')),
+    '<g class="iso-vault-trolley">'
+      + box(240, 107, 80, 12, 10, 6)
+      + `<line class="iso-wire iso-vault-cable" x1="${cableX}" y1="${cableTop}" x2="${cableX}" y2="${cableBottom}"/>`
+      + `<g class="iso-vault-hook">${box(243.5, 109.5, 25, 5, 5, 3)}</g>`
+      + '</g>',
+    box(258, 90, 92, 4, 46, 4),
+    box(400, 90, 92, 4, 46, 4),
+
+    // Hub, at half size: it asks the bucket for the recording (the beacon
+    // blinks) and its floors light bottom to top when the recording arrives.
+    placeAt(hubBuilding(
+      (f) => `class="iso-pane iso-lit iso-vault-hub-window" ${delay(fetch + f * 0.15)}`,
+      `class="iso-beacon iso-lit iso-vault-beacon" ${delay(fetch)}`,
+      false,
+    ), [160, 80, 0], [300, 215, 0], 0.5),
+
+    // Site: four Agents, each with its camera, uploading their recordings.
+    agents.map((cy, i) => box(24, cy, 8, 34, 24, 16)
+      + onPlane(FRONT(24, cy + 24, 24), `<rect class="iso-led iso-lit iso-vault-agent-led" x="3" y="4.5" width="4" height="2.4" ${delay(i * 3)}/>`
+        + `<text class="iso-label" x="9.5" y="7.6" font-size="4.6">AGENT ${i + 1}</text>`)
+      + onPlane(SIDE(58, cy + 24, 24), range(4, 20, 3).map((u) => `<line class="iso-detail" x1="${u}" y1="4" x2="${u}" y2="11"/>`).join(''))
+      + box(36, cy + 9, 24, 3, 3, 10)
+      + box(31, cy + 2, 34, 12, 16, 9)
+      + onPlane(FRONT(31, cy + 18, 43), '<circle class="iso-face iso-top" cx="4.5" cy="4.5" r="3"/><circle class="iso-detail" cx="4.5" cy="4.5" r="1.5"/>')).join(''),
+  ].join('')
+
+  return {
+    viewBox: frame([[0, 0, 0], [420, 0, 0], [0, 300, 0], [420, 300, 0], [258, 90, 96], [404, 136, 96], [331.5, 236.5, 68], [31, 50, 43]], 10),
+    markup,
+    glow: 2,
+    bloom: 14,
+  }
+}
+
 const FIGURES: Record<IsoFigure, () => FigureDrawing> = {
   agent,
   'control-tower': controlTower,
   hub,
+  vault,
 }
 
 /**

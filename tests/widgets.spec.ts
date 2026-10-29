@@ -553,13 +553,13 @@ for (const width of [1280, 390]) {
   test(`public Components page preserves previews, themes and layout at ${width}px`, async ({ page }, testInfo) => {
     await page.setViewportSize({ width, height: 900 })
     await page.goto('/components')
-    await expect(page.locator('.component-section')).toHaveCount(12)
+    await expect(page.locator('.component-section')).toHaveCount(13)
     const previews = page.locator('.component-demo > .hub-widgets')
-    await expect(previews).toHaveCount(12)
+    await expect(previews).toHaveCount(13)
     await page.getByLabel('Widget theme').selectOption('dark')
     for (const preview of await previews.all()) await expect(preview).toHaveAttribute('data-hub-theme', 'dark')
     const links = await page.getByRole('link', { name: 'View in Storybook', exact: true }).evaluateAll(anchors => anchors.map(anchor => anchor.getAttribute('href')))
-    expect(links).toHaveLength(12)
+    expect(links).toHaveLength(13)
     for (const link of links) {
       if (!link) throw new Error('A component documentation link is missing its URL')
       const path = new URL(link, 'http://localhost').searchParams.get('path')

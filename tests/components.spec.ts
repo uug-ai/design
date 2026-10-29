@@ -23,14 +23,14 @@ for (const theme of ['light', 'dark']) {
     }, theme)
     await page.goto('/components')
     await expect(page.getByLabel('Widget theme')).toHaveValue('auto')
-    await expect(page.locator(`.component-demo > [data-hub-theme="${theme}"]`)).toHaveCount(12)
+    await expect(page.locator(`.component-demo > [data-hub-theme="${theme}"]`)).toHaveCount(13)
     const preview = page.locator('.component-demo > .hub-widgets').first()
     await expect(preview).toHaveCSS('color-scheme', theme)
     await expect(preview).toHaveCSS('background-color', theme === 'dark' ? 'rgb(26, 26, 26)' : 'rgb(238, 236, 236)')
 
     const nextTheme = theme === 'dark' ? 'light' : 'dark'
     await page.getByRole('button', { name: `Switch to ${nextTheme} mode`, exact: true }).click()
-    await expect(page.locator(`.component-demo > [data-hub-theme="${nextTheme}"]`)).toHaveCount(12)
+    await expect(page.locator(`.component-demo > [data-hub-theme="${nextTheme}"]`)).toHaveCount(13)
     await expect(preview).toHaveCSS('color-scheme', nextTheme)
     await page.locator('#modal').getByRole('button', { name: 'Edit camera', exact: true }).click()
     await expect(page.getByRole('dialog', { name: 'Edit camera', exact: true }))
@@ -38,7 +38,7 @@ for (const theme of ['light', 'dark']) {
     await page.keyboard.press('Escape')
     await page.reload()
     await expect(page.getByLabel('Widget theme')).toHaveValue('auto')
-    await expect(page.locator(`.component-demo > [data-hub-theme="${nextTheme}"]`)).toHaveCount(12)
+    await expect(page.locator(`.component-demo > [data-hub-theme="${nextTheme}"]`)).toHaveCount(13)
   })
 }
 
@@ -46,7 +46,7 @@ test('previews follow the system dark theme without a saved preference', async (
   await page.emulateMedia({ colorScheme: 'dark' })
   await page.goto('/components')
   await expect(page.getByLabel('Widget theme')).toHaveValue('auto')
-  await expect(page.locator('.component-demo > [data-hub-theme="dark"]')).toHaveCount(12)
+  await expect(page.locator('.component-demo > [data-hub-theme="dark"]')).toHaveCount(13)
 })
 
 test('explicit widget themes override the site until Follow site is restored', async ({ page }) => {
@@ -54,17 +54,17 @@ test('explicit widget themes override the site until Follow site is restored', a
   await page.goto('/components')
   const selector = page.getByLabel('Widget theme')
   await selector.selectOption('light')
-  await expect(page.locator('.component-demo > [data-hub-theme="light"]')).toHaveCount(12)
+  await expect(page.locator('.component-demo > [data-hub-theme="light"]')).toHaveCount(13)
   await page.getByRole('button', { name: 'Switch to light mode', exact: true }).click()
   await page.getByRole('button', { name: 'Switch to dark mode', exact: true }).click()
-  await expect(page.locator('.component-demo > [data-hub-theme="light"]')).toHaveCount(12)
+  await expect(page.locator('.component-demo > [data-hub-theme="light"]')).toHaveCount(13)
   await selector.selectOption('auto')
-  await expect(page.locator('.component-demo > [data-hub-theme="dark"]')).toHaveCount(12)
+  await expect(page.locator('.component-demo > [data-hub-theme="dark"]')).toHaveCount(13)
   await selector.selectOption('dark')
   await page.getByRole('button', { name: 'Switch to light mode', exact: true }).click()
-  await expect(page.locator('.component-demo > [data-hub-theme="dark"]')).toHaveCount(12)
+  await expect(page.locator('.component-demo > [data-hub-theme="dark"]')).toHaveCount(13)
   await selector.selectOption('auto')
-  await expect(page.locator('.component-demo > [data-hub-theme="light"]')).toHaveCount(12)
+  await expect(page.locator('.component-demo > [data-hub-theme="light"]')).toHaveCount(13)
 })
 
 for (const width of [320, 390, 768, 1440]) {
@@ -73,10 +73,10 @@ for (const width of [320, 390, 768, 1440]) {
     await page.goto('/components')
     await page.evaluate(() => document.fonts.ready)
     const previews = page.locator('.component-demo > .hub-widgets')
-    await expect(previews).toHaveCount(12)
+    await expect(previews).toHaveCount(13)
     for (const theme of ['light', 'dark']) {
       await page.getByLabel('Widget theme').selectOption(theme)
-      await expect(page.locator(`.component-demo > [data-hub-theme="${theme}"]`)).toHaveCount(12)
+      await expect(page.locator(`.component-demo > [data-hub-theme="${theme}"]`)).toHaveCount(13)
       const bounds = await page.evaluate(() => ({
         viewport: document.documentElement.clientWidth,
         content: document.documentElement.scrollWidth,

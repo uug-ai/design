@@ -147,8 +147,12 @@ The public page covers all button variants, editable and disabled form
 states, searchable site filters, a composed site overview, feedback and loading
 states, a complete inline modal preview with header/body/footer, and working
 edit/confirmation overlay dialogs. Upload progress and saved-state
-feedback are interactive demos, without calling Hub APIs. All 12 Storybook groups
+feedback are interactive demos, without calling Hub APIs. All 13 Storybook groups
 are represented, with the extended widgets sharing their Storybook examples.
+The Illustrations group shows the isometric figures from
+[src/components/IsoIllustration](src/components/IsoIllustration) (`agent`, `control-tower`,
+`hub`); they render plain SVG strings (`renderIsoSvg`) so non-React apps such as the
+Angular Hub frontend can reuse the same drawings.
 Each section links
 directly to its Storybook documentation; previous `#inputs`, `#cards`, and
 `#loader` links still resolve to their replacement sections.

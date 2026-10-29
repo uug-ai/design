@@ -367,3 +367,24 @@
   color: var(--text-primary);
   box-shadow: 0 12px 20px var(--shadow);
 }
+
+.component-iso {
+  width: min(240px, 100%);
+}
+
+.component-iso--wide {
+  width: min(640px, 100%);
+  margin: 0 auto;
+}
+
+.component-iso--tall {
+  width: min(120px, 100%);
+  mask-image: linear-gradient(to bottom, #000 72%, transparent);
+}
+
+.component-iso-row {
+  justify-content: center;
+  align-items: flex-end;
+  gap: 48px;
+  min-width: 0;
+}

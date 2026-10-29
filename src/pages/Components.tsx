@@ -5,6 +5,7 @@ import {
   HubKpi, HubModal, HubMultiToggle, HubPlaceholder, HubProgress, HubSelect,
   HubSpinner, HubStatus, HubTextarea, HubTheme, HubToggle,
 } from '../components/HubWidgets'
+import IsoIllustration from '../components/IsoIllustration'
 import { storybookEntryUrl, storybookUrl } from '../config/storybook'
 import './Components.css'
 import {
@@ -25,6 +26,7 @@ const COMPONENT_LINKS = [
   { id: 'surfaces', label: 'Surfaces', storybookPath: '/docs/components-surfaces--docs', description: 'Production cards, KPI tiles and compositional blocks with expandable content.' },
   { id: 'feedback', label: 'Feedback', storybookPath: '/docs/components-feedback--docs', description: 'Status badges, messages, progress, loading and empty states from Hub.' },
   { id: 'modal', label: 'Modal', storybookPath: '/docs/components-modal--docs', description: 'Complete header, body and footer preview, plus overlay dialogs and centered confirmations with keyboard focus management.' },
+  { id: 'illustrations', label: 'Illustrations', storybookPath: '/docs/components-illustrations--docs', description: 'Isometric line art for empty states, hero backgrounds and explaining Hub. Only live parts use the Hub accent; they glow in the dark theme and stay flat in light.' },
 ] as const
 
 const SITE_OPTIONS = [
@@ -299,6 +301,14 @@ function Components() {
             <HubTextarea label="Description" defaultValue="Camera at the building entrance." />
           </div>}
       </HubModal>
+    </div>,
+    illustrations: <div className="hub-stack">
+      <IsoIllustration figure="hub" className="component-iso component-iso--wide"
+        label="Hub event flow: a camera event travels through its own Agent on the site gateway and Hub's workflows, analyse and notify stages to a videowall tile and a phone alert." />
+      <div className="hub-row component-iso-row">
+        <IsoIllustration figure="agent" className="component-iso" />
+        <IsoIllustration figure="control-tower" className="component-iso component-iso--tall" />
+      </div>
     </div>,
   }
 

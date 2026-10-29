@@ -1,8 +1,8 @@
 import { box, frame, FRONT, onPlane, P, range, SIDE, TOP, type Vec3 } from './iso'
 
-export type IsoFigure = 'agent' | 'control-tower' | 'hub' | 'vault'
+export type IsoFigure = 'agent' | 'control-tower' | 'hub' | 'vault' | 'factory'
 
-export const ISO_FIGURE_NAMES: IsoFigure[] = ['agent', 'control-tower', 'hub', 'vault']
+export const ISO_FIGURE_NAMES: IsoFigure[] = ['agent', 'control-tower', 'hub', 'vault', 'factory']
 
 interface FigureDrawing {
   viewBox: string
@@ -210,6 +210,26 @@ function sphere(cx: number, cy: number, cz: number, r: number, cls: string, uppe
 // A lens seen from the front: a rim and a pupil around a projected point.
 function lens([x, y]: [number, number], r: number) {
   return `<circle class="iso-face iso-top" cx="${x}" cy="${y}" r="${r}"/><circle class="iso-detail" cx="${x}" cy="${y}" r="${round1(r / 2)}"/>`
+}
+
+// A camera of the given kind standing on (x, y) at height z, lens facing +y.
+type CameraKind = 'bullet' | 'dome' | 'ptz' | 'turret'
+
+function cameraHead(kind: CameraKind, x: number, y: number, z: number) {
+  switch (kind) {
+    case 'bullet':
+      return box(x - 5, y - 3, z, 3, 3, 10)
+        + box(x - 10, y - 10, z + 10, 12, 16, 9)
+        + onPlane(FRONT(x - 10, y + 6, z + 19), '<circle class="iso-face iso-top" cx="4.5" cy="4.5" r="3"/><circle class="iso-detail" cx="4.5" cy="4.5" r="1.5"/>')
+    case 'dome':
+      return cylinder(x, y, z, 8, 2) + sphere(x, y, z + 2, 7, 'iso-face iso-front', true) + lens(P(x, y + 4.6, z + 6.5), 1.6)
+    case 'ptz':
+      return cylinder(x, y, z, 3.5, 7) + cylinder(x, y, z + 7, 7, 2)
+        + box(x - 8, y - 2, z + 9, 2, 4, 11) + sphere(x, y, z + 15, 5.5, 'iso-face iso-top') + box(x + 6, y - 2, z + 9, 2, 4, 11)
+        + lens(P(x, y + 5.2, z + 15), 2)
+    case 'turret':
+      return cylinder(x, y, z, 7.5, 3) + sphere(x, y, z + 8, 6, 'iso-face iso-top') + lens(P(x, y + 5.6, z + 9), 2.1)
+  }
 }
 
 // The Hub building: a podium, three pipeline floors (workflows, analyse,
@@ -491,25 +511,8 @@ function vault(): FigureDrawing {
       + range(5, 25, 5).map((u) => `<line class="iso-detail" x1="${u}" y1="10" x2="${u}" y2="36"/>`).join(''))
   }
 
-  // Each Agent has a different kind of camera on top, all facing +y.
+  // Each Agent has a different kind of camera on top.
   const cameras = ['bullet', 'dome', 'ptz', 'turret'] as const
-  const camera = (kind: typeof cameras[number], cy: number) => {
-    const [x, y] = [41, cy + 12]
-    switch (kind) {
-      case 'bullet':
-        return box(36, cy + 9, 24, 3, 3, 10)
-          + box(31, cy + 2, 34, 12, 16, 9)
-          + onPlane(FRONT(31, cy + 18, 43), '<circle class="iso-face iso-top" cx="4.5" cy="4.5" r="3"/><circle class="iso-detail" cx="4.5" cy="4.5" r="1.5"/>')
-      case 'dome':
-        return cylinder(x, y, 24, 8, 2) + sphere(x, y, 26, 7, 'iso-face iso-front', true) + lens(P(x, y + 4.6, 30.5), 1.6)
-      case 'ptz':
-        return cylinder(x, y, 24, 3.5, 7) + cylinder(x, y, 31, 7, 2)
-          + box(33, y - 2, 33, 2, 4, 11) + sphere(x, y, 39, 5.5, 'iso-face iso-top') + box(47, y - 2, 33, 2, 4, 11)
-          + lens(P(x, y + 5.2, 39), 2)
-      case 'turret':
-        return cylinder(x, y, 24, 7.5, 3) + sphere(x, y, 32, 6, 'iso-face iso-top') + lens(P(x, y + 5.6, 33), 2.1)
-    }
-  }
 
   const [cableX, cableTop] = P(pickup, 112, 80)
   const [, cableBottom] = P(pickup, 112, 28)
@@ -565,11 +568,133 @@ function vault(): FigureDrawing {
       + onPlane(FRONT(24, cy + 24, 24), `<rect class="iso-led iso-lit iso-vault-agent-led" x="3" y="4.5" width="4" height="2.4" ${delay(i * 3)}/>`
         + `<text class="iso-label" x="9.5" y="7.6" font-size="4.6">AGENT ${i + 1}</text>`)
       + onPlane(SIDE(58, cy + 24, 24), range(4, 20, 3).map((u) => `<line class="iso-detail" x1="${u}" y1="4" x2="${u}" y2="11"/>`).join(''))
-      + camera(cameras[i], cy)).join(''),
+      + cameraHead(cameras[i], 41, cy + 12, 24)).join(''),
   ].join('')
 
   return {
     viewBox: frame([[0, 0, 0], [420, 0, 0], [0, 300, 0], [420, 300, 0], [258, 90, 96], [404, 136, 96], [331.5, 236.5, 68], [31, 50, 43]], 10),
+    markup,
+    glow: 2,
+    bloom: 14,
+  }
+}
+
+// Factory: the cameras on a site are found one at a time (a scan runs out to
+// the camera); for each, Factory builds that camera's own Agent, a press
+// stamps the global settings onto it and it rides the conveyor to the node it
+// is deployed on. There it runs as a pod and records its camera: the stream
+// runs from the camera to that node. A 12s round of four 3s beats, one camera
+// per beat (3s delay each); the Factory's windows, hatch, beacon and press run
+// on the beat.
+function factory(): FigureDrawing {
+  const cams = [60, 120, 180, 240]
+  const kinds: CameraKind[] = ['bullet', 'dome', 'ptz', 'turret']
+  // Cluster nodes (left x of each rack) and where each camera's Agent runs.
+  const nodes = [290, 334, 378]
+  const targets = [0, 1, 2, 0]
+  const slots = [0, 0, 0, 1]
+  const delay = (seconds: number) => `style="animation-delay: ${seconds}s"`
+  const flow = (d: string, cls: string, i: number) =>
+    `<path class="iso-pulse iso-lit ${cls}" d="${d}" pathLength="1000" ${delay(i * 3)}/>`
+
+  const grid = range(30, 390, 30).map((x) => `<line class="iso-grid" x1="${x}" y1="10" x2="${x}" y2="290"/>`).join('')
+    + range(30, 270, 30).map((y) => `<line class="iso-grid" x1="10" y1="${y}" x2="410" y2="${y}"/>`).join('')
+
+  // Camera wires share one trunk: down to the Factory's front, which finds the
+  // cameras, and up and along the back to the nodes, where each camera's own
+  // Agent records it once deployed.
+  const nodeX = (k: number) => nodes[k] + 15
+  const wires = cams.map((cy) => `<path class="iso-wire" d="M 32 ${cy} H 90"/>`).join('')
+    + '<path class="iso-wire" d="M 90 30 V 210 H 150 V 200"/>'
+    + `<path class="iso-wire" d="M 90 30 H ${nodeX(nodes.length - 1)}"/>`
+    + nodes.map((_, k) => `<path class="iso-wire" d="M ${nodeX(k)} 30 V 100"/>`).join('')
+    + cams.map((cy, i) => flow(`M 150 200 V 210 H 90 V ${cy} H 32`, 'iso-factory-scan', i)
+      + flow(`M 32 ${cy} H 90 V 30 H ${nodeX(targets[i])} V 100`, 'iso-factory-record', i)).join('')
+
+  // Sawtooth roof: four teeth rising toward the front, each with a glazed face.
+  const polygon = (cls: string, points: Vec3[]) =>
+    `<polygon class="${cls}" points="${points.map((point) => P(...point).join(',')).join(' ')}"/>`
+  const tooth = (k: number) => {
+    const [y0, y1] = [110 + k * 22.5, 132.5 + k * 22.5]
+    return polygon('iso-face iso-top', [[120, y0, 48], [220, y0, 48], [220, y1, 60], [120, y1, 60]])
+      + onPlane(FRONT(120, y1, 60), '<rect class="iso-face iso-front" width="100" height="12"/>'
+        + range(0, 6, 1).map((j) => `<rect class="iso-pane iso-lit iso-factory-glass" x="${4 + j * 13.5}" y="2.5" width="10" height="7" ${delay(k * 0.08)}/>`).join(''))
+      + polygon('iso-face iso-side', [[220, y0, 48], [220, y1, 48], [220, y1, 60]])
+  }
+  const [beaconX, beaconY] = P(213, 115, 80)
+
+  // An Agent leaves the hatch (x 221), stops under the press (+23 units along
+  // x), then rides to its node; --tx / --ty carry that last leg.
+  const agent = (i: number) => {
+    const [tx, ty] = P(nodes[targets[i]] + 8 - 244, 0, 0)
+    return `<g class="iso-factory-agent" style="animation-delay: ${i * 3}s; --tx: ${tx}px; --ty: ${ty}px">`
+      + box(221, 141, 13, 14, 14, 12)
+      + onPlane(FRONT(221, 155, 25), `<rect class="iso-led iso-lit iso-factory-agent-led" x="2" y="2.5" width="3" height="1.8" ${delay(i * 3)}/>`
+        + `<text class="iso-label" x="2" y="8.5" font-size="2.8">AGENT ${i + 1}</text>`)
+      + '</g>'
+  }
+
+  const rack = (x: number, k: number) => box(x, 100, 8, 30, 30, 56)
+    + onPlane(FRONT(x, 130, 64), `<text class="iso-label" x="3" y="7" font-size="4.4">NODE ${k + 1}</text>`
+      + range(0, 3, 1).map((j) => `<rect class="iso-pane" x="3" y="${12 + j * 10}" width="24" height="6" rx="1"/>`).join('')
+      + cams.map((_, i) => (targets[i] === k
+        ? `<rect class="iso-pane iso-lit iso-factory-pod" x="3" y="${12 + slots[i] * 10}" width="24" height="6" rx="1" ${delay(i * 3)}/>`
+          + `<text class="iso-label" x="5" y="${16.4 + slots[i] * 10}" font-size="3.2">AGENT ${i + 1}</text>`
+        : '')).join(''))
+    + onPlane(SIDE(x + 30, 130, 64), range(5, 26, 4).map((u) => `<line class="iso-detail" x1="${u}" y1="8" x2="${u}" y2="50"/>`).join(''))
+
+  const markup = [
+    // Ground plate with a grid and the zones.
+    box(0, 0, 0, 420, 300, 8),
+    onPlane(TOP(0, 0, 8), '<rect class="iso-detail" x="8" y="8" width="404" height="284" rx="10"/>'
+      + grid
+      + '<text class="iso-label iso-label--zone" x="20" y="286" font-size="7">SITE · CAMERAS</text>'
+      + '<text class="iso-label iso-label--zone" x="112" y="232" font-size="7">FACTORY</text>'
+      + '<text class="iso-label iso-label--zone" x="324" y="172" font-size="7">CLUSTER · AGENTS</text>'
+      + wires),
+
+    // Site: cameras of every kind on posts; each gets its own Agent.
+    cams.map((cy, i) => box(28, cy - 2, 8, 4, 4, 22)
+      + onPlane(FRONT(28, cy + 2, 27), `<rect class="iso-led iso-lit iso-factory-found" x="0.8" y="0.5" width="2.4" height="2.4" ${delay(i * 3)}/>`)
+      // The bullet camera's own mount sits 5 units back and 3 to the left.
+      + (kinds[i] === 'bullet' ? cameraHead('bullet', 35, cy + 3, 30) : cameraHead(kinds[i], 30, cy, 30))).join(''),
+
+    // The Factory: a hall with a sawtooth roof, a chimney and a scanning antenna.
+    box(120, 110, 8, 100, 90, 40),
+    onPlane(FRONT(120, 200, 48), '<text class="iso-label" x="5" y="8" font-size="6">FACTORY</text>'
+      + range(0, 3, 1).map((j) => `<rect class="iso-pane iso-lit iso-factory-glass" x="${6 + j * 14}" y="16" width="10" height="14" ${delay(0.3)}/>`).join('')
+      + '<rect class="iso-face iso-side" x="62" y="14" width="30" height="26"/>'
+      + range(18, 38, 4).map((v) => `<line class="iso-detail" x1="62" y1="${v}" x2="92" y2="${v}"/>`).join('')),
+    onPlane(SIDE(220, 200, 48), range(6, 40, 4).map((u) => `<line class="iso-detail" x1="${u}" y1="10" x2="${u}" y2="30"/>`).join('')
+      + '<rect class="iso-face iso-front" x="42" y="20" width="20" height="21"/>'
+      + '<rect class="iso-face iso-side" x="44" y="22" width="16" height="19"/>'
+      + '<g class="iso-factory-hatch"><rect class="iso-face iso-top" x="44" y="22" width="16" height="19"/>'
+      + range(26, 40, 3).map((v) => `<line class="iso-detail" x1="44" y1="${v}" x2="60" y2="${v}"/>`).join('') + '</g>'),
+    tooth(0),
+    box(128, 116, 48, 8, 8, 34),
+    box(212, 114, 50, 2, 2, 28),
+    `<circle class="iso-beacon iso-lit iso-factory-beacon" cx="${beaconX}" cy="${beaconY}" r="2.2"/>`,
+    range(1, 3, 1).map(tooth).join(''),
+
+    // Cluster nodes behind the conveyor; each Agent slides into one as a pod.
+    nodes.map(rack).join(''),
+
+    // Conveyor out of the hatch, the settings press over it and the Agents.
+    box(220, 140, 8, 180, 16, 5),
+    onPlane(TOP(220, 140, 13), range(4, 178, 6).map((u) => `<line class="iso-detail" x1="${u}" y1="1" x2="${u}" y2="15"/>`).join('')),
+    box(250, 132, 8, 3, 3, 40),
+    cams.map((_, i) => agent(i)).join(''),
+    box(250, 161, 8, 3, 3, 40),
+    box(248, 130, 48, 8, 36, 5),
+    onPlane(SIDE(256, 166, 53), '<text class="iso-label" x="4" y="3.9" font-size="3.4">SETTINGS</text>'),
+    '<g class="iso-factory-press">' + box(247, 141, 30, 10, 14, 8)
+      + onPlane(FRONT(247, 155, 38), '<circle class="iso-pane iso-lit iso-factory-gear" cx="5" cy="4" r="2.4"/>'
+        + '<circle class="iso-face iso-top" cx="5" cy="4" r="0.9"/>')
+      + box(250, 146, 38, 4, 4, 10) + '</g>',
+  ].join('')
+
+  return {
+    viewBox: frame([[0, 0, 0], [420, 0, 0], [0, 300, 0], [420, 300, 0], [128, 116, 82], [213, 115, 82], [408, 100, 64], [20, 50, 49], [90, 20, 8]], 10),
     markup,
     glow: 2,
     bloom: 14,
@@ -581,6 +706,7 @@ const FIGURES: Record<IsoFigure, () => FigureDrawing> = {
   'control-tower': controlTower,
   hub,
   vault,
+  factory,
 }
 
 /**

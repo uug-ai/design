@@ -62,14 +62,26 @@ This builds the Vite app into `dist/` and Storybook into `dist/storybook/` in on
   runtime CA certificates are required by the server. Browser network requests
   remain those of the existing application.
 
-`Bump release` reserves a draft release and invokes the shared hardened
-`frontend` profile. Set `publish=false` for verification without a release,
-or `existing_tag` to retry the same immutable source. PRs also run this profile
-without publication. It scans source secrets/configuration and the final image,
+**Bump release** exposes a `hardened` checkbox, unchecked by default. It reserves
+a draft release and normally builds/publishes both native images without the
+additional hardening verification, SBOM/provenance publication or signing.
+Direct GitHub release creation also uses the standard path. The Dockerfile's
+non-root/minimal runtime remains unchanged.
+
+Enable `hardened` to invoke the shared `frontend` profile. Set `publish=false`
+to build without a release; enable `hardened` too for full verification.
+Use `existing_tag` to retry the same immutable source. PRs and dedicated
+security scans keep their hardening profile without publication.
+It scans source secrets/configuration and the final image,
 extracts `/usr/share/frontend/package{,-lock}.json` from that final image and
 **separately scans it**, emits image and browser SPDX SBOMs, retains reports and
 provenance, and signs the verified multi-platform digest. Medium, high, and
 critical findings block publication under the shared policy.
+
+After successful publication, release notes show **Image hardening: Verified
+(security checks, SBOM, provenance and signing)** or **Image hardening: Not
+verified (standard build)**. Retries refresh that indicator without deleting
+existing notes. Draft finalization and the release-note update precede GitOps.
 
 Storybook addons are build-time dependencies that also ship browser code.
 `scripts/image-inventory.mjs` therefore conservatively classifies the entire
@@ -81,9 +93,9 @@ to patched compatible versions; no components or route definitions are changed.
 Findings still require remediation or a centrally
 approved exception; inventory does not imply a clean scan.
 
-CI retains release evidence as `hardened-source`, `hardened-image-amd64`,
+Hardened CI retains release evidence as `hardened-source`, `hardened-image-amd64`,
 `hardened-image-arm64`, and `hardened-release` workflow artifacts. Verify a
-published digest using:
+published hardened digest using:
 
 ```bash
 cosign verify \

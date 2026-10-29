@@ -5,20 +5,21 @@ on:
     types: [created]
 
 permissions:
-  contents: read
+  contents: write
   packages: write
   id-token: write
 
 jobs:
   release:
-    uses: uug-ai/workflows/.github/workflows/release-create.yml@ff61364bb99093f43f0c02b2f5091f0e22ba9fb6
+    uses: uug-ai/workflows/.github/workflows/release-create.yml@main
     with:
       project: ${{ github.event.repository.name }}
       tag: ${{ github.event.release.tag_name }}
       docker_context: "."
-      hardened: true
+      hardened: false
       hardened_profile: frontend
       use_private_module_auth: false
+      finalize_release: true
       runner_matrix: '[{"architecture":"amd64","runner":"ubuntu-24.04"},{"architecture":"arm64","runner":"ubuntu-24.04-arm"}]'
       create_gitops_pr: true
       gitops_repo: "uug-ai/gitops"

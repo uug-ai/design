@@ -169,7 +169,7 @@ const round1 = (value: number) => Math.round(value * 10) / 10
 
 // The Hub end to end: three cameras on site, each wired to its own Agent (the
 // three Agents share one gateway machine), the Hub with its three pipeline
-// floors (ingest, analyse, notify), and the operators' videowall and phone.
+// floors (workflows, analyse, notify), and the operators' videowall and phone.
 // Every 3s something happens in front of one camera in turn (a person walks or
 // a car drives into its field of view), the camera fires, a pulse runs to that
 // camera's Agent, then
@@ -180,7 +180,7 @@ function hub(): FigureDrawing {
   const cams = [130, 190, 250]
   const scenes = ['person', 'car', 'person']
   const detections = ['PERSON 94%', 'VEHICLE 91%', 'PERSON 88%']
-  const floors = ['INGEST', 'ANALYSE', 'NOTIFY']
+  const floors = ['WORKFLOWS', 'ANALYSE', 'NOTIFY']
   const delay = (seconds: number) => `style="animation-delay: ${seconds}s"`
   const pulse = (d: string, cls: string, extra = '') =>
     `<path class="iso-wire" d="${d}"/><path class="iso-pulse iso-lit ${cls}" d="${d}" pathLength="1000" ${extra}/>`
@@ -220,7 +220,7 @@ function hub(): FigureDrawing {
       `<rect class="iso-pane iso-lit iso-hub-floor" x="${4 + i * step}" y="7" width="9" height="13" ${delay(f * 0.35)}/>`,
     ).join('')
     return box(176, 96, z, 78, 78, 26)
-      + onPlane(FRONT(176, 174, z + 26), `<text class="iso-label" x="50" y="17" font-size="6">${name}</text>${panes(4, 11)}`)
+      + onPlane(FRONT(176, 174, z + 26), `<text class="iso-label" x="39" y="17" font-size="6">${name}</text>${panes(3, 11)}`)
       + onPlane(SIDE(254, 174, z + 26), panes(6, 12.2))
       + box(172, 92, z + 26, 86, 86, 2)
   }).join('')

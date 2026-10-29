@@ -304,7 +304,7 @@ function Components() {
     </div>,
     illustrations: <div className="hub-stack">
       <IsoIllustration figure="hub" className="component-iso component-iso--wide"
-        label="Hub event flow: a camera event travels through its own Agent on the site gateway and Hub's ingest, analyse and notify stages to a videowall tile and a phone alert." />
+        label="Hub event flow: a camera event travels through its own Agent on the site gateway and Hub's workflows, analyse and notify stages to a videowall tile and a phone alert." />
       <div className="hub-row component-iso-row">
         <IsoIllustration figure="agent" className="component-iso" />
         <IsoIllustration figure="control-tower" className="component-iso component-iso--tall" />

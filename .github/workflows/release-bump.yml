@@ -17,9 +17,13 @@ on:
         type: string
         default: ""
       publish:
-        description: Publish verified images (false validates without creating a release)
+        description: Publish images (false builds without creating a release)
         type: boolean
         default: true
+      hardened:
+        description: Run image hardening checks, SBOM, provenance and signing (slower)
+        type: boolean
+        default: false
 
 permissions:
   contents: write
@@ -42,13 +46,13 @@ jobs:
   release:
     needs: bump-release
     if: ${{ always() && !cancelled() && (needs.bump-release.result == 'success' || needs.bump-release.result == 'skipped') }}
-    uses: uug-ai/workflows/.github/workflows/release-create.yml@ff61364bb99093f43f0c02b2f5091f0e22ba9fb6
+    uses: uug-ai/workflows/.github/workflows/release-create.yml@main
     with:
       organization: uug-ai
       project: ${{ github.event.repository.name }}
       tag: ${{ inputs.existing_tag || needs.bump-release.outputs.tag }}
       docker_context: "."
-      hardened: true
+      hardened: ${{ inputs.hardened }}
       hardened_profile: frontend
       use_private_module_auth: false
       publish: ${{ inputs.publish }}

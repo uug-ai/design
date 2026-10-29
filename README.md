@@ -114,7 +114,140 @@ This serves the built output locally with the same paths used in production:
 npm run storybook
 ```
 
-Storybook runs on [http://localhost:6006](http://localhost:6006) and exposes isolated stories for the shared components in `src/components`.
+Storybook runs on [http://localhost:6006](http://localhost:6006) and exposes only
+the production Hub widget library in `src/components/HubWidgets`.
+
+### Components (Production Design Reference)
+
+**Components** extracts the reusable widget presentations from
+[hub-frontend](../hub-frontend/kerberos.ng/src/app/shared/widgets) into React.
+Start with **Surfaces / Composition** to see them together. Use the **Hub theme**
+toolbar to switch between the production light and dark palettes in Canvas and
+Docs. The former marketing/brand component stories have been removed.
+**Components** is the sole component catalog, with one top-level group and no
+Hub/Widgets nesting.
+
+The site's **Components** page uses the same Hub widgets and links to these
+stories. Live previews follow the site's theme by default, including changes
+from the header theme toggle. Its **Widget theme** selector can override all
+previews to light or dark; choose **Follow site** to resume automatic matching.
+The public page covers all button variants, editable and disabled form
+states, searchable site filters, a composed site overview, feedback and loading
+states, a complete inline modal preview with header/body/footer, and working
+edit/confirmation overlay dialogs. Upload progress and saved-state
+feedback are interactive demos, without calling Hub APIs. All 13 Storybook groups
+are represented, with the extended widgets sharing their Storybook examples.
+The Illustrations group shows the isometric figures from
+[src/components/IsoIllustration](src/components/IsoIllustration) (`agent`, `control-tower`,
+`hub`); they render plain SVG strings (`renderIsoSvg`) so non-React apps such as the
+Angular Hub frontend can reuse the same drawings.
+Each section links
+directly to its Storybook documentation; previous `#inputs`, `#cards`, and
+`#loader` links still resolve to their replacement sections.
+Public-page browser regressions cover both widget themes at 320px, 390px, 768px,
+and 1440px, sticky section navigation, initial legacy links, and demo feedback.
+Site layout, branding tools, and foundation-page helpers remain
+internal to the documentation site; they are not published as library components.
+
+The implementation is in [src/components/HubWidgets](src/components/HubWidgets).
+Wrap these components in `HubTheme` when using them outside Storybook:
+
+```tsx
+import { HubButton, HubTheme } from './components/HubWidgets'
+
+<HubTheme theme="dark">
+  <HubButton>Add camera</HubButton>
+</HubTheme>
+```
+
+The reusable-component catalog includes 94 stories in 12 groups:
+
+| Story group | Hub source widgets |
+| --- | --- |
+| Buttons | `button`, `inlinebutton`, `block-button`, success flash and mobile text states |
+| Forms | `input`/textarea, `search`, `colorinput`, `tags`, `checkbox`, `slider` switch, icon/text `multitoggle`, filter sizes |
+| Selection | `selectinput`, `radioselect`, `select-overlay`, `multiselect`, `multiselect-overlay`; search, clear, locked options, errors, readonly and loading |
+| Date and time | `dateinput`, `datepicker`, `time-spinner`; recordings-toolbar filter, field/button appearances, bounds, available dates, localized calendar labels and keyboard navigation |
+| Scheduling | `range-slider`, `weekly-schedule`; pointer/keyboard editing, exact-minute readouts, add/remove and non-overlapping segments |
+| Menus | `actions-menu`, `controls-popup`; single/no-action behavior, disabled/hidden/destructive items and keyboard focus |
+| Data | `table` with pagination, emphasis/alignment and empty/loading states, plus `loadmore` |
+| Navigation | `breadcrumb`, `gridtoggle`, `aspectratiotoggle`, language selection/switcher presentations |
+| Notifications | `toast-container`, `label`, `sitebadge`, `groupbadge`, `camerabadge`; actions, dismissal and pausable timers |
+| Feedback | `badge`, `status`, `infobox`, `block-status`, `progressbar`, `spinner`, `placeholder` |
+| Surfaces | `card`, `block`, `block-header`, `block-body`, `block-footer`, `kpi` |
+| Modal | `modal`, `modalheader`, `modalbody`, `modalactions`, `showconfirm`; complete inline preview, full-width/centered/theater, move/resize and dirty-close confirmation |
+
+Colors, shadows, breakpoints, the 4px radius, and the 12px spacing unit come from
+[app.variables.scss](../hub-frontend/kerberos.ng/src/scss/_app.variables.scss).
+Shared button/field styles come from
+[app.scss](../hub-frontend/kerberos.ng/src/scss/app.scss); component-specific values
+come from the widget SCSS. CSS and theme variables are scoped to `.hub-widgets`
+to keep widget previews isolated from the documentation site's styling. Story
+discovery is restricted to that directory so internal site helpers do not
+reappear in the catalog. Icons use the library's existing
+`iconoir-react` dependency rather than Hub's runtime SVG registry.
+
+Stories include editable controls, disabled/readonly/error/loading/active
+states, searchable selection, switches, segmented controls, collapsible blocks,
+dismissible messages, card actions, counting/dwell/occupancy KPIs and
+modal/confirmation interactions. They use local demo
+state only; no Hub API, NgRx, Angular forms, or services are loaded.
+Native controls/dialog supply keyboard operation, dialog focus containment and
+restoration; reduced-motion users see static loading indicators. These are
+intentional accessibility adaptations, not ports of Hub's runtime internals.
+
+The recordings date-filter story and public preview use Hub's left-side calendar/
+clear control and dropdown arrow. All picker variants share its 296px calendar,
+48px month buttons, square cells, recording dots and selected/today styling.
+Popovers use their rendered content height when deciding whether to open above
+or below the trigger.
+The calendar uses the design system's Hub brand token for primary accents.
+Calendar values are local `YYYY-MM-DD` dates (not UTC timestamps). Range-slider
+values are minutes in `[0, 1440]`. Weekly schedules use the Hub shape: Sunday=0,
+seconds in `[0, 86400]`, `enabled`, and explicit IANA timezones. Editing a day
+preserves untouched days, disabled/empty days and their timezones; unsupported
+sub-minute data, overlaps, invalid dates or invalid configuration produce
+explicit errors rather than silently normalizing data.
+
+On narrow screens, segmented controls scroll within their container without
+compressing option buttons, and schedule readouts wrap within the available width.
+Popup panels fit the viewport and reposition on scroll/resize. `HubModal inline`
+renders the same header, body and footer as an in-flow labelled section, without
+an overlay, automatic focus or focus trapping. It still supports controlled
+close/save actions; move/resize and viewport positioning are overlay-only.
+Storybook's overlay variants start open. Documentation renders each in its own
+600px-tall iframe, keeping the complete modal visible and interactive without
+covering other examples; closing it reveals its reopen button.
+Modal dragging uses the whole header without an extra Move button. Resizing uses
+Hub's 6px right/bottom edges and 16px corner grip, with the same muted grip styling.
+Both are desktop-only (768px and wider) and disabled in full-width/theater/inline
+presentations. The focusable header and resize handles support arrow keys; Shift
+uses larger steps. Pointer capture keeps gestures active outside the handle.
+Theater mode retains an accessible close/header control. For dirty-close protection,
+pass `actions={requestClose => ...}` and use `requestClose` for cancellation;
+successful save actions can close directly.
+
+Toast durations are milliseconds; zero keeps a toast until dismissed. Hover and
+keyboard focus independently pause the remaining lifetime. Language stories
+change local selection only, not the documentation site's translation service.
+
+This completes the **reusable-component pass**, not every Hub application feature.
+Camera/media players, timelines/charts, maps/floorplans, drawing/annotation,
+API-backed domain pickers/lists, Google address autocomplete, Stripe credit-card
+entry and sharing/case workflows remain in Hub. Related domain-specific wrappers
+are not claimed as separate ports of their underlying selection primitives.
+The React presentations are a manually maintained reference, not a generated package
+or a replacement consumed by the Angular application. When Hub's design changes,
+update this extraction against the source paths above.
+
+Run `npm run test:widgets` for date/calendar, range-boundary, schedule round-trip
+and label-contrast regression tests. The tests use Node's built-in runner and the
+existing TypeScript compiler, without adding a test framework.
+After `npm run build:all`, run `npm run test:widgets:browser` for production
+Storybook smoke tests, native keyboard/pointer interactions and responsive
+public-page checks. First-time browser setup is `npx playwright install chromium`.
+The browser suite owns a temporary preview server on port 4381 and shuts it down
+when finished; it does not reuse or interfere with the developer's servers.
 
 ### Build Storybook
 
@@ -137,8 +270,8 @@ npm run preview
 - **Typography**: Type scale, font families, and text styles
 - **Spacing**: Consistent spacing system with visual examples
 - **Branding**: Logo guidelines, brand values, voice & tone, and social-banner/logo studios
-- **Components**: Reusable UI components with interactive examples and copy-able code
-- **Storybook**: Isolated component previews and documentation for shared UI pieces
+- **Components**: Interactive previews of the production Hub widgets
+- **Storybook**: Hub-only widget states, controls, and source documentation
 
 ## Favicons
 

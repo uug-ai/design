@@ -605,10 +605,10 @@ function factory(): FigureDrawing {
   // the nodes, where each camera's own Agent records it once deployed.
   const nodeX = (k: number) => nodes[k] + 15
   const wires = cams.map((cy) => `<path class="iso-wire" d="M 32 ${cy} H 60"/>`).join('')
-    + '<path class="iso-wire" d="M 60 30 V 210 H 150 V 200"/>'
+    + '<path class="iso-wire" d="M 60 30 V 240 H 150 V 200"/>'
     + `<path class="iso-wire" d="M 60 30 H ${nodeX(nodes.length - 1)}"/>`
     + nodes.map((_, k) => `<path class="iso-wire" d="M ${nodeX(k)} 30 V 100"/>`).join('')
-    + cams.map((cy, i) => flow(`M 150 200 V 210 H 60 V ${cy} H 32`, 'iso-factory-scan', i)
+    + cams.map((cy, i) => flow(`M 150 200 V 240 H 60 V ${cy} H 32`, 'iso-factory-scan', i)
       + flow(`M 32 ${cy} H 60 V 30 H ${nodeX(targets[i])} V 100`, 'iso-factory-record', i)).join('')
 
   // Sawtooth roof: four teeth rising toward the front, each with a glazed face.

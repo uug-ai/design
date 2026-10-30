@@ -1,8 +1,8 @@
 import { box, frame, FRONT, onPlane, P, range, SIDE, TOP, type Vec3 } from './iso'
 
-export type IsoFigure = 'agent' | 'control-tower' | 'hub' | 'vault' | 'factory'
+export type IsoFigure = 'agent' | 'control-tower' | 'hub' | 'vault' | 'factory' | 'agent-link'
 
-export const ISO_FIGURE_NAMES: IsoFigure[] = ['agent', 'control-tower', 'hub', 'vault', 'factory']
+export const ISO_FIGURE_NAMES: IsoFigure[] = ['agent', 'control-tower', 'hub', 'vault', 'factory', 'agent-link']
 
 interface FigureDrawing {
   viewBox: string
@@ -700,12 +700,98 @@ function factory(): FigureDrawing {
   }
 }
 
+// Agent, zoomed in on one camera and the machine its Agent runs on. Both keep
+// changing, a bullet, dome, PTZ and turret camera and a Raspberry Pi, mini PC,
+// laptop and server, while the stream keeps flowing between them: any camera
+// works with an Agent on any machine. The camera changes every 3s and the
+// machine 1.5s later, so they keep pairing up differently; a ring of light
+// sweeps up each turntable as its device changes. A 12s round.
+function agentLink(): FigureDrawing {
+  // Both turntables stand on grid crossings, with the stream along y 60.
+  const [camX, camY] = [60, 60]
+  const [hostX, hostY] = [140, 60]
+  const cameras: [CameraKind, string][] = [['bullet', 'BULLET'], ['dome', 'DOME'], ['ptz', 'PTZ'], ['turret', 'TURRET']]
+  const delay = (seconds: number) => `style="animation-delay: ${seconds}s"`
+  const variant = (seconds: number, markup: string, first: boolean) =>
+    `<g class="iso-agentlink-variant${first ? ' iso-agentlink-variant--first' : ''}" ${delay(seconds)}>${markup}</g>`
+
+  const grid = range(20, 180, 20).map((x) => `<line class="iso-grid" x1="${x}" y1="8" x2="${x}" y2="132"/>`).join('')
+    + range(20, 120, 20).map((y) => `<line class="iso-grid" x1="8" y1="${y}" x2="192" y2="${y}"/>`).join('')
+
+  // The machines an Agent runs on, each with its recording light, drawn around
+  // (150, 70) on the turntable's top (z 9) and moved onto the host turntable.
+  const led = (x: number, y: number) => `<circle class="iso-led iso-lit iso-agentlink-rec" cx="${x}" cy="${y}" r="1.1"/>`
+  const machines: [string, string][] = [
+    ['RASPBERRY PI', range(0, 3, 1).map((k) => box(135 + (k % 2) * 28, 62 + Math.floor(k / 2) * 16, 9, 2, 2, 2)).join('')
+      + box(133, 60, 11, 34, 22, 2)
+      + box(137, 61, 13, 18, 1.6, 1.6)
+      + box(141, 66, 13, 9, 9, 1.6)
+      + box(152, 67, 13, 6, 7, 1.2)
+      + box(161, 61, 13, 6, 6, 4) + box(161, 68, 13, 6, 6, 4) + box(161, 75, 13, 6, 6, 5)
+      + onPlane(FRONT(133, 82, 13), led(3, 1))],
+    ['MINI PC · DOCKER', box(136, 56, 9, 28, 28, 10)
+      + onPlane(TOP(136, 56, 19), '<circle class="iso-detail" cx="14" cy="14" r="7"/><circle class="iso-detail" cx="14" cy="14" r="3"/>')
+      + onPlane(FRONT(136, 84, 19), led(4, 4) + '<rect class="iso-detail" x="10" y="3" width="4" height="2.4"/><rect class="iso-detail" x="16" y="3" width="4" height="2.4"/>')],
+    ['LAPTOP · DOCKER', box(132, 58, 9, 36, 26, 2)
+      + onPlane(TOP(132, 58, 11), range(0, 3, 1).map((r) => `<line class="iso-detail" x1="4" y1="${6 + r * 4}" x2="32" y2="${6 + r * 4}"/>`).join('')
+        + '<rect class="iso-detail" x="12" y="19" width="12" height="5" rx="1"/>')
+      + box(132, 56, 11, 36, 2, 22)
+      + onPlane(FRONT(132, 58, 33), '<rect class="iso-pane" x="2" y="2" width="32" height="17" rx="1"/>'
+        + '<rect class="iso-det" x="13" y="5" width="7" height="11"/>' + led(5, 5))],
+    ['SERVER · KUBERNETES', box(134, 56, 9, 32, 28, 30)
+      + onPlane(FRONT(134, 84, 39), range(1, 2, 1).map((u) => `<line class="iso-detail" x1="0" y1="${u * 10}" x2="32" y2="${u * 10}"/>`).join('')
+        + range(0, 2, 1).map((u) => led(4, 5 + u * 10)
+          + range(0, 3, 1).map((k) => `<rect class="iso-detail" x="${10 + k * 5.5}" y="${3 + u * 10}" width="4" height="4"/>`).join('')).join(''))
+      + onPlane(SIDE(166, 84, 39), range(4, 25, 4).map((u) => `<line class="iso-detail" x1="${u}" y1="4" x2="${u}" y2="26"/>`).join(''))],
+  ]
+
+  const ring = (cls: string, x: number, y: number, r: number, seconds: number) =>
+    `<g class="iso-agentlink-ring ${cls}" ${delay(seconds)}>`
+    + onPlane(TOP(0, 0, 9), `<circle class="iso-agentlink-ring-line iso-lit" cx="${x}" cy="${y}" r="${r}"/>`) + '</g>'
+
+  const markup = [
+    // Plate with a grid, the two zone labels, each device's name and the stream.
+    box(0, 0, 0, 200, 140, 6),
+    onPlane(TOP(0, 0, 6), '<rect class="iso-detail" x="6" y="6" width="188" height="128" rx="8"/>'
+      + grid
+      // Labels sit on the grid rows, centred under their device; RTSP is
+      // centred between the two.
+      + `<text class="iso-label iso-label--zone" x="${camX}" y="120" font-size="6" text-anchor="middle">ANY CAMERA</text>`
+      + `<text class="iso-label iso-label--zone" x="${hostX}" y="120" font-size="6" text-anchor="middle">ANY MACHINE</text>`
+      + cameras.map(([, name], k) => variant(k * 3, `<text class="iso-label" x="${camX}" y="100" font-size="5" text-anchor="middle">${name}</text>`, k === 0)).join('')
+      + machines.map(([name], k) => variant(k * 3 + 1.5, `<text class="iso-label" x="${hostX}" y="100" font-size="5" text-anchor="middle">${name}</text>`, k === 0)).join('')
+      + `<text class="iso-label" x="${(camX + hostX) / 2}" y="${camY - 2}" font-size="4.6" text-anchor="middle">RTSP</text>`
+      + `<path class="iso-wire" d="M ${camX + 16} ${camY} H ${hostX - 25}"/>`
+      + `<path class="iso-pulse iso-lit iso-agentlink-stream" d="M ${camX + 16} ${camY} H ${hostX - 25}" pathLength="1000"/>`),
+
+    // Camera on its turntable.
+    cylinder(camX, camY, 6, 16, 3),
+    box(camX - 2, camY - 2, 9, 4, 4, 20),
+    cameras.map(([kind], k) => variant(k * 3,
+      kind === 'bullet' ? cameraHead('bullet', camX + 5, camY + 3, 29) : cameraHead(kind, camX, camY, 29), k === 0)).join(''),
+    ring('iso-agentlink-ring--camera', camX, camY, 17, 0),
+
+    // The machine running the Agent, on its turntable.
+    cylinder(hostX, hostY, 6, 25, 3),
+    machines.map(([, drawing], k) => variant(k * 3 + 1.5, placeAt(drawing, [150, 70, 0], [hostX, hostY, 0], 1), k === 0)).join(''),
+    ring('iso-agentlink-ring--host', hostX, hostY, 26, 1.5),
+  ].join('')
+
+  return {
+    viewBox: frame([[0, 0, 0], [200, 0, 0], [0, 140, 0], [200, 140, 0], [camX, camY - 16, 56], [hostX, hostY - 14, 42]], 10),
+    markup,
+    glow: 1.6,
+    bloom: 10,
+  }
+}
+
 const FIGURES: Record<IsoFigure, () => FigureDrawing> = {
   agent,
   'control-tower': controlTower,
   hub,
   vault,
   factory,
+  'agent-link': agentLink,
 }
 
 /**

@@ -523,7 +523,7 @@ function vault(): FigureDrawing {
     onPlane(TOP(0, 0, 8), '<rect class="iso-detail" x="8" y="8" width="404" height="284" rx="10"/>'
       + grid
       + '<text class="iso-label iso-label--zone" x="20" y="286" font-size="7">SITE · AGENTS</text>'
-      + '<text class="iso-label iso-label--zone" x="96" y="232" font-size="7">BRING YOUR OWN STORAGE</text>'
+      + '<text class="iso-label iso-label--zone" x="110" y="232" font-size="7">BRING YOUR OWN STORAGE</text>'
       + '<text class="iso-label iso-label--zone" x="300" y="172" font-size="7">YOUR BUCKETS</text>'
       + '<text class="iso-label iso-label--zone" x="292" y="286" font-size="7">HUB · PLAYBACK</text>'
       + wires),

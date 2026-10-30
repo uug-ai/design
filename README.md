@@ -139,25 +139,11 @@ Docs. The former marketing/brand component stories have been removed.
 **Components** is the sole component catalog, with one top-level group and no
 Hub/Widgets nesting.
 
-The site's **Components** page uses the same Hub widgets and links to these
-stories. Live previews follow the site's theme by default, including changes
-from the header theme toggle. Its **Widget theme** selector can override all
-previews to light or dark; choose **Follow site** to resume automatic matching.
-The public page covers all button variants, editable and disabled form
-states, searchable site filters, a composed site overview, feedback and loading
-states, a complete inline modal preview with header/body/footer, and working
-edit/confirmation overlay dialogs. Upload progress and saved-state
-feedback are interactive demos, without calling Hub APIs. All 13 Storybook groups
-are represented, with the extended widgets sharing their Storybook examples.
-The Illustrations group shows the isometric figures from
-[src/components/IsoIllustration](src/components/IsoIllustration) (`agent`, `control-tower`,
-`hub`, `vault`, `factory`); they render plain SVG strings (`renderIsoSvg`) so non-React apps such as the
-Angular Hub frontend can reuse the same drawings.
-Each section links
-directly to its Storybook documentation; previous `#inputs`, `#cards`, and
-`#loader` links still resolve to their replacement sections.
-Public-page browser regressions cover both widget themes at 320px, 390px, 768px,
-and 1440px, sticky section navigation, initial legacy links, and demo feedback.
+The site's **Components** navigation links open this Storybook directly; the old
+`/components` route redirects there. The Illustrations group shows the isometric
+figures from [src/components/IsoIllustration](src/components/IsoIllustration)
+(`agent`, `control-tower`, `hub`, `vault`, `factory`); they render plain SVG strings (`renderIsoSvg`) so
+non-React apps such as the Angular Hub frontend can reuse the same drawings.
 Site layout, branding tools, and foundation-page helpers remain
 internal to the documentation site; they are not published as library components.
 

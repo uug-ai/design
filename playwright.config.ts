@@ -2,7 +2,7 @@ import { defineConfig } from '@playwright/test'
 
 export default defineConfig({
   testDir: './tests',
-  testMatch: ['widgets.spec.ts', 'components.spec.ts'],
+  testMatch: ['widgets.spec.ts'],
   fullyParallel: true,
   workers: 2,
   reporter: 'list',
@@ -16,7 +16,7 @@ export default defineConfig({
   webServer: {
     command: 'node scripts/preview-all.mjs',
     env: { PORT: '4381' },
-    url: 'http://127.0.0.1:4381/components',
+    url: 'http://127.0.0.1:4381/',
     reuseExistingServer: false,
   },
 })

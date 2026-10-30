@@ -423,8 +423,8 @@ function vault(): FigureDrawing {
   // would draw it darker), with a pulse per Agent.
   const wires = agents.map((cy) => `<path class="iso-wire" d="M 58 ${cy + 12} H 90"/>`).join('')
     + `<path class="iso-wire" d="M 90 ${agents[0] + 12} V ${agents[agents.length - 1] + 12}"/>`
-    + '<path class="iso-wire" d="M 90 210 H 180 V 180"/>'
-    + agents.map((cy, i) => `<path class="iso-pulse iso-lit iso-vault-upload" d="M 58 ${cy + 12} H 90 V 210 H 180 V 180" pathLength="1000" ${delay(i * 3)}/>`).join('')
+    + '<path class="iso-wire" d="M 90 240 H 180 V 180"/>'
+    + agents.map((cy, i) => `<path class="iso-pulse iso-lit iso-vault-upload" d="M 58 ${cy + 12} H 90 V 240 H 180 V 180" pathLength="1000" ${delay(i * 3)}/>`).join('')
     + `<path class="iso-wire" d="M ${sourceX} 127 V 150 H 390 V 240 H 355"/>`
     + `<path class="iso-pulse iso-lit iso-vault-request" d="M 355 240 H 390 V 150 H ${sourceX} V 127" pathLength="1000" ${delay(fetch)}/>`
     + `<path class="iso-pulse iso-lit iso-vault-stream" d="M ${sourceX} 127 V 150 H 390 V 240 H 355" pathLength="1000" ${delay(fetch)}/>`
@@ -523,7 +523,7 @@ function vault(): FigureDrawing {
     onPlane(TOP(0, 0, 8), '<rect class="iso-detail" x="8" y="8" width="404" height="284" rx="10"/>'
       + grid
       + '<text class="iso-label iso-label--zone" x="20" y="286" font-size="7">SITE · AGENTS</text>'
-      + '<text class="iso-label iso-label--zone" x="110" y="232" font-size="7">BRING YOUR OWN STORAGE</text>'
+      + '<text class="iso-label iso-label--zone" x="100" y="262" font-size="7">BRING YOUR OWN STORAGE</text>'
       + '<text class="iso-label iso-label--zone" x="300" y="172" font-size="7">YOUR BUCKETS</text>'
       + '<text class="iso-label iso-label--zone" x="292" y="286" font-size="7">HUB · PLAYBACK</text>'
       + wires),

@@ -614,9 +614,11 @@ function factory(): FigureDrawing {
   // Sawtooth roof: four teeth rising toward the front, each with a glazed face.
   const polygon = (cls: string, points: Vec3[]) =>
     `<polygon class="${cls}" points="${points.map((point) => P(...point).join(',')).join(' ')}"/>`
-  const tooth = (k: number) => {
+  // `onSlope` is drawn on the tooth's slope, before its windows, which stand in front.
+  const tooth = (k: number, onSlope = '') => {
     const [y0, y1] = [110 + k * 22.5, 132.5 + k * 22.5]
     return polygon('iso-face iso-top', [[120, y0, 48], [220, y0, 48], [220, y1, 60], [120, y1, 60]])
+      + onSlope
       + onPlane(FRONT(120, y1, 60), '<rect class="iso-face iso-front" width="100" height="12"/>'
         + range(0, 6, 1).map((j) => `<rect class="iso-pane iso-lit iso-factory-glass" x="${4 + j * 13.5}" y="2.5" width="10" height="7" ${delay(k * 0.08)}/>`).join(''))
       + polygon('iso-face iso-side', [[220, y0, 48], [220, y1, 48], [220, y1, 60]])
@@ -659,7 +661,9 @@ function factory(): FigureDrawing {
       // The bullet camera's own mount sits 5 units back and 3 to the left.
       + (kinds[i] === 'bullet' ? cameraHead('bullet', 35, cy + 3, 30) : cameraHead(kinds[i], 30, cy, 30))).join(''),
 
-    // The Factory: a hall with a sawtooth roof, a chimney and a scanning antenna.
+    // The Factory: a hall with a sawtooth roof, a chimney stack against its back
+    // wall and a scanning antenna on the roof.
+    box(126, 100, 8, 10, 10, 76),
     box(120, 110, 8, 100, 90, 40),
     onPlane(FRONT(120, 200, 48), range(0, 3, 1).map((j) => `<rect class="iso-pane iso-lit iso-factory-glass" x="${6 + j * 14}" y="16" width="10" height="14" ${delay(0.3)}/>`).join('')
       + '<rect class="iso-face iso-side" x="62" y="14" width="30" height="26"/>'
@@ -669,11 +673,9 @@ function factory(): FigureDrawing {
       + '<rect class="iso-face iso-side" x="44" y="22" width="16" height="19"/>'
       + '<g class="iso-factory-hatch"><rect class="iso-face iso-top" x="44" y="22" width="16" height="19"/>'
       + range(26, 40, 3).map((v) => `<line class="iso-detail" x1="44" y1="${v}" x2="60" y2="${v}"/>`).join('') + '</g>'),
-    tooth(0),
-    box(128, 116, 48, 8, 8, 34),
-    box(212, 114, 50, 2, 2, 28),
-    `<circle class="iso-beacon iso-lit iso-factory-beacon" cx="${beaconX}" cy="${beaconY}" r="2.2"/>`,
-    range(1, 3, 1).map(tooth).join(''),
+    tooth(0, box(212, 114, 50, 2, 2, 28)
+      + `<circle class="iso-beacon iso-lit iso-factory-beacon" cx="${beaconX}" cy="${beaconY}" r="2.2"/>`),
+    range(1, 3, 1).map((k) => tooth(k)).join(''),
 
     // Cluster nodes behind the conveyor; each Agent slides into one as a pod.
     nodes.map(rack).join(''),
@@ -693,7 +695,7 @@ function factory(): FigureDrawing {
   ].join('')
 
   return {
-    viewBox: frame([[0, 0, 0], [420, 0, 0], [0, 300, 0], [420, 300, 0], [128, 116, 82], [213, 115, 82], [408, 100, 64], [20, 50, 49], [60, 20, 8]], 10),
+    viewBox: frame([[0, 0, 0], [420, 0, 0], [0, 300, 0], [420, 300, 0], [126, 100, 84], [213, 115, 82], [408, 100, 64], [20, 50, 49], [60, 20, 8]], 10),
     markup,
     glow: 2,
     bloom: 14,

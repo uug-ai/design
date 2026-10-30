@@ -661,8 +661,7 @@ function factory(): FigureDrawing {
 
     // The Factory: a hall with a sawtooth roof, a chimney and a scanning antenna.
     box(120, 110, 8, 100, 90, 40),
-    onPlane(FRONT(120, 200, 48), '<text class="iso-label" x="5" y="8" font-size="6">FACTORY</text>'
-      + range(0, 3, 1).map((j) => `<rect class="iso-pane iso-lit iso-factory-glass" x="${6 + j * 14}" y="16" width="10" height="14" ${delay(0.3)}/>`).join('')
+    onPlane(FRONT(120, 200, 48), range(0, 3, 1).map((j) => `<rect class="iso-pane iso-lit iso-factory-glass" x="${6 + j * 14}" y="16" width="10" height="14" ${delay(0.3)}/>`).join('')
       + '<rect class="iso-face iso-side" x="62" y="14" width="30" height="26"/>'
       + range(18, 38, 4).map((v) => `<line class="iso-detail" x1="62" y1="${v}" x2="92" y2="${v}"/>`).join('')),
     onPlane(SIDE(220, 200, 48), range(6, 40, 4).map((u) => `<line class="iso-detail" x1="${u}" y1="10" x2="${u}" y2="30"/>`).join('')

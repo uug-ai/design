@@ -661,9 +661,7 @@ function factory(): FigureDrawing {
       // The bullet camera's own mount sits 5 units back and 3 to the left.
       + (kinds[i] === 'bullet' ? cameraHead('bullet', 35, cy + 3, 30) : cameraHead(kinds[i], 30, cy, 30))).join(''),
 
-    // The Factory: a hall with a sawtooth roof, a chimney stack against its back
-    // wall and a scanning antenna on the roof.
-    box(126, 100, 8, 10, 10, 76),
+    // The Factory: a hall with a sawtooth roof and a scanning antenna on it.
     box(120, 110, 8, 100, 90, 40),
     onPlane(FRONT(120, 200, 48), range(0, 3, 1).map((j) => `<rect class="iso-pane iso-lit iso-factory-glass" x="${6 + j * 14}" y="16" width="10" height="14" ${delay(0.3)}/>`).join('')
       + '<rect class="iso-face iso-side" x="62" y="14" width="30" height="26"/>'
@@ -695,7 +693,7 @@ function factory(): FigureDrawing {
   ].join('')
 
   return {
-    viewBox: frame([[0, 0, 0], [420, 0, 0], [0, 300, 0], [420, 300, 0], [126, 100, 84], [213, 115, 82], [408, 100, 64], [20, 50, 49], [60, 20, 8]], 10),
+    viewBox: frame([[0, 0, 0], [420, 0, 0], [0, 300, 0], [420, 300, 0], [213, 115, 82], [408, 100, 64], [20, 50, 49], [60, 20, 8]], 10),
     markup,
     glow: 2,
     bloom: 14,

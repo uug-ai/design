@@ -600,16 +600,16 @@ function factory(): FigureDrawing {
   const grid = range(30, 390, 30).map((x) => `<line class="iso-grid" x1="${x}" y1="10" x2="${x}" y2="290"/>`).join('')
     + range(30, 270, 30).map((y) => `<line class="iso-grid" x1="10" y1="${y}" x2="410" y2="${y}"/>`).join('')
 
-  // Camera wires share one trunk: down to the Factory's front, which finds the
-  // cameras, and up and along the back to the nodes, where each camera's own
-  // Agent records it once deployed.
+  // Camera wires share one trunk (at x 60, clear of the Factory hall): down to
+  // the Factory's front, which finds the cameras, and up and along the back to
+  // the nodes, where each camera's own Agent records it once deployed.
   const nodeX = (k: number) => nodes[k] + 15
-  const wires = cams.map((cy) => `<path class="iso-wire" d="M 32 ${cy} H 90"/>`).join('')
-    + '<path class="iso-wire" d="M 90 30 V 210 H 150 V 200"/>'
-    + `<path class="iso-wire" d="M 90 30 H ${nodeX(nodes.length - 1)}"/>`
+  const wires = cams.map((cy) => `<path class="iso-wire" d="M 32 ${cy} H 60"/>`).join('')
+    + '<path class="iso-wire" d="M 60 30 V 210 H 150 V 200"/>'
+    + `<path class="iso-wire" d="M 60 30 H ${nodeX(nodes.length - 1)}"/>`
     + nodes.map((_, k) => `<path class="iso-wire" d="M ${nodeX(k)} 30 V 100"/>`).join('')
-    + cams.map((cy, i) => flow(`M 150 200 V 210 H 90 V ${cy} H 32`, 'iso-factory-scan', i)
-      + flow(`M 32 ${cy} H 90 V 30 H ${nodeX(targets[i])} V 100`, 'iso-factory-record', i)).join('')
+    + cams.map((cy, i) => flow(`M 150 200 V 210 H 60 V ${cy} H 32`, 'iso-factory-scan', i)
+      + flow(`M 32 ${cy} H 60 V 30 H ${nodeX(targets[i])} V 100`, 'iso-factory-record', i)).join('')
 
   // Sawtooth roof: four teeth rising toward the front, each with a glazed face.
   const polygon = (cls: string, points: Vec3[]) =>
@@ -694,7 +694,7 @@ function factory(): FigureDrawing {
   ].join('')
 
   return {
-    viewBox: frame([[0, 0, 0], [420, 0, 0], [0, 300, 0], [420, 300, 0], [128, 116, 82], [213, 115, 82], [408, 100, 64], [20, 50, 49], [90, 20, 8]], 10),
+    viewBox: frame([[0, 0, 0], [420, 0, 0], [0, 300, 0], [420, 300, 0], [128, 116, 82], [213, 115, 82], [408, 100, 64], [20, 50, 49], [60, 20, 8]], 10),
     markup,
     glow: 2,
     bloom: 14,

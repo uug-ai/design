@@ -19,7 +19,6 @@ function Layout({ children }: LayoutProps) {
     { path: '/typography', label: 'Typography' },
     { path: '/spacing', label: 'Spacing' },
     { path: '/branding', label: 'Branding' },
-    { path: '/components', label: 'Components' },
   ]
 
   useEffect(() => {
@@ -45,7 +44,7 @@ function Layout({ children }: LayoutProps) {
               </Link>
             ))}
             <a href={storybookUrl} className="nav-link" target="_blank" rel="noreferrer" onClick={() => setIsMenuOpen(false)}>
-              Storybook
+              Components
             </a>
           </nav>
           <div className="header-actions">

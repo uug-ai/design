@@ -35,7 +35,7 @@ function Home() {
       iconClassName: 'foundation-icon-branding',
     },
     {
-      to: '/components',
+      href: storybookUrl,
       title: 'Components',
       description: 'Reusable UI components with code examples and best practices.',
       icon: Component,
@@ -96,14 +96,23 @@ function Home() {
         <div className="foundations-grid">
           {foundations.map((foundation) => {
             const Icon = foundation.icon
-
-            return (
-              <Link key={foundation.to} to={foundation.to} className="foundation-card">
+            const content = (
+              <>
                 <div className={`foundation-icon ${foundation.iconClassName}`}>
                   <Icon width={28} height={28} />
                 </div>
                 <h3>{foundation.title}</h3>
                 <p>{foundation.description}</p>
+              </>
+            )
+
+            return 'href' in foundation ? (
+              <a key={foundation.title} href={foundation.href} className="foundation-card" target="_blank" rel="noreferrer">
+                {content}
+              </a>
+            ) : (
+              <Link key={foundation.title} to={foundation.to} className="foundation-card">
+                {content}
               </Link>
             )
           })}
@@ -120,11 +129,8 @@ function Home() {
           <Link to="/colors" className="btn btn-primary">
             View Colors
           </Link>
-          <Link to="/components" className="btn btn-secondary">
-            Browse Components
-          </Link>
           <a href={storybookUrl} className="btn btn-secondary" target="_blank" rel="noreferrer">
-            Open Storybook
+            Browse Components
           </a>
         </div>
       </section>

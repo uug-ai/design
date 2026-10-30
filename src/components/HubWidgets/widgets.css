@@ -132,8 +132,13 @@
   color: var(--text-light); background: var(--bg-muted); border-color: var(--bg-muted); box-shadow: none; cursor: not-allowed;
 }
 .hub-widgets .hub-field.has-error > label, .hub-widgets .hub-field-error { color: var(--alert); }
-.hub-widgets .hub-field.has-error :is(input, textarea) { color: var(--alert); border-color: var(--alert); background: hsla(var(--alert-hsl), 0.1); box-shadow: 0 0 0 3px hsla(var(--alert-hsl), 0.2); }
+.hub-widgets .hub-field.has-error :is(input, textarea) { border-color: var(--alert); }
 .hub-widgets .hub-field-error { display: block; font-size: 12px; margin-top: 6px; }
+/* Text fields signal errors with the red border and label; the message stays for screen readers. */
+.hub-widgets .hub-field.has-error > .hub-field-error {
+  position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
+  overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0;
+}
 .hub-widgets .hub-select { position: relative; min-width: 0; }
 .hub-widgets .hub-select-trigger { display: flex; align-items: center; justify-content: space-between; gap: 12px; text-align: start; padding-inline: 20px 10px; }
 .hub-widgets .hub-select-trigger span { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }

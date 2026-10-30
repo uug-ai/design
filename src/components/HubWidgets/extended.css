@@ -175,6 +175,24 @@
 .hub-widgets .hub-identity-badge--camera { width: 12px; height: 12px; }
 .hub-widgets .hub-badge.is-mobile .hub-badge-title { display: none; }
 .hub-widgets .hub-infobox-text a { color: inherit; text-decoration: underline; }
+.hub-widgets .hub-error-summary { position: relative; display: flex; align-items: flex-start; gap: 12px; padding: 16px 24px; border: 1px solid hsla(var(--alert-hsl), 0.5); border-radius: var(--radius); background: hsla(var(--alert-hsl), 0.08); color: var(--alert); }
+.hub-widgets .hub-error-summary > svg { flex: none; margin-top: 1px; }
+.hub-widgets .hub-error-summary strong { display: block; font-weight: 500; }
+.hub-widgets .hub-error-summary ul { margin: 8px 0 0; padding-inline-start: 18px; }
+.hub-widgets .hub-error-summary li + li { margin-top: 4px; }
+.hub-widgets .hub-error-summary a { color: inherit; text-decoration: none; text-underline-offset: 2px; border-radius: 2px; }
+.hub-widgets .hub-error-summary a:hover { text-decoration: underline; }
+.hub-widgets .hub-error-summary a:focus-visible { outline: 2px solid currentColor; outline-offset: 2px; }
+@property --hub-error-summary-angle { syntax: '<angle>'; inherits: false; initial-value: 0deg; }
+.hub-widgets .hub-error-summary-ring {
+  position: absolute; inset: -1px; padding: 2px; border-radius: inherit; pointer-events: none;
+  background: conic-gradient(from var(--hub-error-summary-angle), transparent 0 55%, var(--alert) 85%, transparent);
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0); -webkit-mask-composite: xor;
+  mask: linear-gradient(#000 0 0) content-box exclude, linear-gradient(#000 0 0);
+  animation: hub-error-summary-spin 0.9s linear 2, hub-error-summary-fade 1.8s ease-in forwards;
+}
+@keyframes hub-error-summary-spin { to { --hub-error-summary-angle: 360deg; } }
+@keyframes hub-error-summary-fade { 70% { opacity: 1; } to { opacity: 0; } }
 .hub-widgets .hub-block-status { border-radius: 0; box-shadow: none; }
 .hub-widgets .hub-block-status.is-loading { --hub-info-color: var(--text); --hub-info-hsl: var(--text-light-hsl); }
 .hub-widgets .hub-block-header { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
@@ -216,4 +234,6 @@
 }
 @media (prefers-reduced-motion: reduce) {
   .hub-widgets .hub-field-spinner { animation: none; }
+  .hub-widgets .hub-error-summary-ring { animation: hub-error-summary-fade 1.2s ease-out forwards; background: var(--alert); }
 }
+

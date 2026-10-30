@@ -151,7 +151,7 @@ feedback are interactive demos, without calling Hub APIs. All 13 Storybook group
 are represented, with the extended widgets sharing their Storybook examples.
 The Illustrations group shows the isometric figures from
 [src/components/IsoIllustration](src/components/IsoIllustration) (`agent`, `control-tower`,
-`hub`, `vault`); they render plain SVG strings (`renderIsoSvg`) so non-React apps such as the
+`hub`, `vault`, `factory`); they render plain SVG strings (`renderIsoSvg`) so non-React apps such as the
 Angular Hub frontend can reuse the same drawings.
 Each section links
 directly to its Storybook documentation; previous `#inputs`, `#cards`, and

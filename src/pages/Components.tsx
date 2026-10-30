@@ -26,7 +26,7 @@ const COMPONENT_LINKS = [
   { id: 'surfaces', label: 'Surfaces', storybookPath: '/docs/components-surfaces--docs', description: 'Production cards, KPI tiles and compositional blocks with expandable content.' },
   { id: 'feedback', label: 'Feedback', storybookPath: '/docs/components-feedback--docs', description: 'Status badges, messages, progress, loading and empty states from Hub.' },
   { id: 'modal', label: 'Modal', storybookPath: '/docs/components-modal--docs', description: 'Complete header, body and footer preview, plus overlay dialogs and centered confirmations with keyboard focus management.' },
-  { id: 'illustrations', label: 'Illustrations', storybookPath: '/docs/components-illustrations--docs', description: 'Isometric line art for empty states, hero backgrounds and explaining Hub and Vault. Only live parts use the Hub accent; they glow in the dark theme and stay flat in light.' },
+  { id: 'illustrations', label: 'Illustrations', storybookPath: '/docs/components-illustrations--docs', description: 'Isometric line art for empty states, hero backgrounds and explaining Hub, Vault, Factory and the Agent. Only live parts use the Hub accent; they glow in the dark theme and stay flat in light.' },
 ] as const
 
 const SITE_OPTIONS = [
@@ -307,6 +307,10 @@ function Components() {
         label="Hub event flow: a camera event travels through its own Agent on the site gateway and Hub's workflows, analyse and notify stages to a videowall tile and a phone alert." />
       <IsoIllustration figure="vault" className="component-iso component-iso--wide"
         label="Vault: four Agents upload recordings to the Vault, a crane drops each one into the S3, Azure or Ceph bucket its account uses, and Hub reads a recording straight from its bucket." />
+      <IsoIllustration figure="factory" className="component-iso component-iso--wide"
+        label="Factory: each camera on a site gets its own Agent, built by Factory, stamped with the global settings and deployed to a cluster node, where it records that camera." />
+      <IsoIllustration figure="agent-link" className="component-iso component-iso--wide"
+        label="Agent link: an Agent reads one camera over RTSP; the camera cycles through bullet, dome, PTZ and turret models and the Agent through a Raspberry Pi, mini PC, laptop and Kubernetes server." />
       <div className="hub-row component-iso-row">
         <IsoIllustration figure="agent" className="component-iso" />
         <IsoIllustration figure="control-tower" className="component-iso component-iso--tall" />

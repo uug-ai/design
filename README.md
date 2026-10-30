@@ -126,8 +126,18 @@ This serves the built output locally with the same paths used in production:
 npm run storybook
 ```
 
-Storybook runs on [http://localhost:6006](http://localhost:6006) and exposes only
-the production Hub widget library in `src/components/HubWidgets`.
+Storybook runs on [http://localhost:6006](http://localhost:6006) and exposes the
+production Hub widget library in `src/components/HubWidgets` and the customer
+emails in `src/components/Emails`.
+
+### Emails
+
+**Emails** previews the transactional emails we send customers. **Emails / License**
+is the license email that uug-ai/hub-license sends when a license pull request is
+merged. Its `template.html` and `template.txt` are copies of
+`.github/license-email/` in hub-license, which stays the source of truth: change the
+template there first, then copy it here. Use the Controls panel to try other
+customers, device counts and validity periods.
 
 ### Components (Production Design Reference)
 

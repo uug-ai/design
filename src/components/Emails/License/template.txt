@@ -1,0 +1,18 @@
+Your Hub license
+
+Your Hub license for $company is ready to use.
+The key is attached to this email as license.txt.
+
+  Devices   $cameras
+  Issued    $issued
+  Valid     $validity
+
+To activate it, paste the contents of license.txt into the `license` field of your Helm values.yaml and run `helm upgrade`.
+
+Activation guide: https://learn.uug.ai/docs/hub/license/
+
+Questions? Just reply to this email.
+The Augment Vision team
+
+--
+Keep this key private; it is tied to $company. https://uug.ai

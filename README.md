@@ -146,6 +146,16 @@ and `*.txt` are copies of the `TEMPLATE_*` strings in that repository's
 `templates/*.go`, saved under the names the service looks them up by; the Go files
 stay the source of truth. Edit `values` in Controls to try other content.
 
+**Emails / Notifications v2** is a proposed redesign of those emails on the license
+email layout. Each email has a category colour (Account, Security, Detection, Camera
+status, Usage, Sharing, Tasks) and an isometric spot illustration drawn with the
+Illustrations kernel (`v2/figures.ts`), so its purpose is clear before the text is
+read. The content of all 13 emails lives in `v2/emails.ts`, which generates both the
+HTML and the plain-text version with the placeholders the service already fills.
+Storybook shows the illustrations as SVG; the emails reference PNG exports at
+`https://uug.ai/email/<template>.png`, which still have to be exported and published
+before the templates can replace the current ones.
+
 ### Components (Production Design Reference)
 
 **Components** extracts the reusable widget presentations from

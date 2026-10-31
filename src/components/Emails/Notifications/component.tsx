@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { fill } from './fill'
 
 // Copies of the TEMPLATE_* strings in uug-ai/hub-pipeline-notification templates/*.go, saved
 // under the names the service looks them up by (templates.GetTemplate).
@@ -14,21 +15,11 @@ export type NotificationEmailProps = {
   values: Record<string, string>
 }
 
-// Mirrors channels/smtp.go ReplaceValues: the tab titles are always cleared and every
-// {{key}} with a value is replaced. Placeholders without a value stay in the email, as
-// they do when the service sends it.
-function render(body: string, values: Record<string, string>) {
-  return body.replace(/\{\{([A-Za-z0-9_]+)\}\}/g, (match, key: string) => {
-    if (key === 'tab1_title' || key === 'tab2_title') return ''
-    return values[key] ?? match
-  })
-}
-
 export function NotificationEmail({ template, values }: NotificationEmailProps) {
   const [height, setHeight] = useState(900)
   return <iframe
     title={`${template} email`}
-    srcDoc={render(html[`./templates/${template}.html`], values)}
+    srcDoc={fill(html[`./templates/${template}.html`], values)}
     onLoad={event => {
       const document = event.currentTarget.contentDocument
       if (document) setHeight(document.documentElement.scrollHeight)
@@ -39,6 +30,6 @@ export function NotificationEmail({ template, values }: NotificationEmailProps) 
 
 export function NotificationEmailText({ template, values }: NotificationEmailProps) {
   return <pre style={{ margin: 0, maxWidth: 720, padding: 24, borderRadius: 12, background: '#f7f6fa', color: '#0b0b12', font: '13px/1.6 Menlo, Consolas, monospace', whiteSpace: 'pre-wrap' }}>
-    {render(text[`./templates/${template}.txt`], values).trim()}
+    {fill(text[`./templates/${template}.txt`], values).trim()}
   </pre>
 }

@@ -1,9 +1,9 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import { SAMPLES } from '../samples'
 import { NotificationEmailV2, NotificationEmailV2Text, NotificationFiguresV2 } from './component'
-import { EMAIL_FIGURES, type EmailFigure } from './figures'
+import { NOTIFICATION_FIGURES, type NotificationFigure } from './figures'
 
-const sample = (template: EmailFigure) => ({ template, values: SAMPLES[template] })
+const sample = (template: NotificationFigure) => ({ template, values: SAMPLES[template] })
 
 const meta = {
   title: 'Emails/Notifications v2',
@@ -43,7 +43,7 @@ export const TaskAssigned: Story = { args: sample('assign_task') }
 
 export const PlainText: Story = {
   args: { template: 'detection', values: SAMPLES.detection },
-  argTypes: { template: { control: 'select', options: EMAIL_FIGURES } },
+  argTypes: { template: { control: 'select', options: NOTIFICATION_FIGURES } },
   parameters: { docs: { description: { story: 'The text/plain alternative, generated from the same content as the HTML. Pick a template in Controls; the values stay those of Detection.' } } },
   render: args => <NotificationEmailV2Text {...args} />,
 }

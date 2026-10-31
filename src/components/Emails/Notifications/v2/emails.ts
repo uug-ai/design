@@ -1,13 +1,16 @@
-import type { EmailFigure } from './figures'
+import type { EmailFigure, NotificationFigure } from './figures'
 
 // The v2 notification emails: the license email's layout, with a category colour and a
 // spot illustration per email so its purpose reads at a glance. Placeholders are the
 // ones hub-pipeline-notification already fills ({{user}}, {{link}}, ...), so the
 // generated templates can replace the current ones name for name.
 
-export type EmailCategory = 'account' | 'security' | 'detections' | 'cameras' | 'usage' | 'sharing' | 'tasks'
+export type EmailCategory = 'license' | 'license_expiring' | 'license_expired' | 'account' | 'security' | 'detections' | 'cameras' | 'usage' | 'sharing' | 'tasks'
 
 export const CATEGORIES: Record<EmailCategory, { label: string; accent: string; tint: string }> = {
+  license: { label: 'License', accent: '#2713ff', tint: '#efedff' },
+  license_expiring: { label: 'License', accent: '#b45309', tint: '#fdf3e3' },
+  license_expired: { label: 'License', accent: '#d10650', tint: '#fdeaf1' },
   account: { label: 'Account', accent: '#2713ff', tint: '#efedff' },
   security: { label: 'Security', accent: '#d10650', tint: '#fdeaf1' },
   detections: { label: 'Detection', accent: '#7426ff', tint: '#f3ecff' },
@@ -30,11 +33,13 @@ export interface NotificationEmailV2 {
   body?: string
   cta?: { label: string; href: string }
   secondary?: { label: string; href: string }
+  // The small print under the card; defaults to the notification settings line.
+  footer?: string
 }
 
 const code = (value: string) => `<span style="font-family:Menlo,Consolas,monospace;font-size:13px;">${value}</span>`
 
-export const EMAILS: Record<EmailFigure, NotificationEmailV2> = {
+export const EMAILS: Record<NotificationFigure, NotificationEmailV2> = {
   welcome: {
     figure: 'welcome', category: 'account',
     subject: 'Welcome to Hub',
@@ -150,6 +155,46 @@ export const EMAILS: Record<EmailFigure, NotificationEmailV2> = {
   },
 }
 
+// The license emails from uug-ai/hub-license on the same layout. Their placeholders are
+// hub-license's string.Template ones ($company, ...), not the notification service's.
+// $expires is the end date, for the reminder a month before it and the notice after it.
+const renewal = 'Reply to this email to renew it; you will receive a new license.txt to put in place of the current one.'
+
+export const LICENSE_EMAILS: Record<'license' | 'license_expiring' | 'license_expired', NotificationEmailV2> = {
+  license: {
+    figure: 'license', category: 'license',
+    subject: 'Your Augment Vision license for $company',
+    title: 'Your Hub license',
+    intro: 'Your Hub license for $company is ready to use.<br>The key is attached to this email as license.txt.',
+    rows: [['Devices', '$cameras'], ['Issued', '$issued'], ['Valid', '$validity']],
+    body: `To activate it, paste the contents of license.txt into the ${code('license')} field of your Helm values.yaml and run ${code('helm upgrade')}.`,
+    cta: { label: 'Activation guide', href: 'https://learn.uug.ai/docs/hub/license/' },
+    footer: 'Keep this key private; it is tied to $company.',
+  },
+  license_expiring: {
+    figure: 'license_expiring', category: 'license_expiring',
+    subject: 'Your Augment Vision license for $company expires on $expires',
+    title: 'Your license expires in a month',
+    intro: 'The Hub license for $company expires<br>on $expires.',
+    rows: [['Devices', '$cameras'], ['Expires', '$expires']],
+    body: `${renewal} Renewing before $expires avoids any interruption.`,
+    cta: { label: 'License guide', href: 'https://learn.uug.ai/docs/hub/license/' },
+    footer: 'You receive this email because a Hub license was issued for $company.',
+  },
+  license_expired: {
+    figure: 'license_expired', category: 'license_expired',
+    subject: 'Your Augment Vision license for $company has expired',
+    title: 'Your license has expired',
+    intro: 'The Hub license for $company expired<br>on $expires.',
+    rows: [['Devices', '$cameras'], ['Expired', '$expires']],
+    body: renewal,
+    cta: { label: 'License guide', href: 'https://learn.uug.ai/docs/hub/license/' },
+    footer: 'You receive this email because a Hub license was issued for $company.',
+  },
+}
+
+const NOTIFICATION_FOOTER = 'You receive this email because of your Hub notification settings.'
+
 // Where the 1280 x 720 PNG exports of the figures are served from once the emails go live.
 export const figureUrl = (figure: EmailFigure) => `https://uug.ai/email/${figure}.png`
 
@@ -205,7 +250,7 @@ ${body}
 ${cta}
 <p style="margin:0 0 32px;font-size:15px;line-height:24px;color:#626676;">Questions? Just reply to this email.<br>The Augment Vision team</p>
 </td></tr>
-<tr><td style="padding:24px 4px 0;font-size:12px;line-height:18px;color:#8a8d9c;">You receive this email because of your Hub notification settings. &middot; <a href="https://uug.ai" style="color:#8a8d9c;">uug.ai</a></td></tr>
+<tr><td style="padding:24px 4px 0;font-size:12px;line-height:18px;color:#8a8d9c;">${email.footer ?? NOTIFICATION_FOOTER} &middot; <a href="https://uug.ai" style="color:#8a8d9c;">uug.ai</a></td></tr>
 </table>
 </td></tr>
 </table>
@@ -227,7 +272,7 @@ export function emailText(email: NotificationEmailV2) {
     email.cta && `${email.cta.label}: ${email.cta.href}`,
     email.secondary && `${email.secondary.label}: ${email.secondary.href}`,
     'Questions? Just reply to this email.\nThe Augment Vision team',
-    '--\nYou receive this email because of your Hub notification settings. https://uug.ai',
+    `--\n${email.footer ?? NOTIFICATION_FOOTER} https://uug.ai`,
   ]
   return parts.filter(Boolean).join('\n\n') + '\n'
 }

@@ -139,6 +139,12 @@ merged. Its `template.html` and `template.txt` are copies of
 template there first, then copy it here. Use the Controls panel to try other
 customers, device counts and validity periods.
 
+**Emails / License v2** puts the license email on the Notifications v2 layout and adds
+two proposed emails: a reminder a month before a license expires and a notice once it
+has expired, each with its own colour and illustration. Their content is in
+`Notifications/v2/emails.ts` (`LICENSE_EMAILS`) and uses hub-license's `$placeholders`
+plus `$expires`. hub-license only sends the first one today.
+
 **Emails / Notifications** holds the 13 Kerberos Hub emails that
 uug-ai/hub-pipeline-notification sends (welcome, password reset, detections, device
 status, shared cases and more), filled with sample values. Their `templates/*.html`

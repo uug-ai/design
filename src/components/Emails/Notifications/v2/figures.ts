@@ -5,9 +5,13 @@ import { box, frame, FRONT, onPlane, P, range, SIDE, TOP, type Vec3 } from '../.
 // each figure is a standalone SVG with its colours baked in: Storybook shows it as a
 // data URI and the emails get a PNG export of it.
 
-export type EmailFigure =
+export type NotificationFigure =
   | 'welcome' | 'activate' | 'forgot' | 'newip' | 'detection' | 'device' | 'device_group'
   | 'disable' | 'highupload' | 'share' | 'share_case' | 'share_case_otp' | 'assign_task'
+
+export type LicenseFigure = 'license' | 'license_expiring' | 'license_expired'
+
+export type EmailFigure = NotificationFigure | LicenseFigure
 
 interface Drawing { markup: string; bounds: Vec3[] }
 
@@ -177,6 +181,36 @@ const FIGURES: Record<EmailFigure, () => Drawing> = {
         + '<path class="w" d="M 10 18 L 12 20 L 14.5 16"/>'),
     bounds: block(30, 33, 80, 38, 70),
   }),
+  // A license certificate with its seal, the key in front of it and the Hub box it unlocks.
+  license: () => ({
+    markup: grid(-20, -10, 120, 90)
+      + agentBox(86, 30)
+      + box(20, 30, 0, 60, 4, 46)
+      + onPlane(FRONT(20, 34, 46), '<rect class="pane" x="4" y="4" width="52" height="38"/>' + lines(10, 12, 26, 3, 5)
+        + '<path class="lit" d="M 40 30 L 37 41 L 41 38 L 44 41 Z M 46 30 L 43 41 L 47 38 L 50 41 Z"/><circle class="lit" cx="44" cy="27" r="7"/><circle class="t" cx="44" cy="27" r="3.5"/>')
+      + onPlane(TOP(28, 50, 1), '<circle class="t" cx="8" cy="8" r="8"/><circle class="d" cx="8" cy="8" r="3"/><rect class="t" x="15" y="6" width="34" height="4"/><rect class="lit" x="38" y="10" width="4" height="6"/><rect class="lit" x="44" y="10" width="4" height="4"/>'),
+    bounds: block(20, 30, 108, 66, 46),
+  }),
+  // The certificate beside a calendar with its last day marked: the license expires soon.
+  license_expiring: () => ({
+    markup: grid(-20, -10, 120, 90)
+      + box(20, 30, 0, 60, 4, 46)
+      + onPlane(FRONT(20, 34, 46), '<rect class="pane" x="4" y="4" width="52" height="38"/>' + lines(10, 12, 26, 3, 5)
+        + '<circle class="lit" cx="44" cy="27" r="7"/><circle class="t" cx="44" cy="27" r="3.5"/>')
+      + box(70, 44, 0, 34, 4, 38)
+      + onPlane(FRONT(70, 48, 38), '<rect class="lit" x="0" y="0" width="34" height="8"/><circle class="t" cx="9" cy="0" r="1.6"/><circle class="t" cx="25" cy="0" r="1.6"/>'
+        + range(0, 3, 1).map(row => range(0, 4, 1).map(col => `<rect class="${row === 3 && col === 4 ? 'lit' : 'd'}" x="${3 + col * 6}" y="${11 + row * 6.4}" width="4.4" height="4.4"/>`).join('')).join('')),
+    bounds: block(20, 30, 104, 48, 46),
+  }),
+  // The certificate stamped EXPIRED and the Hub box switched off: the license has expired.
+  license_expired: () => ({
+    markup: grid(-20, -10, 120, 90)
+      + agentBox(86, 30, false)
+      + box(20, 30, 0, 60, 4, 46)
+      + onPlane(FRONT(20, 34, 46), '<rect class="pane" x="4" y="4" width="52" height="38"/>' + lines(10, 12, 26, 3, 5)
+        + '<g transform="rotate(-14 30 26)"><rect class="stamp" x="9" y="19" width="42" height="13" rx="2"/><text class="stamp-text" x="30" y="28.2" text-anchor="middle">EXPIRED</text></g>'),
+    bounds: block(20, 30, 108, 46, 46),
+  }),
 }
 
 // A camera standing on the site platform; `off` greys its light and marks it with a cross.
@@ -190,7 +224,7 @@ function onPlaneCamera(x: number, y: number, on: boolean) {
     + (on ? '' : onPlane(FRONT(x - 3, y + 26, lift + pole + 22), '<path class="cut" d="M 2 0 L 8 6 M 8 0 L 2 6"/>'))
 }
 
-export const EMAIL_FIGURES = Object.keys(FIGURES) as EmailFigure[]
+export const NOTIFICATION_FIGURES = (Object.keys(FIGURES) as EmailFigure[]).filter((figure): figure is NotificationFigure => !figure.startsWith('license'))
 
 /** A 16:9 viewBox around the figure, with room around it on every side. */
 function canvas(bounds: Vec3[]) {
@@ -221,6 +255,7 @@ export function renderEmailFigure(figure: EmailFigure, accent: string, tint: str
     `.shackle{fill:none;stroke:rgba(11,11,18,.42);stroke-width:5}`,
     `.link{fill:none;stroke:rgba(11,11,18,.42);stroke-width:2}.link--lit{stroke:${accent}}`,
     '.ok{fill:#5fab6d;stroke:none}',
+    `.stamp{fill:#ffffff;fill-opacity:.85;stroke:${accent};stroke-width:1.4}.stamp-text{font:700 6.5px Inter,Arial,sans-serif;letter-spacing:.8px;fill:${accent}}`,
     `.label{font:600 4px Inter,Arial,sans-serif;letter-spacing:.6px;fill:${accent}}`,
   ].join('')
   const [x, y, width, height] = canvas(bounds)

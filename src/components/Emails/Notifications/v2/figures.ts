@@ -226,15 +226,21 @@ function onPlaneCamera(x: number, y: number, on: boolean) {
 
 export const NOTIFICATION_FIGURES = (Object.keys(FIGURES) as EmailFigure[]).filter((figure): figure is NotificationFigure => !figure.startsWith('license'))
 
+const round2 = (value: number) => Math.round(value * 100) / 100
+
 /** A 16:9 viewBox around the figure, with room around it on every side. */
 function canvas(bounds: Vec3[]) {
   const [x, y, width, height] = frame(bounds, 0).split(' ').map(Number)
   const fit = Math.max(width / 16, height / 9) * 1.3
-  return [x + width / 2 - 8 * fit, y + height / 2 - 4.5 * fit, 16 * fit, 9 * fit].map(value => Math.round(value * 100) / 100)
+  return [x + width / 2 - 8 * fit, y + height / 2 - 4.5 * fit, 16 * fit, 9 * fit].map(round2)
 }
 
-/** A standalone 16:9 SVG for an email figure: the figure in `accent` on a `tint` ground. */
-export function renderEmailFigure(figure: EmailFigure, accent: string, tint: string) {
+/**
+ * A standalone 16:9 SVG for an email figure: the figure in `accent` on a `tint` ground,
+ * with the UUG logo (`logo`, an image URL; a data URI when the SVG is shown as an image) in
+ * its top-right corner.
+ */
+export function renderEmailFigure(figure: EmailFigure, accent: string, tint: string, logo: string) {
   const { markup, bounds } = FIGURES[figure]()
   const style = [
     'line,path,rect,circle,ellipse{stroke-linejoin:round;stroke-linecap:round}',
@@ -259,6 +265,14 @@ export function renderEmailFigure(figure: EmailFigure, accent: string, tint: str
     `.label{font:600 4px Inter,Arial,sans-serif;letter-spacing:.6px;fill:${accent}}`,
   ].join('')
   const [x, y, width, height] = canvas(bounds)
-  return `<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="720" viewBox="${x} ${y} ${width} ${height}"><style>${style}</style>`
-    + `<rect x="${x}" y="${y}" width="${width}" height="${height}" fill="${tint}"/>${markup}</svg>`
+  const size = round2(height * 0.16)
+  const lx = round2(x + width - height * 0.06 - size)
+  const ly = round2(y + height * 0.06)
+  const r = size / 2
+  return `<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="1280" height="720" viewBox="${x} ${y} ${width} ${height}"><style>${style}</style>`
+    + `<defs><clipPath id="logo"><circle cx="${lx + r}" cy="${ly + r}" r="${r}"/></clipPath></defs>`
+    + `<rect x="${x}" y="${y}" width="${width}" height="${height}" fill="${tint}"/>${markup}`
+    + `<circle cx="${lx + r}" cy="${ly + r}" r="${r}" fill="#ffffff"/>`
+    + `<image href="${logo}" xlink:href="${logo}" x="${lx}" y="${ly}" width="${size}" height="${size}" clip-path="url(#logo)"/>`
+    + `<circle cx="${lx + r}" cy="${ly + r}" r="${r}" fill="none" stroke="rgba(11,11,18,.1)" stroke-width="${round2(size / 60)}"/></svg>`
 }

@@ -235,14 +235,13 @@ export function emailHtml(email: NotificationEmailV2) {
 <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="max-width:520px;font-family:Inter,-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;color:#0b0b12;">
 <tr><td style="height:4px;line-height:4px;font-size:0;border-radius:12px 12px 0 0;background-color:${accent};">&nbsp;</td></tr>
 <tr><td style="background-color:#ffffff;border:1px solid #ebe8f2;border-top:0;border-radius:0 0 12px 12px;padding:28px 40px 8px;">
-<div style="margin-bottom:28px;line-height:0;"><img src="${figureUrl(email.figure)}" width="440" height="248" alt="" style="display:block;width:100%;max-width:440px;height:auto;border:0;border-radius:10px;background-color:${tint};"></div>
+<div style="margin-bottom:28px;line-height:0;"><img src="${figureUrl(email.figure)}" width="440" height="248" alt="UUG" style="display:block;width:100%;max-width:440px;height:auto;border:0;border-radius:10px;background-color:${tint};"></div>
 <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="margin-bottom:28px;"><tr>
-<td style="vertical-align:middle;padding-right:20px;">
+<td>
 <div style="display:inline-block;padding:3px 10px;border-radius:999px;background-color:${tint};color:${accent};font-size:12px;line-height:18px;font-weight:600;letter-spacing:0.02em;">${label}</div>
 <div style="font-family:Outfit,Inter,Arial,sans-serif;font-size:24px;line-height:30px;font-weight:600;margin-top:12px;">${email.title}</div>
 <p style="margin:8px 0 0;font-size:15px;line-height:24px;color:#626676;">${email.intro}</p>
 </td>
-<td align="right" width="56" style="vertical-align:middle;"><img src="https://uug.ai/brand/uug-circle-128.png" width="56" height="56" alt="UUG" style="display:block;border:0;border-radius:50%;"></td>
 </tr></table>
 ${rows}
 ${block}

@@ -158,7 +158,8 @@ status, Usage, Sharing, Tasks) and an isometric spot illustration drawn with the
 Illustrations kernel (`v2/figures.ts`), so its purpose is clear before the text is
 read. The content of all 13 emails lives in `v2/emails.ts`, which generates both the
 HTML and the plain-text version with the placeholders the service already fills.
-Every illustration is a 16:9 image with its category tint and floor grid baked in,
+Every illustration is a 16:9 image with its category tint, floor grid and the UUG logo
+(top right) baked in,
 so the header keeps its shape in every email client. Storybook shows them as SVG;
 the emails reference 1280 x 720 PNG exports at
 `https://uug.ai/email/<template>.png`, which still have to be exported and published

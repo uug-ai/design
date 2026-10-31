@@ -235,12 +235,19 @@ function canvas(bounds: Vec3[]) {
   return [x + width / 2 - 8 * fit, y + height / 2 - 4.5 * fit, 16 * fit, 9 * fit].map(round2)
 }
 
-/**
- * A standalone 16:9 SVG for an email figure: the figure in `accent` on a `tint` ground,
- * with the UUG logo (`logo`, an image URL; a data URI when the SVG is shown as an image) in
- * its top-right corner.
- */
-export function renderEmailFigure(figure: EmailFigure, accent: string, tint: string, logo: string) {
+// The UUG logo as an isometric coin of radius r and thickness h, centred on the origin:
+// the side band between the bottom and top rims, then the top face with UUG lettered on it.
+function logoCoin(r: number, h: number) {
+  const [rx] = P(r / Math.SQRT2, -r / Math.SQRT2, 0)
+  return onPlane(TOP(0, 0, 0), `<circle class="iso-face iso-side" r="${r}"/>`)
+    + `<path class="iso-side" d="M ${-rx} ${-h} H ${rx} V 0 H ${-rx} Z"/>`
+    + `<line class="coin-edge" x1="${-rx}" y1="${-h}" x2="${-rx}" y2="0"/><line class="coin-edge" x1="${rx}" y1="${-h}" x2="${rx}" y2="0"/>`
+    + onPlane(TOP(0, 0, h), `<circle class="iso-face iso-top" r="${r}"/><circle class="d" r="${round2(r * 0.82)}"/>`
+      + `<text class="coin-text" transform="rotate(-45)" y="${round2(r * 0.17)}" font-size="${round2(r * 0.5)}" text-anchor="middle">UUG</text>`)
+}
+
+/** A standalone 16:9 SVG for an email figure: the figure in `accent` on a `tint` ground, with the UUG coin in its top-right corner. */
+export function renderEmailFigure(figure: EmailFigure, accent: string, tint: string) {
   const { markup, bounds } = FIGURES[figure]()
   const style = [
     'line,path,rect,circle,ellipse{stroke-linejoin:round;stroke-linecap:round}',
@@ -261,18 +268,17 @@ export function renderEmailFigure(figure: EmailFigure, accent: string, tint: str
     `.shackle{fill:none;stroke:rgba(11,11,18,.42);stroke-width:5}`,
     `.link{fill:none;stroke:rgba(11,11,18,.42);stroke-width:2}.link--lit{stroke:${accent}}`,
     '.ok{fill:#5fab6d;stroke:none}',
+    '.iso-side{fill:#ebe8f2}.coin-edge{stroke:rgba(11,11,18,.42);stroke-width:.7}',
+    `.coin-text{font-family:Outfit,Inter,Arial,sans-serif;font-weight:700;letter-spacing:.08em;fill:#0b0b12}`,
     `.stamp{fill:#ffffff;fill-opacity:.85;stroke:${accent};stroke-width:1.4}.stamp-text{font:700 6.5px Inter,Arial,sans-serif;letter-spacing:.8px;fill:${accent}}`,
     `.label{font:600 4px Inter,Arial,sans-serif;letter-spacing:.6px;fill:${accent}}`,
   ].join('')
   const [x, y, width, height] = canvas(bounds)
-  const size = round2(height * 0.16)
-  const lx = round2(x + width - height * 0.06 - size)
-  const ly = round2(y + height * 0.06)
-  const r = size / 2
-  return `<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="1280" height="720" viewBox="${x} ${y} ${width} ${height}"><style>${style}</style>`
-    + `<defs><clipPath id="logo"><circle cx="${lx + r}" cy="${ly + r}" r="${r}"/></clipPath></defs>`
+  const r = round2(height * 0.085)
+  const [rx] = P(r / Math.SQRT2, -r / Math.SQRT2, 0)
+  const cx = round2(x + width - height * 0.06 - rx)
+  const cy = round2(y + height * 0.06 + r * 0.6 + r * 0.32)
+  return `<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="720" viewBox="${x} ${y} ${width} ${height}"><style>${style}</style>`
     + `<rect x="${x}" y="${y}" width="${width}" height="${height}" fill="${tint}"/>${markup}`
-    + `<circle cx="${lx + r}" cy="${ly + r}" r="${r}" fill="#ffffff"/>`
-    + `<image href="${logo}" xlink:href="${logo}" x="${lx}" y="${ly}" width="${size}" height="${size}" clip-path="url(#logo)"/>`
-    + `<circle cx="${lx + r}" cy="${ly + r}" r="${r}" fill="none" stroke="rgba(11,11,18,.1)" stroke-width="${round2(size / 60)}"/></svg>`
+    + `<g transform="translate(${cx} ${cy})">${logoCoin(r, round2(r * 0.32))}</g></svg>`
 }

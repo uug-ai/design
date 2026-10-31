@@ -150,7 +150,7 @@ export const EMAILS: Record<EmailFigure, NotificationEmailV2> = {
   },
 }
 
-// Where the PNG exports of the figures are served from once the emails go live.
+// Where the 1280 x 720 PNG exports of the figures are served from once the emails go live.
 export const figureUrl = (figure: EmailFigure) => `https://uug.ai/email/${figure}.png`
 
 const row = ([label, value]: [string, string], last: boolean) => {
@@ -190,7 +190,7 @@ export function emailHtml(email: NotificationEmailV2) {
 <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="max-width:520px;font-family:Inter,-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;color:#0b0b12;">
 <tr><td style="height:4px;line-height:4px;font-size:0;border-radius:12px 12px 0 0;background-color:${accent};">&nbsp;</td></tr>
 <tr><td style="background-color:#ffffff;border:1px solid #ebe8f2;border-top:0;border-radius:0 0 12px 12px;padding:28px 40px 8px;">
-<div style="background-color:${tint};border-radius:10px;padding:12px 24px;margin-bottom:28px;text-align:center;line-height:0;"><img src="${figureUrl(email.figure)}" width="200" alt="" style="display:inline-block;width:100%;max-width:200px;height:auto;border:0;"></div>
+<div style="margin-bottom:28px;line-height:0;"><img src="${figureUrl(email.figure)}" width="440" height="248" alt="" style="display:block;width:100%;max-width:440px;height:auto;border:0;border-radius:10px;background-color:${tint};"></div>
 <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="margin-bottom:28px;"><tr>
 <td style="vertical-align:middle;padding-right:20px;">
 <div style="display:inline-block;padding:3px 10px;border-radius:999px;background-color:${tint};color:${accent};font-size:12px;line-height:18px;font-weight:600;letter-spacing:0.02em;">${label}</div>

@@ -11,7 +11,9 @@ export type EmailFigure =
 
 interface Drawing { markup: string; bounds: Vec3[] }
 
-const grid = (x0: number, y0: number, x1: number, y1: number, step = 20) => onPlane(TOP(0, 0, 0),
+// The floor grid runs well past the figure so it fills the whole 16:9 canvas.
+const grid = (x0: number, y0: number, x1: number, y1: number, step = 20) => wideGrid(x0 - 160, y0 - 160, x1 + 160, y1 + 160, step)
+const wideGrid = (x0: number, y0: number, x1: number, y1: number, step: number) => onPlane(TOP(0, 0, 0),
   range(x0, x1, step).map(at => `<line class="g" x1="${at}" y1="${y0}" x2="${at}" y2="${y1}"/>`).join('')
   + range(y0, y1, step).map(at => `<line class="g" x1="${x0}" y1="${at}" x2="${x1}" y2="${at}"/>`).join(''))
 
@@ -190,8 +192,15 @@ function onPlaneCamera(x: number, y: number, on: boolean) {
 
 export const EMAIL_FIGURES = Object.keys(FIGURES) as EmailFigure[]
 
-/** A standalone SVG for an email figure, coloured with `accent`. */
-export function renderEmailFigure(figure: EmailFigure, accent: string) {
+/** A 16:9 viewBox around the figure, with room around it on every side. */
+function canvas(bounds: Vec3[]) {
+  const [x, y, width, height] = frame(bounds, 0).split(' ').map(Number)
+  const fit = Math.max(width / 16, height / 9) * 1.3
+  return [x + width / 2 - 8 * fit, y + height / 2 - 4.5 * fit, 16 * fit, 9 * fit].map(value => Math.round(value * 100) / 100)
+}
+
+/** A standalone 16:9 SVG for an email figure: the figure in `accent` on a `tint` ground. */
+export function renderEmailFigure(figure: EmailFigure, accent: string, tint: string) {
   const { markup, bounds } = FIGURES[figure]()
   const style = [
     'line,path,rect,circle,ellipse{stroke-linejoin:round;stroke-linecap:round}',
@@ -199,7 +208,7 @@ export function renderEmailFigure(figure: EmailFigure, accent: string) {
     '.iso-top{fill:#ffffff}.iso-front{fill:#f7f6fa}.iso-side{fill:#ebe8f2}',
     '.t{fill:#ffffff;stroke:rgba(11,11,18,.42);stroke-width:.7}',
     '.d{fill:none;stroke:rgba(11,11,18,.2);stroke-width:.7}',
-    `.g{stroke:${accent};stroke-opacity:.12;stroke-width:.6}`,
+    `.g{stroke:${accent};stroke-opacity:.09;stroke-width:.6}`,
     `.lit{fill:${accent};stroke:none}`,
     `.pane{fill:${accent};fill-opacity:.1;stroke:${accent};stroke-opacity:.5;stroke-width:.6}`,
     `.halo{fill:${accent};opacity:.12}`,
@@ -214,5 +223,7 @@ export function renderEmailFigure(figure: EmailFigure, accent: string) {
     '.ok{fill:#5fab6d;stroke:none}',
     `.label{font:600 4px Inter,Arial,sans-serif;letter-spacing:.6px;fill:${accent}}`,
   ].join('')
-  return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="${frame(bounds, 4)}"><style>${style}</style>${markup}</svg>`
+  const [x, y, width, height] = canvas(bounds)
+  return `<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="720" viewBox="${x} ${y} ${width} ${height}"><style>${style}</style>`
+    + `<rect x="${x}" y="${y}" width="${width}" height="${height}" fill="${tint}"/>${markup}</svg>`
 }

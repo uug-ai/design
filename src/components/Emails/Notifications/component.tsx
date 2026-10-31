@@ -22,7 +22,7 @@ export function NotificationEmail({ template, values }: NotificationEmailProps) 
     srcDoc={fill(html[`./templates/${template}.html`], values)}
     onLoad={event => {
       const document = event.currentTarget.contentDocument
-      if (document) setHeight(document.documentElement.scrollHeight)
+      if (document) setHeight(document.body.offsetHeight)
     }}
     style={{ display: 'block', width: '100%', maxWidth: 720, height, border: 0, borderRadius: 12, background: '#ffffff' }}
   />

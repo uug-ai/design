@@ -8,8 +8,10 @@ export type NotificationEmailV2Props = {
   values: Record<string, string>
 }
 
-const figureSrc = (figure: EmailFigure) =>
-  `data:image/svg+xml,${encodeURIComponent(renderEmailFigure(figure, CATEGORIES[EMAILS[figure].category].accent))}`
+const figureSrc = (figure: EmailFigure) => {
+  const { accent, tint } = CATEGORIES[EMAILS[figure].category]
+  return `data:image/svg+xml,${encodeURIComponent(renderEmailFigure(figure, accent, tint))}`
+}
 
 export function NotificationEmailV2({ template, values }: NotificationEmailV2Props) {
   const [height, setHeight] = useState(1000)
@@ -20,7 +22,7 @@ export function NotificationEmailV2({ template, values }: NotificationEmailV2Pro
     srcDoc={fill(html, values)}
     onLoad={event => {
       const document = event.currentTarget.contentDocument
-      if (document) setHeight(document.documentElement.scrollHeight)
+      if (document) setHeight(document.body.offsetHeight)
     }}
     style={{ display: 'block', width: '100%', maxWidth: 640, height, border: 0, borderRadius: 12, background: '#f7f6fa' }}
   />
@@ -36,8 +38,8 @@ export function NotificationFiguresV2() {
   return <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: 16, fontFamily: 'Inter, Arial, sans-serif' }}>
     {EMAIL_FIGURES.map(figure => {
       const { label, accent, tint } = CATEGORIES[EMAILS[figure].category]
-      return <figure key={figure} style={{ margin: 0, padding: 16, borderRadius: 12, background: tint }}>
-        <img src={figureSrc(figure)} alt="" style={{ display: 'block', width: '100%', height: 130, objectFit: 'contain' }} />
+      return <figure key={figure} style={{ margin: 0, padding: 12, borderRadius: 12, background: tint }}>
+        <img src={figureSrc(figure)} alt="" style={{ display: 'block', width: '100%', aspectRatio: '16 / 9', borderRadius: 8 }} />
         <figcaption style={{ marginTop: 12 }}>
           <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: '0.04em', textTransform: 'uppercase', color: accent }}>{label}</div>
           <div style={{ fontSize: 14, fontWeight: 600, color: '#0b0b12', marginTop: 2 }}>{EMAILS[figure].title.replace('{{title}}', 'Detection')}</div>

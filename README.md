@@ -139,6 +139,13 @@ merged. Its `template.html` and `template.txt` are copies of
 template there first, then copy it here. Use the Controls panel to try other
 customers, device counts and validity periods.
 
+**Emails / Notifications** holds the 13 Kerberos Hub emails that
+uug-ai/hub-pipeline-notification sends (welcome, password reset, detections, device
+status, shared cases and more), filled with sample values. Their `templates/*.html`
+and `*.txt` are copies of the `TEMPLATE_*` strings in that repository's
+`templates/*.go`, saved under the names the service looks them up by; the Go files
+stay the source of truth. Edit `values` in Controls to try other content.
+
 ### Components (Production Design Reference)
 
 **Components** extracts the reusable widget presentations from

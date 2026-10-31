@@ -136,7 +136,10 @@ emails in `src/components/Emails`.
 emails from uug-ai/hub-license (issued, a reminder a month before it expires, and
 the notice once it has expired) and the 13 Kerberos Hub emails from
 uug-ai/hub-pipeline-notification (welcome, password reset, detections, camera status,
-usage, sharing and tasks). **Overview** shows them side by side.
+usage, sharing and tasks). Like **Components**, each email has its own page (for
+example **Emails / License** or **Emails / High Upload**) whose stories fill the same
+template with different content, plus its plain-text version. **Emails / Overview**
+shows them all side by side.
 
 All of them share one layout: a card with a category colour (License, Account,
 Security, Detection, Camera status, Usage, Sharing, Tasks) on its top edge, label and
@@ -144,6 +147,8 @@ button, and a 16:9 isometric spot illustration with an isometric UUG coin in its
 right, drawn with the Illustrations kernel in `figures.ts`, so each email's purpose is
 clear before its text is read.
 
+- Each page is `<Email>/stories.tsx`, built from the shared sample values in
+  `samples.ts` and the helpers in `story.ts`.
 - `emails.ts` holds each email's content once and generates both the HTML and the
   plain-text version. The license emails use hub-license's `$placeholders` (plus
   `$expires` for the end date); the others use the `{{placeholders}}`

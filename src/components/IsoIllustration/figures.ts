@@ -1,8 +1,15 @@
 import { box, frame, FRONT, onPlane, P, range, SIDE, TOP, type Vec3 } from './iso'
 
-export type IsoFigure = 'agent' | 'control-tower' | 'hub' | 'vault' | 'factory'
+export type IsoFigure = 'agent' | 'control-tower' | 'hub' | 'vault' | 'factory' | 'ecosystem'
 
-export const ISO_FIGURE_NAMES: IsoFigure[] = ['agent', 'control-tower', 'hub', 'vault', 'factory']
+export const ISO_FIGURE_NAMES: IsoFigure[] = ['agent', 'control-tower', 'hub', 'vault', 'factory', 'ecosystem']
+
+// The product zones of the ecosystem figure. Pass links to make each one a link.
+export type IsoZone = 'factory' | 'agent' | 'vault' | 'hub'
+
+export interface IsoRenderOptions {
+  links?: Partial<Record<IsoZone, string>>
+}
 
 interface FigureDrawing {
   viewBox: string
@@ -393,6 +400,49 @@ function hub(): FigureDrawing {
   }
 }
 
+// A drum whose axis runs along +y (toward the viewer): its outline is the
+// hull of its back and front rims. The caller draws the front face on top.
+function drum(cx: number, y: number, cz: number, r: number, depth: number) {
+  const rims = range(0, 35, 1).flatMap((k) => {
+    const a = (k * Math.PI) / 18
+    return [P(cx + r * Math.cos(a), y, cz + r * Math.sin(a)), P(cx + r * Math.cos(a), y + depth, cz + r * Math.sin(a))]
+  })
+  return `<polygon class="iso-face iso-side" points="${hull(rims).map(([x, z]) => `${x},${z}`).join(' ')}"/>`
+}
+
+// The Vault's main door, on the front of its safe at box(140, 100, 8, 80, 80, 64):
+// a heavy drum in a recessed frame, with bolts, a combination dial and a raised
+// wheel that turns as the Vault works. Other figures place it with placeAt().
+function vaultDoor() {
+  const bolts = range(0, 11, 1).map((k) => {
+    const a = (k * Math.PI) / 6
+    return `<circle class="iso-detail" cx="${round1(40 + Math.cos(a) * 21)}" cy="${round1(34 + Math.sin(a) * 21)}" r="1"/>`
+  }).join('')
+  const spokes = range(0, 2, 1).map((k) => {
+    const a = (k * Math.PI) / 3
+    const [dx, dy] = [round1(Math.cos(a) * 16), round1(Math.sin(a) * 16)]
+    return `<line class="iso-detail iso-vault-spoke" x1="${40 - dx}" y1="${34 - dy}" x2="${40 + dx}" y2="${34 + dy}"/>`
+      + `<circle class="iso-face iso-top" cx="${40 - dx}" cy="${34 - dy}" r="1.8"/><circle class="iso-face iso-top" cx="${40 + dx}" cy="${34 + dy}" r="1.8"/>`
+  }).join('')
+  const ticks = range(0, 11, 1).map((k) => {
+    const a = (k * Math.PI) / 6
+    return `<line class="iso-detail" x1="${round1(66 + Math.cos(a) * 3.2)}" y1="${round1(14 + Math.sin(a) * 3.2)}" x2="${round1(66 + Math.cos(a) * 4.4)}" y2="${round1(14 + Math.sin(a) * 4.4)}"/>`
+  }).join('')
+  return onPlane(FRONT(140, 180, 72), '<text class="iso-label" x="5" y="8" font-size="6">VAULT</text>'
+      + '<circle class="iso-face iso-side" cx="40" cy="34" r="27"/><circle class="iso-detail" cx="40" cy="34" r="25"/>')
+    + drum(180, 180, 38, 23, 5)
+    + onPlane(FRONT(140, 185, 72), '<circle class="iso-face iso-top" cx="40" cy="34" r="23"/>'
+      + '<circle class="iso-pane iso-lit iso-vault-ring" cx="40" cy="34" r="19"/>'
+      + '<circle class="iso-face iso-top" cx="40" cy="34" r="15"/>'
+      + '<circle class="iso-detail" cx="40" cy="34" r="11"/><circle class="iso-detail" cx="40" cy="34" r="7"/>'
+      + bolts)
+    + drum(206, 180, 58, 5, 3)
+    + onPlane(FRONT(140, 183, 72), `<circle class="iso-face iso-top" cx="66" cy="14" r="5"/>${ticks}`
+      + '<line class="iso-detail" x1="66" y1="14" x2="66" y2="10.5"/>')
+    + drum(180, 185, 38, 4, 3)
+    + onPlane(FRONT(140, 188, 72), `<g class="iso-vault-wheel">${spokes}<circle class="iso-face iso-top" cx="40" cy="34" r="4"/></g>`)
+}
+
 // Vault, recordings only: four Agents on site upload their recordings to the
 // Vault, which sends each one out of a hatch as a crate; a gantry crane drops
 // it into the bucket of the storage provider its account uses (bring your own
@@ -428,46 +478,6 @@ function vault(): FigureDrawing {
     + `<path class="iso-wire" d="M ${sourceX} 127 V 150 H 390 V 240 H 355"/>`
     + `<path class="iso-pulse iso-lit iso-vault-request" d="M 355 240 H 390 V 150 H ${sourceX} V 127" pathLength="1000" ${delay(fetch)}/>`
     + `<path class="iso-pulse iso-lit iso-vault-stream" d="M ${sourceX} 127 V 150 H 390 V 240 H 355" pathLength="1000" ${delay(fetch)}/>`
-
-  // A drum whose axis runs along +y (toward the viewer): its outline is the
-  // hull of its back and front rims. The caller draws the front face on top.
-  const drum = (cx: number, y: number, cz: number, r: number, depth: number) => {
-    const rims = range(0, 35, 1).flatMap((k) => {
-      const a = (k * Math.PI) / 18
-      return [P(cx + r * Math.cos(a), y, cz + r * Math.sin(a)), P(cx + r * Math.cos(a), y + depth, cz + r * Math.sin(a))]
-    })
-    return `<polygon class="iso-face iso-side" points="${hull(rims).map(([x, z]) => `${x},${z}`).join(' ')}"/>`
-  }
-
-  // Main door: a heavy drum in a recessed frame, with bolts, a
-  // combination dial and a raised wheel that turns as the Vault works.
-  const bolts = range(0, 11, 1).map((k) => {
-    const a = (k * Math.PI) / 6
-    return `<circle class="iso-detail" cx="${round1(40 + Math.cos(a) * 21)}" cy="${round1(34 + Math.sin(a) * 21)}" r="1"/>`
-  }).join('')
-  const spokes = range(0, 2, 1).map((k) => {
-    const a = (k * Math.PI) / 3
-    const [dx, dy] = [round1(Math.cos(a) * 16), round1(Math.sin(a) * 16)]
-    return `<line class="iso-detail iso-vault-spoke" x1="${40 - dx}" y1="${34 - dy}" x2="${40 + dx}" y2="${34 + dy}"/>`
-      + `<circle class="iso-face iso-top" cx="${40 - dx}" cy="${34 - dy}" r="1.8"/><circle class="iso-face iso-top" cx="${40 + dx}" cy="${34 + dy}" r="1.8"/>`
-  }).join('')
-  const ticks = range(0, 11, 1).map((k) => {
-    const a = (k * Math.PI) / 6
-    return `<line class="iso-detail" x1="${round1(66 + Math.cos(a) * 3.2)}" y1="${round1(14 + Math.sin(a) * 3.2)}" x2="${round1(66 + Math.cos(a) * 4.4)}" y2="${round1(14 + Math.sin(a) * 4.4)}"/>`
-  }).join('')
-  const door = onPlane(FRONT(140, 180, 72), '<text class="iso-label" x="5" y="8" font-size="6">VAULT</text>'
-      + '<circle class="iso-face iso-side" cx="40" cy="34" r="27"/><circle class="iso-detail" cx="40" cy="34" r="25"/>')
-    + drum(180, 180, 38, 23, 5)
-    + onPlane(FRONT(140, 185, 72), '<circle class="iso-face iso-top" cx="40" cy="34" r="23"/>'
-      + '<circle class="iso-pane iso-lit iso-vault-ring" cx="40" cy="34" r="19"/>'
-      + '<circle class="iso-face iso-top" cx="40" cy="34" r="15"/>'
-      + '<circle class="iso-detail" cx="40" cy="34" r="11"/><circle class="iso-detail" cx="40" cy="34" r="7"/>'
-      + bolts)
-    + drum(206, 180, 58, 5, 3)
-    + onPlane(FRONT(140, 183, 72), `<circle class="iso-face iso-top" cx="66" cy="14" r="5"/>${ticks}`
-      + '<line class="iso-detail" x1="66" y1="14" x2="66" y2="10.5"/>')
-    + drum(180, 185, 38, 4, 3)
-    + onPlane(FRONT(140, 188, 72), `<g class="iso-vault-wheel">${spokes}<circle class="iso-face iso-top" cx="40" cy="34" r="4"/></g>`)
 
   // Side: the display, vents and the hatch the conveyor runs out of.
   const side = onPlane(SIDE(220, 180, 72), '<rect class="iso-pane" x="8" y="8" width="64" height="18" rx="1.5"/>'
@@ -534,7 +544,7 @@ function vault(): FigureDrawing {
 
     // The Vault: a safe with its main door, the display and the hatch.
     box(140, 100, 8, 80, 80, 64),
-    door,
+    vaultDoor(),
     side,
 
     // Conveyor out of the hatch, the buckets, then the rest of the crane.
@@ -700,26 +710,151 @@ function factory(): FigureDrawing {
   }
 }
 
-const FIGURES: Record<IsoFigure, () => FigureDrawing> = {
+// The whole platform on one plate, a zone per product: Factory at the back
+// deploys an Agent for every camera on the left; the Agents upload their
+// recordings to Vault on the right and send their events to Hub in front, and
+// Hub plays recordings back from Vault. A 12s round of four 3s beats, one per
+// step (deploy, upload, events, playback). Each zone can be a link (see
+// IsoRenderOptions), so a page can use the figure as a map of the docs.
+const ECOSYSTEM_ZONES: { zone: IsoZone; name: string; tagline: string; x: number; y: number }[] = [
+  { zone: 'factory', name: 'FACTORY', tagline: 'DEPLOYS AGENTS', x: 20, y: 20 },
+  { zone: 'vault', name: 'VAULT', tagline: 'STORES RECORDINGS', x: 230, y: 20 },
+  { zone: 'agent', name: 'AGENT', tagline: 'RECORDS EACH CAMERA', x: 20, y: 230 },
+  { zone: 'hub', name: 'HUB', tagline: 'MONITORS AND ALERTS', x: 230, y: 230 },
+]
+
+function ecosystem(links: IsoRenderOptions['links'] = {}): FigureDrawing {
+  // Agents at 1.3x: 44 wide and 31 deep, their backs at y 285.
+  const agents = [30, 86, 142]
+  const kinds: CameraKind[] = ['bullet', 'dome', 'ptz']
+  const delay = (seconds: number) => `style="animation-delay: ${seconds}s"`
+  const pulse = (d: string, beat: number) =>
+    `<path class="iso-pulse iso-lit" d="${d}" pathLength="1000" ${delay(beat * 3)}/>`
+  const mid = (x: number) => x + 22
+
+  const grid = range(30, 390, 30).map((at) =>
+    `<line class="iso-grid" x1="${at}" y1="10" x2="${at}" y2="410"/>`
+    + `<line class="iso-grid" x1="10" y1="${at}" x2="410" y2="${at}"/>`,
+  ).join('')
+
+  // Wires: Factory's door down to the Agents; the Agents' bus up the middle
+  // to Vault's door, with a branch into Hub; Vault straight down into Hub.
+  // Shared runs are drawn once (overlapping strokes would draw darker).
+  const wires = '<path class="iso-wire" d="M 127 130 V 260"/>'
+    + `<path class="iso-wire" d="M ${mid(agents[0])} 260 H ${mid(agents[2])}"/>`
+    + agents.map((x) => `<path class="iso-wire" d="M ${mid(x)} 260 V 285 M ${mid(x)} 316 V 350"/>`).join('')
+    + `<path class="iso-wire" d="M ${mid(agents[0])} 350 H 210 V 150 H 290 V 140"/>`
+    + '<path class="iso-wire" d="M 210 316 H 276"/>'
+    + '<path class="iso-wire" d="M 335 140 V 276"/>'
+
+  // Pulses take the colour of the product they leave from.
+  const pulses = '<g data-iso-zone="factory">'
+    + agents.map((x) => pulse(`M 127 130 V 260 H ${mid(x)} V 285`, 0)).join('')
+    + '</g><g data-iso-zone="agent">'
+    + agents.map((x) => pulse(`M ${mid(x)} 316 V 350 H 210 V 150 H 290 V 140`, 1)
+      + pulse(`M ${mid(x)} 316 V 350 H 210 V 316 H 276`, 2)).join('')
+    + `</g><g data-iso-zone="vault">${pulse('M 335 140 V 276', 3)}</g>`
+
+  // Factory: a hall with a sawtooth roof (four teeth rising toward the front),
+  // a roller door the Agents leave through and a beacon on the back tooth.
+  const polygon = (cls: string, points: Vec3[]) =>
+    `<polygon class="${cls}" points="${points.map((point) => P(...point).join(',')).join(' ')}"/>`
+  const tooth = (k: number) => {
+    const [y0, y1] = [40 + k * 22.5, 62.5 + k * 22.5]
+    return polygon('iso-face iso-top', [[50, y0, 48], [150, y0, 48], [150, y1, 60], [50, y1, 60]])
+      + onPlane(FRONT(50, y1, 60), '<rect class="iso-face iso-front" width="100" height="12"/>'
+        + range(0, 6, 1).map((j) => `<rect class="iso-pane iso-lit iso-eco-flash" x="${4 + j * 13.5}" y="2.5" width="10" height="7" ${delay(-1.5 + k * 0.08)}/>`).join(''))
+      + polygon('iso-face iso-side', [[150, y0, 48], [150, y1, 48], [150, y1, 60]])
+  }
+  const [factoryBeaconX, factoryBeaconY] = P(143, 45, 80)
+  const factory = box(50, 40, 8, 100, 90, 40)
+    + onPlane(FRONT(50, 130, 48), range(0, 3, 1).map((j) => `<rect class="iso-pane iso-lit iso-eco-flash" x="${6 + j * 14}" y="16" width="10" height="14" ${delay(-1.2)}/>`).join('')
+      + '<rect class="iso-face iso-side" x="62" y="14" width="30" height="26"/>'
+      + range(18, 38, 4).map((v) => `<line class="iso-detail" x1="62" y1="${v}" x2="92" y2="${v}"/>`).join(''))
+    + onPlane(SIDE(150, 130, 48), range(6, 86, 4).map((u) => `<line class="iso-detail" x1="${u}" y1="10" x2="${u}" y2="30"/>`).join(''))
+    + tooth(0)
+    + box(142, 44, 50, 2, 2, 28)
+    + `<circle class="iso-beacon iso-lit iso-eco-blink" cx="${factoryBeaconX}" cy="${factoryBeaconY}" r="2.2" ${delay(-1.5)}/>`
+    + range(1, 3, 1).map(tooth).join('')
+
+  // Vault: the safe with its door, moved from the Vault figure's (140, 100)
+  // to (270, 60); the side shows what it stores.
+  const vault = placeAt(box(140, 100, 8, 80, 80, 64) + vaultDoor()
+    + onPlane(SIDE(220, 180, 72), '<rect class="iso-pane" x="8" y="8" width="64" height="18" rx="1.5"/>'
+      + '<text class="iso-label" x="11" y="13.5" font-size="3.6">STORED</text>'
+      + '<text class="iso-screen-text" x="11" y="21.5" font-size="5">RECORDINGS</text>'
+      + range(10, 70, 4).map((u) => `<line class="iso-detail" x1="${u}" y1="38" x2="${u}" y2="56"/>`).join('')),
+  [140, 100, 0], [270, 60, 0], 1)
+
+  // Agents: one per camera, each with its own kind of camera on top, drawn
+  // as in the Vault figure and placed at 1.3x with their base on the plate.
+  const agentBoxes = agents.map((x, i) => placeAt(box(0, 0, 8, 34, 24, 16)
+    + onPlane(FRONT(0, 24, 24), `<rect class="iso-led iso-lit iso-eco-agent-led" x="3" y="4.5" width="4" height="2.4"/>`
+      + `<text class="iso-label" x="9.5" y="7.6" font-size="4.6">AGENT ${i + 1}</text>`)
+    + onPlane(SIDE(34, 24, 24), range(4, 20, 3).map((u) => `<line class="iso-detail" x1="${u}" y1="4" x2="${u}" y2="11"/>`).join(''))
+    + cameraHead(kinds[i], 17, 12, 24), [0, 0, 0], [x, 285, -2.4], 1.3)).join('')
+
+  // Hub at three quarters, its podium on the plate at (276, 276).
+  const [haloX, haloY] = P(316, 316, 70)
+  const hub = `<ellipse class="iso-halo iso-eco-halo" cx="${haloX}" cy="${haloY}" rx="56" ry="38"/>`
+    + placeAt(hubBuilding(
+      (f) => `class="iso-pane iso-lit iso-eco-flash" ${delay(6 + f * 0.35)}`,
+      `class="iso-beacon iso-lit iso-eco-blink" ${delay(9)}`,
+    ), [160, 80, 0], [276, 276, 2], 0.75)
+
+  const drawings: Record<IsoZone, string> = { factory, vault, agent: agentBoxes, hub }
+
+  // A zone: its tile and name on the plate, then its buildings; a link when
+  // the page passed one for it.
+  const zone = ({ zone: key, name, tagline, x, y }: (typeof ECOSYSTEM_ZONES)[number]) => {
+    const inner = onPlane(TOP(x, y, 8), '<rect class="iso-zone-tile" width="170" height="170" rx="8"/>'
+      + `<text class="iso-label iso-zone-name" x="8" y="149" font-size="12">${name}</text>`
+      + `<text class="iso-label iso-label--zone" x="8" y="161" font-size="6.5">${tagline}</text>`)
+      + drawings[key]
+    const href = links[key]
+    const label = name.charAt(0) + name.slice(1).toLowerCase()
+    return href
+      ? `<a class="iso-zone" data-iso-zone="${key}" href="${href}" aria-label="${label}">${inner}</a>`
+      : `<g class="iso-zone" data-iso-zone="${key}">${inner}</g>`
+  }
+
+  const markup = [
+    box(0, 0, 0, 420, 420, 8),
+    onPlane(TOP(0, 0, 8), '<rect class="iso-detail" x="8" y="8" width="404" height="404" rx="10"/>' + grid + wires + pulses),
+    // Back to front: Factory, then Vault and the Agents, then Hub.
+    ECOSYSTEM_ZONES.map(zone).join(''),
+  ].join('')
+
+  return {
+    viewBox: frame([[0, 0, 0], [420, 0, 0], [0, 420, 0], [420, 420, 0], [143, 45, 82], [316, 316, 106], [270, 60, 72]], 10),
+    markup,
+    glow: 2,
+    bloom: 14,
+  }
+}
+
+const FIGURES: Record<IsoFigure, (options: IsoRenderOptions) => FigureDrawing> = {
   agent,
   'control-tower': controlTower,
   hub,
   vault,
   factory,
+  ecosystem: (options) => ecosystem(options.links),
 }
 
 /**
  * The complete <svg> for a figure, or '' for an unknown name. `id` must be
  * unique on the page: it names this instance's glow filters, which the
- * stylesheet only switches on when the illustration glows.
+ * stylesheet only switches on when the illustration glows. `options.links`
+ * turns the ecosystem figure's zones into links.
  */
-export function renderIsoSvg(figure: IsoFigure, id: string) {
+export function renderIsoSvg(figure: IsoFigure, id: string, options: IsoRenderOptions = {}) {
   const build = FIGURES[figure]
   if (!build) {
     return ''
   }
 
-  const { viewBox, markup, glow, bloom, loop } = build()
+  const { viewBox, markup, glow, bloom, loop } = build(options)
   const [x, y, width, height] = viewBox.split(' ').map(Number)
   // Filters work in scene units over a generous region: a perfectly straight
   // wire has a zero-height bounding box and would vanish under the default one.

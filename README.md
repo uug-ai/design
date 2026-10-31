@@ -236,9 +236,10 @@ coverage, individual previews, gallery links, themes, assets and responsive chec
 
 **Emails** shows every email we send customers, one level deep: the three license
 emails from uug-ai/hub-license (issued, a reminder a month before it expires, and
-the notice once it has expired) and the 13 Kerberos Hub emails from
+the notice once it has expired), the 13 Kerberos Hub emails from
 uug-ai/hub-pipeline-notification (welcome, password reset, detections, camera status,
-usage, sharing and tasks). Like **Components**, each email has its own page (for
+usage, sharing and tasks) and two new usage warnings at 50% and 75% of the daily
+upload limit (`limit_50`, `limit_75`), which the service does not send yet. Like **Components**, each email has its own page (for
 example **Emails / License** or **Emails / High Upload**) whose stories fill the same
 template with different content, plus its plain-text version. **Emails / Overview**
 shows them all side by side.

@@ -1,19 +1,26 @@
 import { useState } from 'react'
-import { fill } from '../fill'
-import { CATEGORIES, EMAILS, emailText } from './emails'
-import { NOTIFICATION_FIGURES, type NotificationFigure } from './figures'
+import { CATEGORIES, EMAILS, emailText, LICENSE_EMAILS } from './emails'
+import { fill } from './fill'
+import type { EmailFigure } from './figures'
 import { figureSrc, previewHtml } from './preview'
+import { render } from './render'
 
-export type NotificationEmailV2Props = {
-  template: NotificationFigure
+export type EmailProps = {
+  template: EmailFigure
   values: Record<string, string>
 }
 
-export function NotificationEmailV2({ template, values }: NotificationEmailV2Props) {
-  const [height, setHeight] = useState(1000)
+// License templates are filled like hub-license fills them ($name, escaped in the HTML),
+// the others like hub-pipeline-notification ({{name}}).
+const isLicense = (template: EmailFigure) => template in LICENSE_EMAILS
+const fillFor = (template: EmailFigure, body: string, values: Record<string, string>, html: boolean) =>
+  isLicense(template) ? render(body, values, html) : fill(body, values)
+
+export function Email({ template, values }: EmailProps) {
+  const [height, setHeight] = useState(900)
   return <iframe
     title={`${template} email`}
-    srcDoc={fill(previewHtml(EMAILS[template]), values)}
+    srcDoc={fillFor(template, previewHtml(EMAILS[template]), values, true)}
     onLoad={event => {
       const document = event.currentTarget.contentDocument
       if (document) setHeight(document.body.offsetHeight)
@@ -22,15 +29,15 @@ export function NotificationEmailV2({ template, values }: NotificationEmailV2Pro
   />
 }
 
-export function NotificationEmailV2Text({ template, values }: NotificationEmailV2Props) {
+export function EmailText({ template, values }: EmailProps) {
   return <pre style={{ margin: 0, maxWidth: 640, padding: 24, borderRadius: 12, background: '#f7f6fa', color: '#0b0b12', font: '13px/1.6 Menlo, Consolas, monospace', whiteSpace: 'pre-wrap' }}>
-    {fill(emailText(EMAILS[template]), values).trim()}
+    {fillFor(template, emailText(EMAILS[template]), values, false).trim()}
   </pre>
 }
 
-export function NotificationFiguresV2() {
+export function EmailOverview() {
   return <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: 16, fontFamily: 'Inter, Arial, sans-serif' }}>
-    {NOTIFICATION_FIGURES.map(figure => {
+    {(Object.keys(EMAILS) as EmailFigure[]).map(figure => {
       const { label, accent, tint } = CATEGORIES[EMAILS[figure].category]
       return <figure key={figure} style={{ margin: 0, padding: 12, borderRadius: 12, background: tint }}>
         <img src={figureSrc(EMAILS[figure])} alt="" style={{ display: 'block', width: '100%', aspectRatio: '16 / 9', borderRadius: 8 }} />

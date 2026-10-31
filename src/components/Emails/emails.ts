@@ -1,9 +1,10 @@
-import type { EmailFigure, NotificationFigure } from './figures'
+import type { EmailFigure, LicenseFigure, NotificationFigure } from './figures'
 
-// The v2 notification emails: the license email's layout, with a category colour and a
-// spot illustration per email so its purpose reads at a glance. Placeholders are the
-// ones hub-pipeline-notification already fills ({{user}}, {{link}}, ...), so the
-// generated templates can replace the current ones name for name.
+// Every customer email on one layout: a card with a category colour and a 16:9 spot
+// illustration, so each email's purpose reads at a glance. The notification emails use
+// the placeholders hub-pipeline-notification already fills ({{user}}, {{link}}, ...) and
+// the license emails hub-license's ($company, ...), so the generated templates can
+// replace the current ones name for name.
 
 export type EmailCategory = 'license' | 'license_expiring' | 'license_expired' | 'account' | 'security' | 'detections' | 'cameras' | 'usage' | 'sharing' | 'tasks'
 
@@ -20,7 +21,7 @@ export const CATEGORIES: Record<EmailCategory, { label: string; accent: string; 
   tasks: { label: 'Tasks', accent: '#2f855a', tint: '#e8f6ee' },
 }
 
-export interface NotificationEmailV2 {
+export interface EmailContent {
   figure: EmailFigure
   category: EmailCategory
   subject: string
@@ -39,7 +40,7 @@ export interface NotificationEmailV2 {
 
 const code = (value: string) => `<span style="font-family:Menlo,Consolas,monospace;font-size:13px;">${value}</span>`
 
-export const EMAILS: Record<NotificationFigure, NotificationEmailV2> = {
+export const NOTIFICATION_EMAILS: Record<NotificationFigure, EmailContent> = {
   welcome: {
     figure: 'welcome', category: 'account',
     subject: 'Welcome to Hub',
@@ -155,12 +156,12 @@ export const EMAILS: Record<NotificationFigure, NotificationEmailV2> = {
   },
 }
 
-// The license emails from uug-ai/hub-license on the same layout. Their placeholders are
-// hub-license's string.Template ones ($company, ...), not the notification service's.
+// The license emails from uug-ai/hub-license. Their placeholders are hub-license's
+// string.Template ones ($company, ...), not the notification service's.
 // $expires is the end date, for the reminder a month before it and the notice after it.
 const renewal = 'Reply to this email to renew it; you will receive a new license.txt to put in place of the current one.'
 
-export const LICENSE_EMAILS: Record<'license' | 'license_expiring' | 'license_expired', NotificationEmailV2> = {
+export const LICENSE_EMAILS: Record<LicenseFigure, EmailContent> = {
   license: {
     figure: 'license', category: 'license',
     subject: 'Your Augment Vision license for $company',
@@ -193,6 +194,9 @@ export const LICENSE_EMAILS: Record<'license' | 'license_expiring' | 'license_ex
   },
 }
 
+/** Every email, license emails first. */
+export const EMAILS: Record<EmailFigure, EmailContent> = { ...LICENSE_EMAILS, ...NOTIFICATION_EMAILS }
+
 const NOTIFICATION_FOOTER = 'You receive this email because of your Hub notification settings.'
 
 // Where the 1280 x 720 PNG exports of the figures are served from once the emails go live.
@@ -204,7 +208,7 @@ const row = ([label, value]: [string, string], last: boolean) => {
 }
 
 /** The email's HTML template, with the service placeholders still in it. */
-export function emailHtml(email: NotificationEmailV2) {
+export function emailHtml(email: EmailContent) {
   const { accent, tint, label } = CATEGORIES[email.category]
   const rows = email.rows?.length
     ? `<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="font-size:14px;line-height:20px;margin-bottom:28px;">\n${email.rows.map((r, i) => row(r, i === email.rows!.length - 1)).join('\n')}\n</table>`
@@ -261,7 +265,7 @@ ${cta}
 const plain = (html: string) => html.replace(/<br>/g, '\n').replace(/<[^>]+>/g, '').replace(/&rarr;/g, '->')
 
 /** The text/plain alternative, built from the same content as the HTML. */
-export function emailText(email: NotificationEmailV2) {
+export function emailText(email: EmailContent) {
   const parts = [
     `${CATEGORIES[email.category].label.toUpperCase()}: ${plain(email.title)}`,
     plain(email.intro),

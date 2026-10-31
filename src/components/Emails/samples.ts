@@ -1,6 +1,6 @@
-import type { NotificationTemplate } from './component'
+import type { EmailFigure } from './figures'
 
-// Sample values for the notification stories, keyed by template name.
+// Sample values for the email stories, keyed by template name.
 
 // The {{sections}} markup hub-monitor-device renders for device_group (grouping.go renderSectionsHTML).
 const font = 'font-family: Inter, Arial, sans-serif; font-style: normal; letter-spacing: 0em; text-align: left;'
@@ -23,7 +23,12 @@ const thumbnail = `<img src="data:image/svg+xml,${encodeURIComponent('<svg xmlns
 const user = 'jane.doe'
 const app = 'https://app.kerberos.io'
 
-export const SAMPLES: Record<NotificationTemplate, Record<string, string>> = {
+const license = { company: 'acme', cameras: '25', issued: '30 October 2026', validity: '365 days, until 30 October 2027' }
+
+export const SAMPLES: Record<EmailFigure, Record<string, string>> = {
+  license: { ...license, expires: '30 October 2027' },
+  license_expiring: { ...license, expires: '30 November 2026' },
+  license_expired: { ...license, expires: '30 October 2026' },
   welcome: { user, link: `${app}/activate/3f9c2a` },
   activate: { user, link: `${app}/login` },
   forgot: { user, password: 'k7Rt-29xq-Lm4p', ipaddress: '84.198.12.40' },

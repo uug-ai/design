@@ -1,6 +1,6 @@
-import { box, frame, FRONT, onPlane, P, range, SIDE, TOP, type Vec3 } from '../../../IsoIllustration/iso'
+import { box, frame, FRONT, onPlane, P, range, SIDE, TOP, type Vec3 } from '../IsoIllustration/iso'
 
-// Spot illustrations for the v2 notification emails, drawn with the iso kernel of the
+// Spot illustrations for the emails, drawn with the iso kernel of the
 // Illustrations section. Email clients ignore stylesheets and most drop inline SVG, so
 // each figure is a standalone SVG with its colours baked in: Storybook shows it as a
 // data URI and the emails get a PNG export of it.
@@ -224,7 +224,6 @@ function onPlaneCamera(x: number, y: number, on: boolean) {
     + (on ? '' : onPlane(FRONT(x - 3, y + 26, lift + pole + 22), '<path class="cut" d="M 2 0 L 8 6 M 8 0 L 2 6"/>'))
 }
 
-export const NOTIFICATION_FIGURES = (Object.keys(FIGURES) as EmailFigure[]).filter((figure): figure is NotificationFigure => !figure.startsWith('license'))
 
 const round2 = (value: number) => Math.round(value * 100) / 100
 

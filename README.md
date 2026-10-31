@@ -132,38 +132,28 @@ emails in `src/components/Emails`.
 
 ### Emails
 
-**Emails** previews the transactional emails we send customers. **Emails / License**
-is the license email that uug-ai/hub-license sends when a license pull request is
-merged. Its `template.html` and `template.txt` are copies of
-`.github/license-email/` in hub-license, which stays the source of truth: change the
-template there first, then copy it here. Use the Controls panel to try other
-customers, device counts and validity periods.
+**Emails** shows every email we send customers, one level deep: the three license
+emails from uug-ai/hub-license (issued, a reminder a month before it expires, and
+the notice once it has expired) and the 13 Kerberos Hub emails from
+uug-ai/hub-pipeline-notification (welcome, password reset, detections, camera status,
+usage, sharing and tasks). **Overview** shows them side by side.
 
-**Emails / License v2** puts the license email on the Notifications v2 layout and adds
-two proposed emails: a reminder a month before a license expires and a notice once it
-has expired, each with its own colour and illustration. Their content is in
-`Notifications/v2/emails.ts` (`LICENSE_EMAILS`) and uses hub-license's `$placeholders`
-plus `$expires`. hub-license only sends the first one today.
+All of them share one layout: a card with a category colour (License, Account,
+Security, Detection, Camera status, Usage, Sharing, Tasks) on its top edge, label and
+button, and a 16:9 isometric spot illustration with an isometric UUG coin in its top
+right, drawn with the Illustrations kernel in `figures.ts`, so each email's purpose is
+clear before its text is read.
 
-**Emails / Notifications** holds the 13 Kerberos Hub emails that
-uug-ai/hub-pipeline-notification sends (welcome, password reset, detections, device
-status, shared cases and more), filled with sample values. Their `templates/*.html`
-and `*.txt` are copies of the `TEMPLATE_*` strings in that repository's
-`templates/*.go`, saved under the names the service looks them up by; the Go files
-stay the source of truth. Edit `values` in Controls to try other content.
-
-**Emails / Notifications v2** is a proposed redesign of those emails on the license
-email layout. Each email has a category colour (Account, Security, Detection, Camera
-status, Usage, Sharing, Tasks) and an isometric spot illustration drawn with the
-Illustrations kernel (`v2/figures.ts`), so its purpose is clear before the text is
-read. The content of all 13 emails lives in `v2/emails.ts`, which generates both the
-HTML and the plain-text version with the placeholders the service already fills.
-Every illustration is a 16:9 image with its category tint, floor grid and an isometric UUG logo coin
-(top right) baked in,
-so the header keeps its shape in every email client. Storybook shows them as SVG;
-the emails reference 1280 x 720 PNG exports at
-`https://uug.ai/email/<template>.png`, which still have to be exported and published
-before the templates can replace the current ones.
+- `emails.ts` holds each email's content once and generates both the HTML and the
+  plain-text version. The license emails use hub-license's `$placeholders` (plus
+  `$expires` for the end date); the others use the `{{placeholders}}`
+  hub-pipeline-notification already fills, so the templates can replace the current
+  ones name for name.
+- The illustrations are SVG in Storybook. The templates reference 1280 x 720 PNG
+  exports at `https://uug.ai/email/<template>.png`, which have to be exported and
+  published before the services can send these designs.
+- The services still send their current templates; hub-license sends only the issued
+  license email today.
 
 ### Components (Production Design Reference)
 

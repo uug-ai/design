@@ -71,8 +71,15 @@ non-root/minimal runtime remains unchanged.
 Enable `hardened` to invoke the shared `frontend` profile. Set `publish=false`
 to build without a release; enable `hardened` too for full verification.
 Use `existing_tag` to retry the same immutable source. PRs and dedicated
-security scans keep their hardening profile without publication.
-It scans source secrets/configuration and the final image,
+security scans do not automatically run image hardening: PRs use the standard
+multi-architecture build workflow, and the separate **Security scan** workflow is
+manual-only. PR builds do not publish images, generate SBOMs/attestations, sign
+images or request registry-write/OIDC permissions. They still build the unchanged
+non-root Dockerfile and run its embedded build and test checks.
+
+Release hardening remains opt-in through **Bump release**, and a manual
+**Security scan** can run the same non-publishing verification when needed.
+The hardening profile scans source secrets/configuration and the final image,
 extracts `/usr/share/frontend/package{,-lock}.json` from that final image and
 **separately scans it**, emits image and browser SPDX SBOMs, retains reports and
 provenance, and signs the verified multi-platform digest. Medium, high, and

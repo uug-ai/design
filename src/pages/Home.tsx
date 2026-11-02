@@ -121,8 +121,8 @@ function Home() {
 
       <section className="section cta-section">
         <h2>Draw building blocks</h2>
-        <p>Explore and design the building blocks used in our architecture drawings, from UUG.AI products and cloud services to Kubernetes and isometric cameras.</p>
-        <Link to="/draw" className="btn btn-primary">Design building blocks</Link>
+        <p>Browse individual architecture building blocks by category, from uug.ai and Generic to cloud providers, Kubernetes and Isometric. Every block has its own Storybook entry.</p>
+        <Link to="/draw" className="btn btn-primary">Browse building blocks</Link>
       </section>
 
       <section className="section cta-section">

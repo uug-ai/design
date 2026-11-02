@@ -19,6 +19,7 @@ function Layout({ children }: LayoutProps) {
     { path: '/typography', label: 'Typography' },
     { path: '/spacing', label: 'Spacing' },
     { path: '/branding', label: 'Branding' },
+    { path: '/draw', label: 'Draw' },
   ]
 
   useEffect(() => {

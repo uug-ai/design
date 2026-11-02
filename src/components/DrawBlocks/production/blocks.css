@@ -1,0 +1,51 @@
+/* Generated from Draw's production palettes and block styles. */
+.draw-block-preview {
+  --text-primary: #0b0b12;
+  --background: #ffffff;
+  --surface: #f7f5fb;
+  --surface-strong: #efeafb;
+  --canvas: #fbfaff;
+  --block-card: #ffffff;
+  --block-edge: rgba(11, 11, 18, 0.08);
+  --block-title: #0b0b12;
+  --block-subtitle: #6d6666;
+  --block-shadow: rgba(20, 11, 59, 0.1);
+  --iso-top: var(--background);
+  --iso-front: var(--surface);
+  --iso-side: var(--surface-strong);
+  --iso-line: color-mix(in srgb, var(--text-primary) 38%, transparent);
+  --iso-detail: color-mix(in srgb, var(--text-primary) 16%, transparent);
+  --iso-accent: #7426ff;
+}
+.draw-block-preview[data-draw-theme='dark'],
+[data-theme='dark'] .draw-block-preview:not([data-draw-theme='light']),
+[data-hub-theme='dark'] .draw-block-preview:not([data-draw-theme='light']) {
+  --text-primary: #ecebf4;
+  --background: #1c1b26;
+  --surface: #252433;
+  --surface-strong: #2f2b4a;
+  --canvas: #121118;
+  --block-card: #24232f;
+  --block-edge: rgba(255, 255, 255, 0.08);
+  --block-title: #f1f0f7;
+  --block-subtitle: #a8a3b5;
+  --block-shadow: rgba(0, 0, 0, 0.5);
+  --iso-top: var(--surface-strong);
+  --iso-side: var(--background);
+  --iso-line: color-mix(in srgb, var(--text-primary) 42%, transparent);
+  --iso-detail: color-mix(in srgb, var(--text-primary) 18%, transparent);
+  --iso-accent: #a07cff;
+}
+.draw-block-preview .block-card {
+  fill: var(--block-card);
+  stroke: var(--block-edge);
+}
+.draw-block-preview .block-title {
+  fill: var(--block-title);
+}
+.draw-block-preview .block-subtitle {
+  fill: var(--block-subtitle);
+}
+.draw-block-preview .block-shadow {
+  flood-color: var(--block-shadow);
+}

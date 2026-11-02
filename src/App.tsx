@@ -6,6 +6,7 @@ import Colors from './pages/Colors'
 import Typography from './pages/Typography'
 import Spacing from './pages/Spacing'
 import Branding from './pages/Branding'
+import Draw from './pages/Draw'
 import { storybookUrl } from './config/storybook'
 import './App.css'
 
@@ -26,6 +27,7 @@ function App() {
         <Route path="/typography" element={<Typography />} />
         <Route path="/spacing" element={<Spacing />} />
         <Route path="/branding" element={<Branding />} />
+        <Route path="/draw" element={<Draw />} />
         <Route path="/components" element={<StorybookRedirect />} />
       </Routes>
     </Layout>

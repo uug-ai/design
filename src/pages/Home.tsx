@@ -120,6 +120,12 @@ function Home() {
       </section>
 
       <section className="section cta-section">
+        <h2>Draw building blocks</h2>
+        <p>Explore and design the building blocks used in our architecture drawings, from UUG.AI products and cloud services to Kubernetes and isometric cameras.</p>
+        <Link to="/draw" className="btn btn-primary">Design building blocks</Link>
+      </section>
+
+      <section className="section cta-section">
         <h2>Get Started</h2>
         <p>
           Explore our design foundations and component library to start building with

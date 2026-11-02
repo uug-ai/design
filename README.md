@@ -71,8 +71,15 @@ non-root/minimal runtime remains unchanged.
 Enable `hardened` to invoke the shared `frontend` profile. Set `publish=false`
 to build without a release; enable `hardened` too for full verification.
 Use `existing_tag` to retry the same immutable source. PRs and dedicated
-security scans keep their hardening profile without publication.
-It scans source secrets/configuration and the final image,
+security scans do not automatically run image hardening: PRs use the standard
+multi-architecture build workflow, and the separate **Security scan** workflow is
+manual-only. PR builds do not publish images, generate SBOMs/attestations, sign
+images or request registry-write/OIDC permissions. They still build the unchanged
+non-root Dockerfile and run its embedded build and test checks.
+
+Release hardening remains opt-in through **Bump release**, and a manual
+**Security scan** can run the same non-publishing verification when needed.
+The hardening profile scans source secrets/configuration and the final image,
 extracts `/usr/share/frontend/package{,-lock}.json` from that final image and
 **separately scans it**, emits image and browser SPDX SBOMs, retains reports and
 provenance, and signs the verified multi-platform digest. Medium, high, and
@@ -129,6 +136,35 @@ npm run storybook
 Storybook runs on [http://localhost:6006](http://localhost:6006) and exposes the
 production Hub widget library in `src/components/HubWidgets` and the customer
 emails in `src/components/Emails`.
+
+### Draw building blocks
+
+The **Draw** navigation item and `/draw` page provide a searchable catalogue and
+local design playground for every production Draw building block: General,
+UUG.AI, AWS, Azure, Google Cloud, Kubernetes and isometric artwork. Select a block,
+edit its labels, badges, size and appearance, compare light/dark themes, and copy
+its design settings for code review. Storybook has a separate **Draw / Building
+blocks** section with the same playground, individual controls, grouped galleries,
+compact-card and dark-mode examples.
+
+Experiments do not change live Draw, saved boards or the production defaults.
+Geometry changes still require editing the artwork source. The production renderer,
+catalogue, palettes and local icon assets are a generated snapshot, not an
+independently reimplemented card. With the Draw repository checked out beside this
+one, refresh or verify it with:
+
+```bash
+npm run sync:draw-blocks
+npm run test:draw-blocks:sync
+```
+
+An alternate Draw `web` directory can be passed as a positional argument. Do not
+hand-edit `src/components/DrawBlocks/production/` or `public/draw-blocks/`.
+Implement approved changes in Draw and resynchronize the snapshot. Icon licences
+are preserved alongside the bundled assets; no cross-origin assets are needed.
+
+Build both the app and Storybook, then run `npm run test:draw-blocks` for the
+catalogue, controls, theme, asset, accessibility and responsive regression checks.
 
 ### Emails
 

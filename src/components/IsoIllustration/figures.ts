@@ -1,8 +1,18 @@
 import { box, frame, FRONT, onPlane, P, range, SIDE, TOP, type Vec3 } from './iso'
 
 export type IsoFigure = 'agent' | 'control-tower' | 'hub' | 'vault' | 'factory' | 'ecosystem'
+  | 'tutorial-agent-install'
+  | 'tutorial-agent-camera'
+  | 'tutorial-hub-workflow-stage'
+  | 'tutorial-hub-moq-relay'
+  | 'tutorial-hub-transports'
+  | 'tutorial-hub-hls'
+  | 'tutorial-hub-webrtc-turn'
 
-export const ISO_FIGURE_NAMES: IsoFigure[] = ['agent', 'control-tower', 'hub', 'vault', 'factory', 'ecosystem']
+export const ISO_FIGURE_NAMES: IsoFigure[] = [
+  'agent', 'control-tower', 'hub', 'vault', 'factory', 'ecosystem',
+  'tutorial-agent-install', 'tutorial-agent-camera', 'tutorial-hub-workflow-stage', 'tutorial-hub-moq-relay', 'tutorial-hub-transports', 'tutorial-hub-hls', 'tutorial-hub-webrtc-turn',
+]
 
 // The product zones of the ecosystem figure. Pass links to make each one a link.
 export type IsoZone = 'factory' | 'agent' | 'vault' | 'hub'
@@ -19,7 +29,8 @@ interface FigureDrawing {
   bloom: number
   // Length of the animation round in seconds. Parts marked data-iso-at (seconds
   // into the round where their moment starts) let a page seek the figure there.
-  loop?: number
+  loop?: number  // Extra classes on the <svg>, e.g. the shared tutorial animation styles.
+  classes?: string
 }
 
 // A camera on a pole with an Agent box at its foot, wired to a small Hub control
@@ -833,6 +844,280 @@ function ecosystem(links: IsoRenderOptions['links'] = {}): FigureDrawing {
   }
 }
 
+// Tutorial banners: wide 10:3 scenes for the docs' tutorial headers and
+// cards, laid out left to right like a diorama on an open grid floor. at()
+// gives the ground point drawn at screen position (u, v), so parts are placed
+// by where they appear. Every banner runs on a 6s round: pulses, flashes and
+// blinks take their moment as an animation delay (component.css, tutorial).
+const COS30 = Math.cos(Math.PI / 6)
+
+function at(u: number, v: number): [number, number] {
+  const d = u / COS30
+  return [round1((d + 2 * v) / 2), round1((2 * v - d) / 2)]
+}
+
+const tutDelay = (seconds: number) => `style="animation-delay: ${round1(seconds)}s"`
+const tutPulse = (d: string, seconds: number, cls = '') =>
+  `<path class="iso-pulse iso-lit${cls ? ` ${cls}` : ''}" d="${d}" pathLength="1000" ${tutDelay(seconds)}/>`
+const tutWire = (d: string, dashed = false) => `<path class="iso-wire${dashed ? ' iso-wire--dashed' : ''}" d="${d}"/>`
+// A floor wire from a to b in `steps` small stair steps (along x, then y),
+// so it runs level across the banner instead of dipping to its bottom edge.
+function route([ax, ay]: [number, number], [bx, by]: [number, number], steps = 3) {
+  const [dx, dy] = [(bx - ax) / steps, (by - ay) / steps]
+  return `M ${ax} ${ay}` + range(1, steps, 1).map((k) => ` H ${round1(ax + dx * k)} V ${round1(ay + dy * k)}`).join('')
+}
+
+// The banner frames the screen point (u, v) at its centre, `width` units wide.
+function tutBanner(floor: string, parts: string[], [u, v]: [number, number], width = 460): FigureDrawing {
+  const grid = range(-660, 660, 30).map((a) =>
+    `<line class="iso-grid" x1="${a}" y1="-660" x2="${a}" y2="660"/><line class="iso-grid" x1="-660" y1="${a}" x2="660" y2="${a}"/>`,
+  ).join('')
+  return {
+    viewBox: `${round1(u - width / 2)} ${round1(v - width * 0.15)} ${width} ${round1(width * 0.3)}`,
+    markup: onPlane(TOP(0, 0, 0), grid + floor) + parts.join(''),
+    glow: 1.6,
+    bloom: 10,
+    classes: 'iso-figure--tutorial',
+  }
+}
+
+// Parts the tutorial scenes share. All stand on the floor (z = 0).
+function cameraPost(kind: CameraKind, [x, y]: [number, number], led = 0, h = 30) {
+  return box(x - 2, y - 2, 0, 4, 4, h)
+    + onPlane(FRONT(x - 2, y + 2, h - 4), `<rect class="iso-led iso-lit iso-tut-blink" x="0.8" y="0" width="2.4" height="2.4" ${tutDelay(led)}/>`)
+    + (kind === 'bullet' ? cameraHead('bullet', x + 5, y + 3, h) : cameraHead(kind, x, y, h))
+}
+
+function agentBox([x, y]: [number, number], label: string, led: number, w = 34, d = 24, h = 16) {
+  return box(x, y, 0, w, d, h)
+    + onPlane(FRONT(x, y + d, h), `<rect class="iso-led iso-lit iso-tut-blink" x="3" y="4.5" width="4" height="2.4" ${tutDelay(led)}/>`
+      + `<text class="iso-label" x="9.5" y="7.6" font-size="4.6">${label}</text>`)
+    + onPlane(SIDE(x + w, y + d, h), range(4, d - 4, 3).map((u) => `<line class="iso-detail" x1="${u}" y1="4" x2="${u}" y2="${h - 5}"/>`).join(''))
+}
+
+// A standing screen facing the viewer, its content in local units (0..w, 0..h).
+const screenPanel = (x: number, y: number, z: number, w: number, h: number, content: string) =>
+  box(x, y, z, w, 3, h) + onPlane(FRONT(x, y + 3, z + h), content)
+
+function laptop([x, y]: [number, number], w: number, content: string) {
+  return box(x, y, 0, w, round1(w * 0.62), 2) + screenPanel(x, y, 2, w, round1(w * 0.58), content)
+}
+
+function monitor([x, y]: [number, number], w: number, h: number, content: string) {
+  return box(x + w / 2 - 7, y - 3, 0, 14, 10, 1.5) + box(x + w / 2 - 1.5, y + 0.5, 1.5, 3, 2, 8) + screenPanel(x, y, 9.5, w, h, content)
+}
+
+function phone([x, y]: [number, number], content: string) {
+  return box(x - 3, y - 4, 0, 18, 12, 3) + screenPanel(x, y, 3, 12, 22, content)
+}
+
+// A lit screen: its pane, then whatever sits on it.
+const screen = (w: number, h: number, flash: number, extra = '') =>
+  `<rect class="iso-pane iso-lit iso-tut-flash" x="1.5" y="1.5" width="${w - 3}" height="${h - 3}" rx="1" ${tutDelay(flash)}/>${extra}`
+const playIcon = (cx: number, cy: number, r: number) =>
+  `<path class="iso-det" d="M ${round1(cx - r * 0.6)} ${round1(cy - r)} L ${round1(cx + r)} ${cy} L ${round1(cx - r * 0.6)} ${round1(cy + r)} Z"/>`
+
+function rack([x, y]: [number, number], w: number, h: number, label: string, slots: string[]) {
+  return box(x, y, 0, w, w, h)
+    + onPlane(FRONT(x, y + w, h), `<text class="iso-label" x="3" y="6.5" font-size="4">${label}</text>`
+      + slots.map((attrs, j) => `<rect class="iso-pane${attrs ? ' iso-lit iso-tut-flash' : ''}" x="3" y="${11 + j * 9}" width="${w - 6}" height="6" rx="1" ${attrs}/>`).join(''))
+    + onPlane(SIDE(x + w, y + w, h), range(5, w - 4, 4).map((u) => `<line class="iso-detail" x1="${u}" y1="8" x2="${u}" y2="${h - 6}"/>`).join(''))
+}
+
+// A firewall: a brick wall running along y (down-left on screen), labelled.
+function firewall([x, y]: [number, number], length: number, h: number, label: string) {
+  const bricks = range(0, h - 4, 4).map((v, row) => `<line class="iso-detail" x1="0" y1="${v}" x2="5" y2="${v}"/>`
+    + range(row % 2 ? 4 : 8, length - 2, 8).map((u) => `<line class="iso-detail" x1="${u}" y1="${v}" x2="${u}" y2="${v + 4}"/>`).join('')).join('')
+  return box(x, y, 0, 5, length, h)
+    + onPlane(SIDE(x + 5, y + length, h), `<g>${bricks}</g><text class="iso-label" x="${length / 2 - 6}" y="${h + 6}" font-size="5">${label}</text>`)
+}
+
+// Install Agent: a camera's RTSP stream reaches its Agent, running as a
+// container on a small machine, and the Agent's web UI opens on port 80.
+function tutorialAgentInstall(): FigureDrawing {
+  const cam = at(-200, 42)
+  const [mx, my] = at(-35, 30)
+  const lap = at(150, 32)
+  const toMachine = route(cam, [mx + 12, my + 40])
+  const toLaptop = route([mx + 52, my + 28], [lap[0] + 10, lap[1] + 28.5])
+  const ui = screen(46, 26.7, 1.8,
+    '<text class="iso-screen-text" x="5" y="9" font-size="4.6">AGENT</text>'
+    + '<text class="iso-screen-text" x="5" y="15" font-size="3.4">localhost:80</text>'
+    + '<rect class="iso-det" x="5" y="18" width="16" height="5"/><rect class="iso-det" x="24" y="18" width="16" height="5"/>')
+  return tutBanner(tutWire(toMachine) + tutWire(toLaptop) + tutPulse(toMachine, 0) + tutPulse(toLaptop, 1.8), [
+    cameraPost('dome', cam, -1.5),
+    box(mx, my, 0, 52, 40, 18),
+    onPlane(FRONT(mx, my + 40, 18), '<text class="iso-label" x="4" y="7" font-size="4.4">DOCKER</text>'
+      + '<line class="iso-detail" x1="4" y1="11" x2="48" y2="11"/>'),
+    onPlane(SIDE(mx + 52, my + 40, 18), range(4, 36, 3).map((u) => `<line class="iso-detail" x1="${u}" y1="4" x2="${u}" y2="13"/>`).join('')),
+    placeAt(agentBox([mx + 9, my + 8], 'AGENT', 0, 34, 24, 14), [0, 0, 0], [0, 0, 18], 1),
+    laptop(lap, 46, ui),
+  ], [-15, 42], 440)
+}
+
+// Connect any IP camera: cameras of every kind each send a main and a sub
+// RTSP stream over the local network, through a switch, to a verified Agent.
+function tutorialAgentCamera(): FigureDrawing {
+  const kinds: CameraKind[] = ['bullet', 'dome', 'ptz', 'turret']
+  const cams = [at(-235, 30), at(-195, 60), at(-150, 28), at(-110, 58)]
+  const [sx, sy] = at(-5, 34)
+  const [ax, ay] = at(140, 30)
+  const ports = cams.map((_, i) => [sx + 7 + i * 9, sy + 22] as [number, number])
+  const toAgent = route([sx + 46, sy + 11], [ax + 12, ay + 28])
+  const floor = cams.map((c, i) => tutWire(route(c, ports[i]))).join('') + tutWire(toAgent)
+    + cams.map((c, i) => tutPulse(route(c, ports[i]), i * 1.5) + tutPulse(route(c, ports[i]), i * 1.5 + 0.35, 'iso-tut-sub')
+      + tutPulse(toAgent, i * 1.5 + 1.2)).join('')
+  return tutBanner(floor, [
+    ...cams.map((c, i) => cameraPost(kinds[i], c, i * 1.5 - 1.5)),
+    box(sx, sy, 0, 46, 22, 8),
+    onPlane(FRONT(sx, sy + 22, 8), '<text class="iso-label" x="2.5" y="6.5" font-size="3.4">SWITCH</text>'
+      + cams.map((_, i) => `<rect class="iso-led iso-lit iso-tut-blink" x="${16 + i * 7}" y="3" width="4" height="2.2" ${tutDelay(i * 1.5)}/>`).join('')),
+    box(ax, ay, 0, 40, 28, 22),
+    onPlane(FRONT(ax, ay + 28, 22), '<rect class="iso-led iso-lit iso-tut-blink" x="3" y="4" width="4" height="2.4" style="animation-delay: 1.2s"/>'
+      + '<text class="iso-label" x="9.5" y="7" font-size="4.6">AGENT</text>'
+      + '<rect class="iso-pane iso-lit iso-tut-flash" x="3" y="10" width="34" height="9" rx="1" style="animation-delay: 1.2s"/>'
+      + '<path class="iso-det" d="M 7 14.6 L 9.2 16.8 L 13 12.2"/>'
+      + '<text class="iso-screen-text" x="15.5" y="16.6" font-size="4.2">VERIFIED</text>'),
+    onPlane(SIDE(ax + 40, ay + 28, 22), range(4, 24, 3).map((u) => `<line class="iso-detail" x1="${u}" y1="4" x2="${u}" y2="18"/>`).join('')),
+  ], [-40, 33], 460)
+}
+
+// Set up your own workflow stage: Hub's pipeline as a row of stages, an
+// event running through them, and your own stage plugged in before notify.
+function tutorialHubWorkflowStage(): FigureDrawing {
+  const stages = [['EVENT', -235], ['WORKFLOWS', -150], ['ANALYSE', -70], ['YOUR STAGE', 15], ['NOTIFY', 100]] as const
+  const spots = stages.map(([, u]) => at(u, 36))
+  const [px, py] = at(190, 30)
+  const segments = spots.slice(0, -1).map(([x, y], k) => route([x + 34, y + 13], [spots[k + 1][0] + 9, spots[k + 1][1] + 26]))
+    .concat(route([spots[4][0] + 34, spots[4][1] + 13], [px + 6, py + 8]))
+  const floor = segments.map((d) => tutWire(d)).join('') + segments.map((d, k) => tutPulse(d, k * 0.9)).join('')
+  return tutBanner(floor, [
+    ...stages.map(([name], k) => {
+      const [x, y] = spots[k]
+      const own = name === 'YOUR STAGE'
+      const h = own ? 30 : 22
+      return box(x, y, 0, 34, 26, h)
+        + onPlane(FRONT(x, y + 26, h), `<text class="iso-label" x="3" y="6.5" font-size="${own ? 3.6 : 3.8}">${name}</text>`
+          + `<rect class="iso-pane iso-lit iso-tut-flash" x="3" y="10" width="28" height="${own ? 15 : 8}" rx="1" ${tutDelay(k === 0 ? -1.5 : (k - 1) * 0.9)}/>`
+          + (own ? '<circle class="iso-det" cx="17" cy="17.5" r="3.5"/><circle class="iso-det" cx="17" cy="17.5" r="1.2"/>' : ''))
+        + onPlane(SIDE(x + 34, y + 26, h), range(4, 22, 3).map((u) => `<line class="iso-detail" x1="${u}" y1="4" x2="${u}" y2="${h - 5}"/>`).join(''))
+    }),
+    phone([px, py], screen(12, 22, 3.6, '<text class="iso-screen-text" x="6" y="9" font-size="3" text-anchor="middle">ALERT</text>')),
+  ], [-12, 40], 500)
+}
+
+// Deploy a MoQ relay on Kubernetes: one stream from an Agent into relay pods
+// on a three-node cluster, which fan it out to every viewer.
+function tutorialHubMoqRelay(): FigureDrawing {
+  const cam = at(-250, 40)
+  const agent = at(-205, 30)
+  const [cx, cy] = at(-60, 22)
+  const viewers = [at(105, -2), at(140, 44), at(215, 22)]
+  const toCluster = route([agent[0] + 34, agent[1] + 12], [cx + 20, cy + 64])
+  const fanOut = [
+    route([cx + 104, cy + 18], [viewers[0][0] + 12, viewers[0][1] + 3]),
+    route([cx + 104, cy + 32], [viewers[1][0] + 10, viewers[1][1] + 26]),
+    route([cx + 104, cy + 46], [viewers[2][0] + 6, viewers[2][1] + 8]),
+  ]
+  const floor = tutWire(route(cam, [agent[0] + 6, agent[1] + 24])) + tutWire(toCluster) + fanOut.map((d) => tutWire(d)).join('')
+    + tutPulse(route(cam, [agent[0] + 6, agent[1] + 24]), -0.8, 'iso-tut-sub') + tutPulse(toCluster, 0) + fanOut.map((d, i) => tutPulse(d, 1.6 + i * 0.12)).join('')
+  const pod = (j: number) => `style="animation-delay: ${round1(0 + j * 0.1)}s"`
+  return tutBanner(floor, [
+    cameraPost('turret', cam, -0.8),
+    agentBox(agent, 'AGENT', -0.2),
+    box(cx, cy, 0, 104, 64, 4),
+    onPlane(FRONT(cx, cy + 64, 4), '<text class="iso-label" x="4" y="3.4" font-size="3">KUBERNETES</text>'),
+    ...[8, 40, 72].map((dx, j) => placeAt(rack([cx + dx, cy + 10], 26, 46, `NODE ${j + 1}`, [pod(j), '', '']), [0, 0, 0], [0, 0, 4], 1)),
+    monitor(viewers[0], 40, 24, screen(40, 24, 3.1, playIcon(20, 12, 4))),
+    laptop(viewers[1], 40, screen(40, 23.2, 3.2, playIcon(20, 11.6, 4))),
+    phone(viewers[2], screen(12, 22, 3.3, playIcon(6, 11, 2.6))),
+  ], [-15, 40], 520)
+}
+
+// Choose a transport: one camera, three lanes to the same viewer. WebRTC is
+// the fastest, MoQ close behind, HLS slower and in segments.
+function tutorialHubTransports(): FigureDrawing {
+  const cam = at(-250, 42)
+  const agent = at(-205, 32)
+  const gates = [['WEBRTC', at(-40, 0), 'iso-tut-fast'], ['MOQ', at(-40, 38), ''], ['HLS', at(-40, 76), 'iso-tut-slow']] as const
+  const [mx, my] = at(140, 30)
+  const lanes = gates.map(([, [gx, gy], cls], i) => {
+    const a = route([agent[0] + 34, agent[1] + 6 + i * 6], [gx + 8, gy + 20])
+    const b = route([gx + 30, gy + 10], [mx + 14 + i * 12, my + 3])
+    return { a, b, cls }
+  })
+  const floor = tutWire(route(cam, [agent[0] + 6, agent[1] + 24])) + lanes.map(({ a, b }) => tutWire(a) + tutWire(b)).join('')
+    + lanes.map(({ a, b, cls }) => tutPulse(a, 0, cls) + tutPulse(b, cls === 'iso-tut-fast' ? 0.75 : cls ? 2.25 : 1.5, cls)).join('')
+  const tiles = gates.map(([name], i) => `<rect class="iso-pane iso-lit" x="${3 + i * 17}" y="4" width="15" height="20" rx="1"/>`
+    + `<text class="iso-screen-text" x="${10.5 + i * 17}" y="15.5" font-size="3.2" text-anchor="middle">${name}</text>`).join('')
+  return tutBanner(floor, [
+    cameraPost('ptz', cam, -1.5),
+    agentBox(agent, 'AGENT', -1.2),
+    ...gates.map(([name, [gx, gy]]) => box(gx, gy, 0, 30, 20, 14)
+      + onPlane(FRONT(gx, gy + 20, 14), `<text class="iso-label" x="3" y="8.5" font-size="4.4">${name}</text>`)),
+    monitor([mx, my], 56, 28, `<rect class="iso-face iso-side" x="0" y="0" width="56" height="28"/>${tiles}`),
+  ], [-25, 46], 500)
+}
+
+// Set up HLS live view: the stream is cut into numbered segments listed in a
+// playlist, which the browser's player fetches one after another.
+function tutorialHubHls(): FigureDrawing {
+  const agent = at(-235, 32)
+  const [gx, gy] = at(-140, 30)
+  const chips = [at(-55, 40), at(-20, 40), at(15, 40)]
+  const [lx, ly] = at(-25, 12)
+  const [bx, by] = at(140, 30)
+  const toCutter = route([agent[0] + 34, agent[1] + 12], [gx + 8, gy + 30])
+  const toBrowser = route([chips[2][0] + 22, chips[2][1] + 8], [bx + 20, by + 3])
+  const floor = tutWire(toCutter) + tutWire(route([gx + 36, gy + 15], [chips[0][0] + 4, chips[0][1] + 16])) + tutWire(toBrowser)
+    + tutPulse(toCutter, 0) + tutPulse(toBrowser, 3.1)
+  return tutBanner(floor, [
+    agentBox(agent, 'AGENT', -1.5),
+    box(gx, gy, 0, 36, 30, 20),
+    onPlane(FRONT(gx, gy + 30, 20), '<text class="iso-label" x="3" y="7" font-size="3.8">SEGMENTER</text>'
+      + '<rect class="iso-pane iso-lit iso-tut-flash" x="3" y="10.5" width="30" height="6" rx="1" style="animation-delay: 0s"/>'),
+    screenPanel(lx, ly, 0, 34, 30, '<rect class="iso-pane" x="2" y="2" width="30" height="26" rx="1"/>'
+      + '<text class="iso-screen-text" x="5" y="8" font-size="3.6">INDEX.M3U8</text>'
+      + range(0, 2, 1).map((i) => `<line class="iso-det" x1="5" y1="${13 + i * 5}" x2="${24 - i * 4}" y2="${13 + i * 5}"/>`).join('')),
+    ...chips.map(([x, y], i) => box(x, y, 0, 22, 16, 6)
+      + onPlane(TOP(x, y, 6), `<rect class="iso-pane iso-lit iso-tut-flash" x="2" y="2" width="18" height="12" rx="1" ${tutDelay(1.2 + i * 0.6)}/>`)
+      + onPlane(FRONT(x, y + 16, 6), `<text class="iso-label" x="2" y="4.6" font-size="3.4">00${i + 1}.TS</text>`)),
+    monitor([bx, by], 50, 30, screen(50, 30, 4.6, playIcon(25, 13, 5) + '<line class="iso-det" x1="6" y1="25" x2="44" y2="25"/>')),
+  ], [-40, 36], 470)
+}
+
+// Set up WebRTC with TURN: the Agent and the viewer each sit behind a
+// firewall. Hub only signals; the media is relayed through coturn.
+function tutorialHubWebrtcTurn(): FigureDrawing {
+  const cam = at(-262, 44)
+  const agent = at(-222, 34)
+  const wallA = at(-138, -6)
+  const [tx, ty] = at(-15, 34)
+  const wallB = at(100, -4)
+  const lap = at(185, 34)
+  const hub = at(-20, -30)
+  const mediaIn = route([agent[0] + 34, agent[1] + 12], [tx + 12, ty + 30])
+  const mediaOut = route([tx + 40, ty + 15], [lap[0] + 10, lap[1] + 25])
+  const sigA = route([agent[0] + 34, agent[1] + 4], [hub[0] + 40, hub[1] + 55])
+  const sigB = route([hub[0] + 55, hub[1] + 40], [lap[0] + 4, lap[1] + 20])
+  const floor = tutWire(route(cam, [agent[0] + 6, agent[1] + 24])) + tutWire(sigA, true) + tutWire(sigB, true) + tutWire(mediaIn) + tutWire(mediaOut)
+    + tutPulse(sigA, 0, 'iso-tut-sub') + tutPulse(sigB, 0.6, 'iso-tut-sub') + tutPulse(mediaIn, 2.1) + tutPulse(mediaOut, 3.6)
+  return tutBanner(floor, [
+    placeAt(hubBuilding((f) => `class="iso-pane iso-lit iso-tut-flash" ${tutDelay(0.3 + f * 0.2)}`, 'class="iso-beacon iso-lit iso-tut-blink" style="animation-delay: 0s"', false),
+      [160, 80, 0], [hub[0], hub[1], 0], 0.32),
+    cameraPost('bullet', cam, 0.6),
+    agentBox(agent, 'AGENT', 2.0),
+    firewall(wallA, 62, 26, 'NAT'),
+    box(tx, ty, 0, 40, 30, 28),
+    onPlane(FRONT(tx, ty + 30, 28), '<text class="iso-label" x="3" y="7" font-size="4.2">COTURN</text>'
+      + '<circle class="iso-pane iso-lit iso-tut-flash" cx="20" cy="17" r="6.5" style="animation-delay: 2.1s"/>'
+      + '<circle class="iso-face iso-top" cx="20" cy="17" r="3"/>'),
+    onPlane(SIDE(tx + 40, ty + 30, 28), range(4, 26, 3).map((u) => `<line class="iso-detail" x1="${u}" y1="5" x2="${u}" y2="23"/>`).join('')),
+    firewall(wallB, 70, 26, 'NAT'),
+    laptop(lap, 42, screen(42, 24.4, 3.6, playIcon(21, 12, 4))),
+  ], [-30, 26], 530)
+}
+
 const FIGURES: Record<IsoFigure, (options: IsoRenderOptions) => FigureDrawing> = {
   agent,
   'control-tower': controlTower,
@@ -840,6 +1125,13 @@ const FIGURES: Record<IsoFigure, (options: IsoRenderOptions) => FigureDrawing> =
   vault,
   factory,
   ecosystem: (options) => ecosystem(options.links),
+  'tutorial-agent-install': tutorialAgentInstall,
+  'tutorial-agent-camera': tutorialAgentCamera,
+  'tutorial-hub-workflow-stage': tutorialHubWorkflowStage,
+  'tutorial-hub-moq-relay': tutorialHubMoqRelay,
+  'tutorial-hub-transports': tutorialHubTransports,
+  'tutorial-hub-hls': tutorialHubHls,
+  'tutorial-hub-webrtc-turn': tutorialHubWebrtcTurn,
 }
 
 /**
@@ -854,13 +1146,13 @@ export function renderIsoSvg(figure: IsoFigure, id: string, options: IsoRenderOp
     return ''
   }
 
-  const { viewBox, markup, glow, bloom, loop } = build(options)
+  const { viewBox, markup, glow, bloom, loop, classes } = build(options)
   const [x, y, width, height] = viewBox.split(' ').map(Number)
   // Filters work in scene units over a generous region: a perfectly straight
   // wire has a zero-height bounding box and would vanish under the default one.
   const region = `filterUnits="userSpaceOnUse" x="${x - width}" y="${y - height}" width="${width * 3}" height="${height * 3}"`
 
-  return `<svg class="iso-figure iso-figure--${figure}" viewBox="${viewBox}" focusable="false"${loop ? ` data-iso-loop="${loop}"` : ''}`
+  return `<svg class="iso-figure iso-figure--${figure}${classes ? ` ${classes}` : ''}" viewBox="${viewBox}" focusable="false"${loop ? ` data-iso-loop="${loop}"` : ''}`
     + ` style="--iso-glow: url(#${id}); --iso-bloom: url(#${id}-bloom)">`
     + `<defs><filter id="${id}" ${region}>`
     + `<feGaussianBlur stdDeviation="${glow}" result="blur"/>`

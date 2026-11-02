@@ -17,7 +17,7 @@ const meta = {
       <Story />
     </div>,
   ],
-  parameters: { docs: { description: { component: 'Isometric line art for empty states (agent), hero backgrounds (control-tower) and explaining Hub (hub), Vault (vault) and Factory (factory), and the whole platform at a glance (ecosystem), whose product zones can be links. Faces use the Hub card tones and only live parts use the --hub accent, so white-label themes recolour them; set --iso-accent to override. With glow="auto" lit parts glow in the dark Hub theme and stay flat in light. Decorative unless a label is passed. The figures render plain SVG strings (renderIsoSvg), which the Angular Hub frontend and the docs reuse.' } } },
+  parameters: { docs: { description: { component: 'Isometric line art for empty states (agent), hero backgrounds (control-tower) and explaining Hub (hub), Vault (vault) and Factory (factory), the whole platform at a glance (ecosystem), whose product zones can be links, and a wide banner per docs tutorial (tutorial-*). Faces use the Hub card tones and only live parts use the --hub accent, so white-label themes recolour them; set --iso-accent to override. With glow="auto" lit parts glow in the dark Hub theme and stay flat in light. Decorative unless a label is passed. The figures render plain SVG strings (renderIsoSvg), which the Angular Hub frontend and the docs reuse.' } } },
 } satisfies Meta<typeof IsoIllustration>
 
 export default meta
@@ -65,6 +65,23 @@ Each zone can take its own colour: set \`--iso-zone-accent\` on \`[data-iso-zone
       .iso-zone-colours [data-iso-zone='hub'] { --iso-zone-accent: #a239d7; }
     `}</style>
     <IsoIllustration {...args} />
+  </div>,
+}
+const TUTORIAL_FIGURES = ISO_FIGURE_NAMES.filter(name => name.startsWith('tutorial-'))
+
+export const TutorialBanners: Story = {
+  parameters: {
+    isoWidth: '720px',
+    docs: {
+      description: {
+        story: 'Wide 10:3 banners for the docs tutorials, one per tutorial, each animating its subject on a 6s round: Install Agent, Connect any IP camera, Set up your own workflow stage, Deploy a MoQ relay on Kubernetes, MoQ vs HLS vs WebRTC, Set up HLS live view and Set up WebRTC with TURN. Set --iso-accent to the product colour.',
+      },
+    },
+  },
+  render: args => <div style={{ display: 'grid', gap: '16px' }}>
+    {TUTORIAL_FIGURES.map(figure => <div key={figure} style={{ aspectRatio: '10 / 3', overflow: 'hidden', borderRadius: '8px', border: '1px solid var(--card-muted, #ddd)' }}>
+      <IsoIllustration {...args} figure={figure} label={figure.replace('tutorial-', '').split('-').join(' ')} />
+    </div>)}
   </div>,
 }
 export const AccentOverride: Story = {

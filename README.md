@@ -139,16 +139,20 @@ emails in `src/components/Emails`.
 
 ### Draw building blocks
 
-The **Draw** navigation item and `/draw` page provide a searchable catalogue and
-local design playground for every production Draw building block: General,
-UUG.AI, AWS, Azure, Google Cloud, Kubernetes and isometric artwork. Select a block,
-edit its labels, badges, size and appearance, compare light/dark themes, and copy
-its design settings for code review. Storybook has a separate **Draw / Building
-blocks** section with the same playground, individual controls, grouped galleries,
-compact-card and dark-mode examples.
+The **Draw** navigation item and `/draw` page show every production Draw building
+block, grouped by category without search or filter controls. Storybook has a main
+**Draw / Building blocks / Docs** page listing the complete library. Each block
+category also has its own **Docs** page showing only that group's blocks in a
+responsive side-by-side grid, with links to the individual entries. Each block
+also has its own entry under **Draw / Building blocks / Generic**, **uug.ai**,
+**AWS**, **Azure**, **Google Cloud**, **Kubernetes** or **Isometric**. For example,
+Agent is **Draw / Building blocks / uug.ai / Agent**, and Camera is
+**Draw / Building blocks / Generic / Camera**. Gallery cards link directly to
+these entries. Use Storybook's theme toolbar to compare individual blocks in light
+and dark. There is no configuration panel or design-settings export.
 
-Experiments do not change live Draw, saved boards or the production defaults.
-Geometry changes still require editing the artwork source. The production renderer,
+Previews do not change live Draw, saved boards or the production defaults.
+Artwork changes still require editing the source. The production renderer,
 catalogue, palettes and local icon assets are a generated snapshot, not an
 independently reimplemented card. With the Draw repository checked out beside this
 one, refresh or verify it with:
@@ -163,8 +167,14 @@ hand-edit `src/components/DrawBlocks/production/` or `public/draw-blocks/`.
 Implement approved changes in Draw and resynchronize the snapshot. Icon licences
 are preserved alongside the bundled assets; no cross-origin assets are needed.
 
-Build both the app and Storybook, then run `npm run test:draw-blocks` for the
-catalogue, controls, theme, asset, accessibility and responsive regression checks.
+Individual stories live in `src/components/DrawBlocks/<Category>/stories.tsx`.
+Category Docs pages live alongside them in `Overview.mdx` and reuse the catalogue.
+When syncing new blocks, add their named stories to the corresponding category.
+The regression suite verifies that every production block has exactly one story
+and that each gallery link points to it.
+
+Build both the app and Storybook, then run `npm run test:draw-blocks` for story
+coverage, individual previews, gallery links, themes, assets and responsive checks.
 
 ### Emails
 

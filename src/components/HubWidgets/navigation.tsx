@@ -14,8 +14,8 @@ export type HubMenuItem = {
   onSelect: () => void
 }
 
-export function HubActionsMenu({ label = 'Actions', items, collapseSingle = true, iconOnly = false }: {
-  label?: string; items: HubMenuItem[]; collapseSingle?: boolean; iconOnly?: boolean
+export function HubActionsMenu({ label = 'Actions', menuLabel, items, collapseSingle = true, iconOnly = false }: {
+  label?: string; menuLabel?: string; items: HubMenuItem[]; collapseSingle?: boolean; iconOnly?: boolean
 }) {
   const visible = items.filter(item => !item.hidden)
   const single = collapseSingle && visible.length === 1
@@ -38,7 +38,7 @@ export function HubActionsMenu({ label = 'Actions', items, collapseSingle = true
         ? <>{visible[0].icon && <span aria-hidden="true">{visible[0].icon}</span>}{visible[0].text}</>
         : <>{label}<NavArrowDown width={14} height={14} aria-hidden="true" /></>}
     </button>
-    {popup.open && <div ref={popup.panelRef} id={id} role="menu" aria-label={label} tabIndex={-1}
+    {popup.open && <div ref={popup.panelRef} id={id} role="menu" aria-label={menuLabel ?? label} tabIndex={-1}
       className="hub-popup hub-menu-panel" style={popup.style}
       onKeyDown={event => {
         const buttons = Array.from(event.currentTarget.querySelectorAll<HTMLButtonElement>('[role="menuitem"]:not(:disabled)'))

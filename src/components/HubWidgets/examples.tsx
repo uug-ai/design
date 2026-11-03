@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
-import { EditPencil, Plus, Trash } from 'iconoir-react'
+import { Download, EditPencil, Plus, Refresh, Trash, XmarkCircle } from 'iconoir-react'
 import {
   HubButton, HubColorInput, HubInput, HubMultiSelect, HubSearch, HubSelect, HubTags, HubTextarea,
 } from './controls'
@@ -85,8 +85,37 @@ export function SchedulingExample({ weekly = false, disabled = false, maxSegment
   </div>
 }
 
-export function MenuExample({ single = false, empty = false, allDisabled = false }: { single?: boolean; empty?: boolean; allDisabled?: boolean }) {
+const exportFormats = [
+  { id: 'csv', text: 'CSV (spreadsheet)' }, { id: 'json', text: 'JSON' }, { id: 'ndjson', text: 'NDJSON (one event per line)' },
+]
+
+// Audit page Export menu: while a download runs the trigger reads "Exporting…" and every format is disabled.
+function ExportMenuExample({ busy = false }: { busy?: boolean }) {
+  const [running, setRunning] = useState('')
+  const [result, setResult] = useState('No export started')
+  useEffect(() => {
+    if (!running) return
+    const timer = window.setTimeout(() => {
+      setResult(`Saved audit-events-demo.${running} in this demo. No Hub data was exported.`)
+      setRunning('')
+    }, 1500)
+    return () => window.clearTimeout(timer)
+  }, [running])
+  const exporting = busy || !!running
+  const items = exportFormats.map(format => ({
+    ...format, icon: <Download />, disabled: exporting,
+    onSelect: () => { setRunning(format.id); setResult(`Exporting ${format.id.toUpperCase()}…`) },
+  }))
+  return <div className="hub-stack"><div className="hub-row">
+    <HubActionsMenu label={exporting ? 'Exporting…' : 'Export'} menuLabel="Export audit events" items={items} />
+  </div><output role="status">{busy ? 'An export is running, so every format is disabled.' : result}</output></div>
+}
+
+export function MenuExample({ single = false, empty = false, allDisabled = false, variant = 'camera', busy = false }: {
+  single?: boolean; empty?: boolean; allDisabled?: boolean; variant?: 'camera' | 'export'; busy?: boolean
+}) {
   const [result, setResult] = useState('No action selected')
+  if (variant === 'export') return <ExportMenuExample busy={busy} />
   const items = empty ? [] : [
     { id: 'edit', text: 'Edit camera', icon: <EditPencil />, disabled: allDisabled, onSelect: () => setResult('Edit camera selected') },
     { id: 'delete', text: 'Delete camera', icon: <Trash />, danger: true, disabled: allDisabled, hidden: single, onSelect: () => setResult('Delete camera selected') },
@@ -128,14 +157,22 @@ export function DataExample({ view = 'table', empty = false, loading = false }: 
   </div>
 }
 
-export function NavigationExample({ disabled = false }: { disabled?: boolean }) {
+export function NavigationExample({ disabled = false, pageActions = false }: { disabled?: boolean; pageActions?: boolean }) {
   const [grid, setGrid] = useState('2')
   const [ratio, setRatio] = useState('16:9')
   const [language, setLanguage] = useState('en')
   const [result, setResult] = useState('')
   return <div className="hub-stack">
-    <HubBreadcrumb title="Cameras" items={[{ text: 'Sites', href: '#sites' }, { text: 'Ghent', href: '#ghent' }, { text: 'Entrance' }]}
-      actions={<HubButton icon={<Plus />} disabled={disabled} onClick={() => setResult('Add camera selected')}>Add camera</HubButton>} />
+    {pageActions
+      ? <HubBreadcrumb title="Audit log" items={[{ text: 'Management' }, { text: 'Audit log' }]} actions={<>
+        <HubButton variant="outlined" icon={<XmarkCircle />} disabled={disabled} onClick={() => setResult('Clear filters selected')}>Clear filters</HubButton>
+        <HubButton variant="outlined" icon={<Refresh />} disabled={disabled} onClick={() => setResult('Refresh selected')}>Refresh</HubButton>
+        <HubActionsMenu label="Export" menuLabel="Export audit events" items={exportFormats.map(format => ({
+          ...format, icon: <Download />, disabled, onSelect: () => setResult(`${format.text} export selected`),
+        }))} />
+      </>} />
+      : <HubBreadcrumb title="Cameras" items={[{ text: 'Sites', href: '#sites' }, { text: 'Ghent', href: '#ghent' }, { text: 'Entrance' }]}
+        actions={<HubButton icon={<Plus />} disabled={disabled} onClick={() => setResult('Add camera selected')}>Add camera</HubButton>} />}
     <div className="hub-row"><HubGridToggle value={grid} onChange={setGrid} disabled={disabled} />
       <HubAspectRatioToggle value={ratio} onChange={setRatio} disabled={disabled} /></div>
     <HubLanguageSwitcher value={language} onChange={setLanguage} disabled={disabled} />
@@ -189,5 +226,29 @@ export function NotificationExample({ autoDismiss = false, fixed = false }: { au
       <HubIdentityBadge name="Online camera" color="#35d06b" variant="camera" />
       <HubLabelTag color="#f3b13e">Needs review</HubLabelTag></div>
     <output role="status">{result || 'Notifications pause while hovered or keyboard-focused.'}</output>
+  </div>
+}
+
+// Hub ToastService.progress: one persistent info toast updated in place per part, then
+// turned into a success or error toast that dismisses itself.
+export function ExportProgressExample({ parts = 3, failPart = 0 }: { parts?: number; failPart?: number }) {
+  const [step, setStep] = useState<{ part: number; outcome?: 'success' | 'error' } | null>(null)
+  const [dismissed, setDismissed] = useState(false)
+  useEffect(() => {
+    if (!step || step.outcome) return
+    const timer = window.setTimeout(() => setStep(step.part === failPart ? { part: step.part, outcome: 'error' }
+      : step.part === parts ? { part: step.part, outcome: 'success' } : { part: step.part + 1 }), 1200)
+    return () => window.clearTimeout(timer)
+  }, [step, parts, failPart])
+  const running = !!step && !step.outcome
+  const toast: HubToastItem | null = !step || dismissed ? null
+    : step.outcome === 'success' ? { id: 'export', kind: 'success', title: `Audit export complete: ${parts} files`, duration: 6000 }
+      : step.outcome === 'error' ? { id: 'export', kind: 'error', title: `The audit export stopped after ${step.part - 1} files. Please try again.`, duration: 8000 }
+        : { id: 'export', kind: 'info', title: 'Exporting audit events', message: `Downloading part ${step.part} of ${parts}…`, duration: 0 }
+  return <div className="hub-stack">
+    <div className="hub-row"><HubButton icon={<Download />} disabled={running}
+      onClick={() => { setDismissed(false); setStep({ part: 1 }) }}>{`Export ${parts} parts`}</HubButton></div>
+    <HubToastContainer items={toast ? [toast] : []} onDismiss={() => setDismissed(true)} inline />
+    <output role="status">{running ? `Part ${step.part} of ${parts}` : 'Parts are simulated; nothing is downloaded.'}</output>
   </div>
 }

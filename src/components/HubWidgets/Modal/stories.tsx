@@ -1,12 +1,13 @@
 import { useState } from 'react'
 import type { Meta, StoryObj } from '@storybook/react-vite'
+import { Download } from 'iconoir-react'
 import { HubButton, HubInput, HubSelect, HubTextarea } from '../controls'
 import { HubModal } from '../surfaces'
 import { ModalPreviewExample } from '../examples'
 
 type ModalStoryArgs = {
   title: string; confirmation: boolean; fullWidth?: boolean; centered?: boolean
-  theaterMode?: boolean; draggable?: boolean; resizable?: boolean
+  theaterMode?: boolean; draggable?: boolean; resizable?: boolean; parts?: number
 }
 
 const meta = {
@@ -108,6 +109,33 @@ export const Confirmation: Story = {
         <HubButton variant="alert" onClick={() => { setOpen(false); setDeleted(true) }}>Delete camera</HubButton>
       </>}>
         <p>This action removes the camera from this project. This is a presentation-only demo.</p>
+      </HubModal>
+    </>
+  },
+}
+export const DownloadConfirmation: Story = {
+  args: { title: 'Export audit events', confirmation: true, parts: 1 },
+  argTypes: { parts: { control: { type: 'number', min: 1, max: 20, step: 1 } } },
+  parameters: { docs: { description: { story: 'ShowConfirm for an action that is not destructive, as used before every audit export: a primary Download button with a download icon next to an outlined Cancel. Set parts above 1 for the text shown when the export is split into several files.' } } },
+  render: function DownloadConfirmationStory(args) {
+    const [open, setOpen] = useState(true)
+    const [result, setResult] = useState('')
+    const parts = Math.max(1, Math.round(args.parts ?? 1))
+    const total = (parts > 1 ? parts * 100000 - 50000 : 42000).toLocaleString('en-US')
+    const text = parts > 1
+      ? `${total} events match these filters. They will download as ${parts} files of up to 100,000 events each. Continue?`
+      : `${total} events match these filters. They will download as one CSV file. Continue?`
+    return <>
+      <HubButton variant="outlined" icon={<Download />} onClick={() => { setOpen(true); setResult('') }}>Export CSV</HubButton>
+      {result && <p role="status">{result}</p>}
+      <HubModal open={open} confirmation={args.confirmation} title={args.title} onClose={() => setOpen(false)} actions={<>
+        <HubButton variant="outlined" onClick={() => setOpen(false)}>Cancel</HubButton>
+        <HubButton variant="submit" icon={<Download />} onClick={() => {
+          setOpen(false)
+          setResult(`Download started in this demo (${parts === 1 ? 'one file' : `${parts} files`}). No Hub data was exported.`)
+        }}>Download</HubButton>
+      </>}>
+        <p>{text}</p>
       </HubModal>
     </>
   },

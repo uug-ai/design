@@ -1,8 +1,42 @@
-.draw-page { max-width: 1200px; margin: 0 auto; padding: 60px 24px 80px; }
-.draw-page-heading { display: grid; gap: 20px; margin-bottom: 48px; }
-.draw-page-heading h1 { font-family: var(--font-family-heading); font-size: clamp(36px, 5vw, 56px); }
-.draw-page-heading > p:not(.draw-page-eyebrow) { max-width: 720px; color: var(--text-secondary); line-height: 1.8; }
-.draw-page-eyebrow { color: var(--primary-color); font-size: 12px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; }
-.draw-page-links { display: flex; flex-wrap: wrap; gap: 20px; }
-.draw-page-links a { color: var(--primary-color); font-weight: 500; }
-.draw-page-links a:focus-visible { outline: 2px solid currentColor; outline-offset: 4px; }
+.draw-architecture-grid {
+  grid-template-columns: minmax(0, 1fr);
+}
+
+.draw-page .draw-template-card {
+  display: flex;
+  flex-direction: column;
+  padding: 24px;
+}
+
+.draw-template-card > p {
+  flex: 1;
+}
+
+.draw-template-preview {
+  display: block;
+  margin: 8px 0 16px;
+}
+
+.draw-template-preview img {
+  display: block;
+  width: 100%;
+  height: auto;
+  aspect-ratio: 4 / 3;
+  object-fit: contain;
+  padding: 12px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: #fbfaff;
+}
+
+@media (min-width: 700px) {
+  .draw-architecture-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (min-width: 1000px) {
+  .draw-architecture-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}

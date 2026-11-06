@@ -1,6 +1,5 @@
 import { BadgeCheck, Component, Palette, RulerArrows, Text } from 'iconoir-react'
 import { Link } from 'react-router-dom'
-import { storybookUrl } from '../config/storybook'
 import '../components/Button/component.css'
 import './Home.css'
 
@@ -35,9 +34,9 @@ function Home() {
       iconClassName: 'foundation-icon-branding',
     },
     {
-      href: storybookUrl,
-      title: 'Components',
-      description: 'Reusable UI components with code examples and best practices.',
+      to: '/components',
+      title: 'Storybook',
+      description: 'One component library for Agent, Vault, Factory and Hub.',
       icon: Component,
       iconClassName: 'foundation-icon-components',
     },
@@ -106,11 +105,7 @@ function Home() {
               </>
             )
 
-            return 'href' in foundation ? (
-              <a key={foundation.title} href={foundation.href} className="foundation-card" target="_blank" rel="noreferrer">
-                {content}
-              </a>
-            ) : (
+            return (
               <Link key={foundation.title} to={foundation.to} className="foundation-card">
                 {content}
               </Link>
@@ -120,9 +115,9 @@ function Home() {
       </section>
 
       <section className="section cta-section">
-        <h2>Draw building blocks</h2>
-        <p>Browse individual architecture building blocks by category, from uug.ai and Generic to cloud providers, Kubernetes and Isometric. Every block has its own Storybook entry.</p>
-        <Link to="/draw" className="btn btn-primary">Browse building blocks</Link>
+        <h2>Design architectures with Draw</h2>
+        <p>Our way to design and draw architectures. Explore real deployment templates, then launch Draw to bring your own system into view.</p>
+        <Link to="/draw" className="btn btn-primary">Explore Draw</Link>
       </section>
 
       <section className="section cta-section">
@@ -135,9 +130,9 @@ function Home() {
           <Link to="/colors" className="btn btn-primary">
             View Colors
           </Link>
-          <a href={storybookUrl} className="btn btn-secondary" target="_blank" rel="noreferrer">
-            Browse Components
-          </a>
+          <Link to="/components" className="btn btn-secondary">
+            Explore Storybook
+          </Link>
         </div>
       </section>
     </div>

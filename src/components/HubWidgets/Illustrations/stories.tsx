@@ -17,7 +17,7 @@ const meta = {
       <Story />
     </div>,
   ],
-  parameters: { docs: { description: { component: 'Isometric line art for empty states (agent), hero backgrounds (control-tower) and explaining Hub (hub), Vault (vault) and Factory (factory), the whole platform at a glance (ecosystem), whose product zones can be links, and a wide banner per docs tutorial (tutorial-*). Faces use the Hub card tones and only live parts use the --hub accent, so white-label themes recolour them; set --iso-accent to override. With glow="auto" lit parts glow in the dark Hub theme and stay flat in light. Decorative unless a label is passed. The figures render plain SVG strings (renderIsoSvg), which the Angular Hub frontend and the docs reuse.' } } },
+  parameters: { docs: { description: { component: 'Isometric line art for empty states (agent), hero backgrounds (control-tower) and explaining Hub (hub), Vault (vault) and Factory (factory), the whole platform at a glance (ecosystem), whose product zones can be links, a wide banner per docs tutorial (tutorial-*) and the camera-to-Agent link (agent-link). Faces use the Hub card tones and only live parts use the --hub accent, so white-label themes recolour them; set --iso-accent to override. With glow="auto" lit parts glow in the dark Hub theme and stay flat in light. Decorative unless a label is passed. The figures render plain SVG strings (renderIsoSvg), which the Angular Hub frontend and the docs reuse.' } } },
 } satisfies Meta<typeof IsoIllustration>
 
 export default meta
@@ -83,6 +83,10 @@ export const TutorialBanners: Story = {
       <IsoIllustration {...args} figure={figure} label={figure.replace('tutorial-', '').split('-').join(' ')} />
     </div>)}
   </div>,
+}
+export const AgentLink: Story = {
+  args: { figure: 'agent-link', label: 'Agent link: an Agent reads one camera over RTSP; the camera cycles through bullet, dome, PTZ and turret models and the Agent through a Raspberry Pi, mini PC, laptop and Kubernetes server.' },
+  parameters: { isoWidth: '480px' },
 }
 export const AccentOverride: Story = {
   render: args => <div style={{ '--iso-accent': 'hsl(205, 74%, 53%)' } as CSSProperties}>

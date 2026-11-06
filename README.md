@@ -275,7 +275,7 @@ Hub/Widgets nesting.
 The site's **Components** navigation links open this Storybook directly; the old
 `/components` route redirects there. The Illustrations group shows the isometric
 figures from [src/components/IsoIllustration](src/components/IsoIllustration)
-(`agent`, `control-tower`, `hub`, `vault`, `factory`); they render plain SVG strings (`renderIsoSvg`) so
+(`agent`, `control-tower`, `hub`, `vault`, `factory`, `agent-link`); they render plain SVG strings (`renderIsoSvg`) so
 non-React apps such as the Angular Hub frontend can reuse the same drawings.
 Site layout, branding tools, and foundation-page helpers remain
 internal to the documentation site; they are not published as library components.

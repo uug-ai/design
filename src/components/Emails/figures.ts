@@ -6,7 +6,7 @@ import { box, frame, FRONT, onPlane, P, range, SIDE, TOP, type Vec3 } from '../I
 // data URI and the emails get a PNG export of it.
 
 export type NotificationFigure =
-  | 'welcome' | 'activate' | 'forgot' | 'newip' | 'detection' | 'device' | 'device_group'
+  | 'welcome' | 'activate' | 'forgot' | 'newip' | 'detection' | 'device' | 'device_group' | 'recording'
   | 'disable' | 'highupload' | 'share' | 'share_case' | 'share_case_otp' | 'assign_task'
 
 export type LicenseFigure = 'license' | 'license_expiring' | 'license_expired'
@@ -121,6 +121,25 @@ const FIGURES: Record<EmailFigure, () => Drawing> = {
       + [[20, 4], [55, 18], [90, 32]].map(([x, y], i) => onPlaneCamera(x, y, i === 2)).join(''),
     bounds: [...block(0, 0, 120, 70, 6), [17, 4, 52], [87, 32, 52]],
   }),
+  // An online camera and its Agent, the upload line to the recordings cut and the newest
+  // slot on the stack empty, a clock counting the hours: the camera stopped recording.
+  recording: () => ({
+    markup: grid(-20, -10, 130, 90)
+      + onPlane(TOP(0, 0, 0), '<path class="wire" d="M 6 56 H 30"/><path class="wire wire--dash" d="M 52 62 H 66"/><path class="wire wire--dash" d="M 78 62 H 88 V 36"/><path class="cut" d="M 69 57 L 75 67 M 75 57 L 69 67"/>')
+      + range(0, 2, 1).map(i => box(74, 12, i * 9, 30, 22, 6)
+        + onPlane(FRONT(74, 34, i * 9 + 6), '<rect class="d" x="3" y="2" width="8" height="2"/>')).join('')
+      + onPlane(TOP(74, 12, 27), '<rect class="frame" x="1" y="1" width="28" height="20" rx="1"/>')
+      + cameraOnline(0, 30, 40)
+      + agentBox(30, 52)
+      + box(112, -2, 0, 22, 8, 3)
+      + onPlane(FRONT(112, 2, 25), '<circle class="t" cx="11" cy="11" r="10"/>'
+        + range(0, 11, 1).map(i => {
+          const a = (i * Math.PI) / 6
+          return `<line class="d" x1="${round2(11 + Math.sin(a) * 7.6)}" y1="${round2(11 - Math.cos(a) * 7.6)}" x2="${round2(11 + Math.sin(a) * 8.8)}" y2="${round2(11 - Math.cos(a) * 8.8)}"/>`
+        }).join('')
+        + '<path class="hand" d="M 11 11 V 4.5 M 11 11 L 15.5 13.5"/><circle class="lit" cx="11" cy="11" r="1.3"/>'),
+    bounds: [...block(-3, -2, 134, 68, 54)],
+  }),
   // A storage meter filled to the brim with a pause sign: the daily limit is reached.
   disable: () => ({
     markup: grid(-20, -10, 120, 90)
@@ -213,6 +232,14 @@ const FIGURES: Record<EmailFigure, () => Drawing> = {
   }),
 }
 
+// A camera on a pole facing the viewer, online: its status light is green.
+function cameraOnline(x: number, y: number, pole = 40) {
+  return box(x, y + 20, 0, 4, 4, pole)
+    + box(x - 3, y, pole, 10, 26, 10)
+    + onPlane(FRONT(x - 3, y + 26, pole + 10), '<circle class="t" cx="5" cy="5" r="3.4"/><circle class="d" cx="5" cy="5" r="1.8"/>')
+    + onPlane(SIDE(x + 7, y + 26, pole + 10), '<circle class="ok" cx="3" cy="3" r="1.2"/>')
+}
+
 // A camera standing on the site platform; `off` greys its light and marks it with a cross.
 function onPlaneCamera(x: number, y: number, on: boolean) {
   const lift = 6
@@ -264,6 +291,7 @@ export function renderEmailFigure(figure: EmailFigure, accent: string, tint: str
     `.cut{fill:none;stroke:${accent};stroke-width:1.6}`,
     `.warn{fill:${accent};stroke:none}.w{fill:none;stroke:#ffffff;stroke-width:1.6}.wdot{fill:#ffffff}`,
     `.arrow{fill:none;stroke:${accent};stroke-width:2}`,
+    `.hand{fill:none;stroke:${accent};stroke-width:1.4}`,
     `.shackle{fill:none;stroke:rgba(11,11,18,.42);stroke-width:5}`,
     `.link{fill:none;stroke:rgba(11,11,18,.42);stroke-width:2}.link--lit{stroke:${accent}}`,
     '.ok{fill:#5fab6d;stroke:none}',

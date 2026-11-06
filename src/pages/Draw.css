@@ -1,0 +1,42 @@
+.draw-architecture-grid {
+  grid-template-columns: minmax(0, 1fr);
+}
+
+.draw-page .draw-template-card {
+  display: flex;
+  flex-direction: column;
+  padding: 24px;
+}
+
+.draw-template-card > p {
+  flex: 1;
+}
+
+.draw-template-preview {
+  display: block;
+  margin: 8px 0 16px;
+}
+
+.draw-template-preview img {
+  display: block;
+  width: 100%;
+  height: auto;
+  aspect-ratio: 4 / 3;
+  object-fit: contain;
+  padding: 12px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: #fbfaff;
+}
+
+@media (min-width: 700px) {
+  .draw-architecture-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (min-width: 1000px) {
+  .draw-architecture-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}

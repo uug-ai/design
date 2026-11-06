@@ -40,9 +40,11 @@ type HubInputProps = InputHTMLAttributes<HTMLInputElement> & {
   label: string
   error?: string
   loading?: boolean
+  /** Screen-reader text while loading; defaults to "Saving {label}". */
+  loadingText?: string
 }
 
-export function HubInput({ label, error, id, loading = false, ...props }: HubInputProps) {
+export function HubInput({ label, error, id, loading = false, loadingText, ...props }: HubInputProps) {
   const generatedId = useId()
   const inputId = id ?? generatedId
   const errorId = `${inputId}-error`
@@ -52,7 +54,7 @@ export function HubInput({ label, error, id, loading = false, ...props }: HubInp
       <input {...props} id={inputId} aria-invalid={error ? true : undefined}
         aria-busy={loading || undefined}
         aria-describedby={[props['aria-describedby'], error ? errorId : undefined].filter(Boolean).join(' ') || undefined} />
-      {loading && <span className="hub-field-spinner" role="status"><span className="hub-sr-only">Saving {label}</span></span>}
+      {loading && <span className="hub-field-spinner" role="status"><span className="hub-sr-only">{loadingText ?? `Saving ${label}`}</span></span>}
       {error && <span id={errorId} className="hub-field-error">{error}</span>}
     </div>
   )

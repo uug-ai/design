@@ -1,0 +1,116 @@
+.tool-landing {
+  padding-top: 80px;
+  padding-bottom: 96px;
+}
+
+.tool-landing-heading {
+  max-width: 850px;
+  margin-bottom: 80px;
+}
+
+.tool-landing .tool-landing-eyebrow {
+  color: var(--primary-color);
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  margin-bottom: 24px;
+}
+
+.tool-landing-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 24px;
+  margin-top: 32px;
+}
+
+.tool-landing a:focus-visible {
+  outline: 2px solid var(--primary-color);
+  outline-offset: 5px;
+}
+
+.tool-landing-text-link {
+  color: var(--primary-color);
+  font-weight: 500;
+  text-underline-offset: 4px;
+}
+
+.tool-landing-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 24px;
+  margin-top: 32px;
+}
+
+.tool-landing-card {
+  padding: 28px;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: var(--surface);
+}
+
+.tool-landing .tool-landing-card h3 {
+  margin-top: 0;
+}
+
+.tool-landing-card p {
+  font-size: 1rem;
+}
+
+.storybook-product-agent {
+  --product-accent: #ff0059;
+  --product-accent-soft: rgba(255, 0, 89, 0.14);
+}
+
+.storybook-product-vault {
+  --product-accent: #7426ff;
+  --product-accent-soft: rgba(116, 38, 255, 0.14);
+}
+
+.storybook-product-factory {
+  --product-accent: #2713ff;
+  --product-accent-soft: rgba(39, 19, 255, 0.14);
+}
+
+.storybook-product-hub {
+  --product-accent: #a239d7;
+  --product-accent-soft: rgba(162, 57, 215, 0.14);
+}
+
+.storybook-product-card {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  border-top: 4px solid var(--product-accent);
+}
+
+.storybook-product-card h3 {
+  padding: 4px 12px;
+  border-radius: 6px;
+  background: var(--product-accent-soft);
+}
+
+.storybook-product-card a {
+  margin-top: auto;
+  color: var(--text-primary);
+}
+
+@media (max-width: 600px) {
+  .tool-landing {
+    padding-top: 48px;
+    padding-bottom: 64px;
+  }
+
+  .tool-landing-heading {
+    margin-bottom: 56px;
+  }
+
+  .tool-landing-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .tool-landing-card {
+    padding: 24px;
+  }
+}

@@ -2,7 +2,10 @@ import type { StorybookConfig } from '@storybook/react-vite'
 import { mergeConfig } from 'vite'
 
 const config: StorybookConfig = {
-  stories: ['../src/components/HubWidgets/**/stories.@(js|jsx|mjs|ts|tsx)'],
+  stories: [
+    '../src/components/DrawBlocks/**/*.mdx',
+    '../src/components/{HubWidgets,Emails,DrawBlocks}/**/stories.@(js|jsx|mjs|ts|tsx)',
+  ],
   addons: ['@storybook/addon-a11y', '@storybook/addon-docs'],
   features: {
     sidebarOnboardingChecklist: false,

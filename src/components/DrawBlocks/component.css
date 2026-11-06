@@ -1,0 +1,32 @@
+.draw-block-preview {
+  display: grid;
+  place-items: center;
+  min-width: 0;
+  padding: 16px;
+  border-radius: 12px;
+  background: var(--canvas);
+}
+.draw-block-preview > svg { display: block; max-width: 100%; height: auto; }
+.draw-block-preview .block-card { fill: var(--draw-card-color, var(--block-card)); }
+.draw-block-preview .block-card,
+.draw-block-preview clipPath rect { rx: var(--draw-radius, 12px); }
+.draw-block-preview .block-title { fill: var(--draw-title-color, var(--block-title)); }
+.draw-block-preview .block-subtitle { fill: var(--draw-subtitle-color, var(--block-subtitle)); }
+.draw-block-preview .block > g[clip-path] > rect { fill: var(--draw-header-color); }
+.draw-block-preview[data-draw-theme='dark'] image[href^='/draw-blocks/generic/'],
+[data-theme='dark'] .draw-block-preview:not([data-draw-theme='light']) image[href^='/draw-blocks/generic/'],
+[data-hub-theme='dark'] .draw-block-preview:not([data-draw-theme='light']) image[href^='/draw-blocks/generic/'] {
+  filter: invert(100%) hue-rotate(180deg);
+}
+.draw-catalogue a:focus-visible { outline: 2px solid var(--primary-color); outline-offset: 3px; }
+.draw-result-count { color: var(--text-secondary); font-size: 13px; line-height: 1.7; }
+.draw-catalogue { display: grid; gap: 20px; }
+.draw-catalogue-section { display: grid; gap: 16px; scroll-margin-top: 100px; }
+.draw-catalogue-section h2 { font-size: 22px; font-weight: 600; }
+.draw-catalogue-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(220px, 100%), 1fr)); gap: 16px; }
+.draw-catalogue-item { display: grid; min-width: 0; gap: 8px; padding: 12px; border: 1px solid var(--border); border-radius: 12px; }
+.draw-catalogue-item .draw-block-preview { min-height: 190px; }
+.draw-catalogue-item .draw-block-preview > svg { max-height: 170px; }
+.draw-catalogue-item code { overflow-wrap: anywhere; color: var(--text-secondary); font-size: 11px; }
+.draw-catalogue-pick { display: grid; gap: 12px; width: 100%; color: inherit; text-decoration: none; }
+.draw-catalogue-pick:hover { color: var(--primary-color); }

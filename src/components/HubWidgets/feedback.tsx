@@ -1,4 +1,4 @@
-import type { ReactNode } from 'react'
+import type { MouseEvent, ReactNode } from 'react'
 import { InfoCircle, ShieldCheck, WarningCircle, Xmark } from 'iconoir-react'
 
 export type HubBadgeTone = 'neutral' | 'success' | 'alert' | 'updating' | 'info' | 'gold'
@@ -24,6 +24,38 @@ export function HubBadge({ title, tone = 'neutral', count, total, mobile = false
 
 export function HubStatus({ children, tone = 'neutral', color }: { children: ReactNode; tone?: HubBadgeTone; color?: string }) {
   return <span className={`hub-status hub-badge--${tone}`}><span aria-hidden="true" style={{ backgroundColor: color }} />{children}</span>
+}
+
+export type HubErrorSummaryItem = string | { message: string; field: string }
+
+function focusField(event: MouseEvent<HTMLAnchorElement>, field: string) {
+  const target = document.getElementById(field)
+  if (!target) return
+  event.preventDefault()
+  const wrapper = target.closest('.hub-field') ?? target
+  wrapper.scrollIntoView({ block: 'center' })
+  target.focus({ preventScroll: true })
+}
+
+export function HubErrorSummary({ title = 'Please check the highlighted fields.', errors, highlight = 0 }: {
+  title?: string
+  /** Messages, or `{ message, field }` to link the message to the element id of its field. */
+  errors: HubErrorSummaryItem[]
+  /** Increment to replay the spinning border, e.g. when a blocked submit is clicked. */
+  highlight?: number
+}) {
+  if (errors.length === 0) return null
+  return <div className="hub-error-summary" role="alert">
+    {highlight > 0 && <span key={highlight} className="hub-error-summary-ring" aria-hidden="true" />}
+    <WarningCircle width={18} height={18} aria-hidden="true" />
+    <div>
+      <strong>{title}</strong>
+      <ul>{errors.map(error => typeof error === 'string'
+        ? <li key={error}>{error}</li>
+        : <li key={error.field}><a href={`#${error.field}`} onClick={event => focusField(event, error.field)}>{error.message}</a></li>)}
+      </ul>
+    </div>
+  </div>
 }
 
 export function HubInfobox({ tone = 'info', children, onDismiss, href, icon, className = '', loading = false }: {

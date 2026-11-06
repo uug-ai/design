@@ -1,6 +1,5 @@
 import { BadgeCheck, Component, Palette, RulerArrows, Text } from 'iconoir-react'
 import { Link } from 'react-router-dom'
-import { storybookUrl } from '../config/storybook'
 import '../components/Button/component.css'
 import './Home.css'
 
@@ -36,8 +35,8 @@ function Home() {
     },
     {
       to: '/components',
-      title: 'Components',
-      description: 'Reusable UI components with code examples and best practices.',
+      title: 'Storybook',
+      description: 'One component library for Agent, Vault, Factory and Hub.',
       icon: Component,
       iconClassName: 'foundation-icon-components',
     },
@@ -96,18 +95,29 @@ function Home() {
         <div className="foundations-grid">
           {foundations.map((foundation) => {
             const Icon = foundation.icon
-
-            return (
-              <Link key={foundation.to} to={foundation.to} className="foundation-card">
+            const content = (
+              <>
                 <div className={`foundation-icon ${foundation.iconClassName}`}>
                   <Icon width={28} height={28} />
                 </div>
                 <h3>{foundation.title}</h3>
                 <p>{foundation.description}</p>
+              </>
+            )
+
+            return (
+              <Link key={foundation.title} to={foundation.to} className="foundation-card">
+                {content}
               </Link>
             )
           })}
         </div>
+      </section>
+
+      <section className="section cta-section">
+        <h2>Design architectures with Draw</h2>
+        <p>Our way to design and draw architectures. Explore real deployment templates, then launch Draw to bring your own system into view.</p>
+        <Link to="/draw" className="btn btn-primary">Explore Draw</Link>
       </section>
 
       <section className="section cta-section">
@@ -121,11 +131,8 @@ function Home() {
             View Colors
           </Link>
           <Link to="/components" className="btn btn-secondary">
-            Browse Components
+            Explore Storybook
           </Link>
-          <a href={storybookUrl} className="btn btn-secondary" target="_blank" rel="noreferrer">
-            Open Storybook
-          </a>
         </div>
       </section>
     </div>

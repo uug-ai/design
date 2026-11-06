@@ -5,7 +5,8 @@ import Colors from './pages/Colors'
 import Typography from './pages/Typography'
 import Spacing from './pages/Spacing'
 import Branding from './pages/Branding'
-import Components from './pages/Components'
+import Draw from './pages/Draw'
+import Storybook from './pages/Storybook'
 import './App.css'
 
 function App() {
@@ -17,7 +18,8 @@ function App() {
         <Route path="/typography" element={<Typography />} />
         <Route path="/spacing" element={<Spacing />} />
         <Route path="/branding" element={<Branding />} />
-        <Route path="/components" element={<Components />} />
+        <Route path="/draw" element={<Draw />} />
+        <Route path="/components" element={<Storybook />} />
       </Routes>
     </Layout>
   )

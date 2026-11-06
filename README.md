@@ -2,6 +2,29 @@
 
 A comprehensive design system website for UUG.AI, built with React, TypeScript, and Vite.
 
+All design pages use the shared `SiteFooter`, matching the public website's
+branding, navigation groups and company details. Website destinations use
+absolute `https://uug.ai/` URLs; the footer's **Design system** link stays local.
+The footer uses the site's theme tokens and the public website's responsive layout.
+
+### Cookie settings
+
+The shared footer's **Cookie settings** button reopens the same nonmodal
+accept/reject notice used by the public website. It appears on the first visit
+and remembers `granted` or `denied` in localStorage under
+`uug-analytics-consent`, with no expiry. Preferences are local to the design
+site's origin, not shared with `uug.ai`; changing or clearing the choice in
+another tab synchronizes the notice.
+
+The design site has no analytics or advertising integration. Neither choice
+loads a tracker or sends cookieless analytics. The notice therefore uses a
+**Cookie settings** heading and design-specific explanatory copy instead of
+the website's analytics claims, with a link to the public privacy policy.
+The website's binary choice is preserved; it has no separate customization
+dialog. Blocked storage displays an error rather than claiming the choice
+was saved. Accepting or rejecting does not disable essential preferences such
+as the theme.
+
 ## Getting Started
 
 ### Prerequisites
@@ -71,8 +94,15 @@ non-root/minimal runtime remains unchanged.
 Enable `hardened` to invoke the shared `frontend` profile. Set `publish=false`
 to build without a release; enable `hardened` too for full verification.
 Use `existing_tag` to retry the same immutable source. PRs and dedicated
-security scans keep their hardening profile without publication.
-It scans source secrets/configuration and the final image,
+security scans do not automatically run image hardening: PRs use the standard
+multi-architecture build workflow, and the separate **Security scan** workflow is
+manual-only. PR builds do not publish images, generate SBOMs/attestations, sign
+images or request registry-write/OIDC permissions. They still build the unchanged
+non-root Dockerfile and run its embedded build and test checks.
+
+Release hardening remains opt-in through **Bump release**, and a manual
+**Security scan** can run the same non-publishing verification when needed.
+The hardening profile scans source secrets/configuration and the final image,
 extracts `/usr/share/frontend/package{,-lock}.json` from that final image and
 **separately scans it**, emits image and browser SPDX SBOMs, retains reports and
 provenance, and signs the verified multi-platform digest. Medium, high, and
@@ -122,12 +152,115 @@ This serves the built output locally with the same paths used in production:
 
 ### Storybook
 
+The **Storybook** navigation item and `/components` page introduce the shared
+component library for Agent, Vault, Factory and Hub, with links to their product
+pages on the UUG.AI website. **Open Storybook** launches the library itself:
+`http://localhost:6006/` in development and `/storybook/` in production.
+Each product card explains its role and uses its public-website colour identity,
+with themed text for contrast in light and dark modes.
+The intermediate page does not replace or reorganize the component stories.
+
 ```bash
 npm run storybook
 ```
 
-Storybook runs on [http://localhost:6006](http://localhost:6006) and exposes only
-the production Hub widget library in `src/components/HubWidgets`.
+Storybook runs on [http://localhost:6006](http://localhost:6006) and exposes the
+production Hub widget library in `src/components/HubWidgets` and the customer
+emails in `src/components/Emails`.
+
+### Draw building blocks
+
+The **Draw** navigation item and `/draw` page introduce our architecture-design
+tool with real **Basic setup**, **Hybrid setup** and **Cloud setup** templates
+from Draw's library, and link to `https://draw.uug.ai/`. Each tile has one ordinary
+**Open Draw** link directly below its preview image, opening the app without a
+template payload or separate full-size viewer.
+Previews preserve the actual template's nodes, groups, labels and connections,
+using Draw's own renderer and light canvas. Compact responsive tiles show the
+complete diagrams without cropping, with three columns on desktop, two on
+tablets and one on narrow screens.
+
+The self-contained SVG previews and metadata are generated from Draw's
+`web/src/templates/catalogue.ts`, diagram converter and production renderer.
+They require no live Draw connection at runtime. To refresh or verify the
+snapshot, pass a read-only Draw checkout's `web` directory:
+
+```bash
+npm run sync:draw-templates -- ../collaborate/web
+npm run test:draw-templates:sync -- ../collaborate/web
+```
+
+Do not hand-edit `public/draw-templates/` or `src/config/drawTemplates.json`.
+Change templates in Draw, then regenerate the previews here.
+
+The full block catalogue remains in Storybook, linked from `/components`.
+Storybook has a main
+**Draw / Building blocks / Docs** page listing the complete library. Each block
+category also has its own **Docs** page showing only that group's blocks in a
+responsive side-by-side grid, with links to the individual entries. Each block
+also has its own entry under **Draw / Building blocks / Generic**, **uug.ai**,
+**AWS**, **Azure**, **Google Cloud**, **Kubernetes** or **Isometric**. For example,
+Agent is **Draw / Building blocks / uug.ai / Agent**, and Camera is
+**Draw / Building blocks / Generic / Camera**. Gallery cards link directly to
+these entries. Use Storybook's theme toolbar to compare individual blocks in light
+and dark. There is no configuration panel or design-settings export.
+
+Previews do not change live Draw, saved boards or the production defaults.
+Artwork changes still require editing the source. The production renderer,
+catalogue, palettes and local icon assets are a generated snapshot, not an
+independently reimplemented card. With the Draw repository checked out beside this
+one, refresh or verify it with:
+
+```bash
+npm run sync:draw-blocks
+npm run test:draw-blocks:sync
+```
+
+An alternate Draw `web` directory can be passed as a positional argument. Do not
+hand-edit `src/components/DrawBlocks/production/` or `public/draw-blocks/`.
+Implement approved changes in Draw and resynchronize the snapshot. Icon licences
+are preserved alongside the bundled assets; no cross-origin assets are needed.
+
+Individual stories live in `src/components/DrawBlocks/<Category>/stories.tsx`.
+Category Docs pages live alongside them in `Overview.mdx` and reuse the catalogue.
+When syncing new blocks, add their named stories to the corresponding category.
+The regression suite verifies that every production block has exactly one story
+and that each gallery link points to it.
+
+Build both the app and Storybook, then run `npx playwright test tests/landing-pages.spec.ts`
+for entry-page navigation, product links and responsive checks.
+Run `npm run test:draw-blocks` for story
+coverage, individual previews, gallery links, themes, assets and responsive checks.
+
+### Emails
+
+**Emails** shows every email we send customers, one level deep: the three license
+emails from uug-ai/hub-license (issued, a reminder a month before it expires, and
+the notice once it has expired) and the 13 Kerberos Hub emails from
+uug-ai/hub-pipeline-notification (welcome, password reset, detections, camera status,
+usage, sharing and tasks). Like **Components**, each email has its own page (for
+example **Emails / License** or **Emails / High Upload**) whose stories fill the same
+template with different content, plus its plain-text version. **Emails / Overview**
+shows them all side by side.
+
+All of them share one layout: a card with a category colour (License, Account,
+Security, Detection, Camera status, Usage, Sharing, Tasks) on its top edge, label and
+button, and a 16:9 isometric spot illustration with an isometric UUG coin in its top
+right, drawn with the Illustrations kernel in `figures.ts`, so each email's purpose is
+clear before its text is read.
+
+- Each page is `<Email>/stories.tsx`, built from the shared sample values in
+  `samples.ts` and the helpers in `story.ts`.
+- `emails.ts` holds each email's content once and generates both the HTML and the
+  plain-text version. The license emails use hub-license's `$placeholders` (plus
+  `$expires` for the end date); the others use the `{{placeholders}}`
+  hub-pipeline-notification already fills, so the templates can replace the current
+  ones name for name.
+- The illustrations are SVG in Storybook. The templates reference 1280 x 720 PNG
+  exports at `https://uug.ai/email/<template>.png`, which have to be exported and
+  published before the services can send these designs.
+- The services still send their current templates; hub-license sends only the issued
+  license email today.
 
 ### Components (Production Design Reference)
 
@@ -139,25 +272,11 @@ Docs. The former marketing/brand component stories have been removed.
 **Components** is the sole component catalog, with one top-level group and no
 Hub/Widgets nesting.
 
-The site's **Components** page uses the same Hub widgets and links to these
-stories. Live previews follow the site's theme by default, including changes
-from the header theme toggle. Its **Widget theme** selector can override all
-previews to light or dark; choose **Follow site** to resume automatic matching.
-The public page covers all button variants, editable and disabled form
-states, searchable site filters, a composed site overview, feedback and loading
-states, a complete inline modal preview with header/body/footer, and working
-edit/confirmation overlay dialogs. Upload progress and saved-state
-feedback are interactive demos, without calling Hub APIs. All 13 Storybook groups
-are represented, with the extended widgets sharing their Storybook examples.
-The Illustrations group shows the isometric figures from
-[src/components/IsoIllustration](src/components/IsoIllustration) (`agent`, `control-tower`,
-`hub`, `vault`, `factory`, `agent-link`); they render plain SVG strings (`renderIsoSvg`) so non-React apps such as the
-Angular Hub frontend can reuse the same drawings.
-Each section links
-directly to its Storybook documentation; previous `#inputs`, `#cards`, and
-`#loader` links still resolve to their replacement sections.
-Public-page browser regressions cover both widget themes at 320px, 390px, 768px,
-and 1440px, sticky section navigation, initial legacy links, and demo feedback.
+The site's **Components** navigation links open this Storybook directly; the old
+`/components` route redirects there. The Illustrations group shows the isometric
+figures from [src/components/IsoIllustration](src/components/IsoIllustration)
+(`agent`, `control-tower`, `hub`, `vault`, `factory`, `agent-link`); they render plain SVG strings (`renderIsoSvg`) so
+non-React apps such as the Angular Hub frontend can reuse the same drawings.
 Site layout, branding tools, and foundation-page helpers remain
 internal to the documentation site; they are not published as library components.
 

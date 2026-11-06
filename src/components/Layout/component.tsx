@@ -1,7 +1,8 @@
 import { useEffect, useState } from 'react'
 import { Link, useLocation } from 'react-router-dom'
-import { storybookUrl } from '../../config/storybook'
 import ThemeToggle from '../ThemeToggle'
+import SiteFooter from '../SiteFooter'
+import CookieConsentNotice from '../CookieConsent/component'
 import './component.css'
 
 interface LayoutProps {
@@ -19,7 +20,8 @@ function Layout({ children }: LayoutProps) {
     { path: '/typography', label: 'Typography' },
     { path: '/spacing', label: 'Spacing' },
     { path: '/branding', label: 'Branding' },
-    { path: '/components', label: 'Components' },
+    { path: '/draw', label: 'Draw' },
+    { path: '/components', label: 'Storybook' },
   ]
 
   useEffect(() => {
@@ -39,14 +41,12 @@ function Layout({ children }: LayoutProps) {
                 key={item.path}
                 to={item.path}
                 className={`nav-link ${location.pathname === item.path ? 'active' : ''}`}
+                aria-current={location.pathname === item.path ? 'page' : undefined}
                 onClick={() => setIsMenuOpen(false)}
               >
                 {item.label}
               </Link>
             ))}
-            <a href={storybookUrl} className="nav-link" target="_blank" rel="noreferrer" onClick={() => setIsMenuOpen(false)}>
-              Storybook
-            </a>
           </nav>
           <div className="header-actions">
             <ThemeToggle />
@@ -77,11 +77,8 @@ function Layout({ children }: LayoutProps) {
         </div>
       </header>
       <main className="main-content">{children}</main>
-      <footer className="footer">
-        <div className="footer-content">
-          <p>&copy; 2026 UUG.AI. All rights reserved.</p>
-        </div>
-      </footer>
+      <SiteFooter />
+      <CookieConsentNotice />
     </div>
   )
 }

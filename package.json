@@ -14,6 +14,8 @@
     "test:widgets:browser": "playwright test",
     "sync:draw-blocks": "node scripts/sync-draw-blocks.mjs",
     "test:draw-blocks:sync": "node scripts/sync-draw-blocks.mjs --check",
+    "sync:draw-templates": "node scripts/sync-draw-templates.mjs",
+    "test:draw-templates:sync": "node scripts/sync-draw-templates.mjs --check",
     "test:draw-blocks": "playwright test tests/draw-blocks.spec.ts",
     "build:all": "npm run build && npm run build-storybook",
     "preview": "vite preview",

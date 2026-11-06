@@ -1,0 +1,23 @@
+[
+  {
+    "id": "basic-setup",
+    "title": "Basic setup",
+    "description": "Cameras connected directly to Agents at the edge.",
+    "source": "https://learn.uug.ai/docs/prologue/deployments/",
+    "preview": "/draw-templates/basic-setup.svg"
+  },
+  {
+    "id": "hybrid-setup",
+    "title": "Hybrid setup",
+    "description": "Agents at the edge connect to a Vault and Hub running in the cloud.",
+    "source": "https://learn.uug.ai/docs/prologue/deployments/",
+    "preview": "/draw-templates/hybrid-setup.svg"
+  },
+  {
+    "id": "cloud-setup",
+    "title": "Cloud setup",
+    "description": "Only the cameras stay at the edge, every other component runs in the cloud over a secure VPN.",
+    "source": "https://learn.uug.ai/docs/prologue/deployments/",
+    "preview": "/draw-templates/cloud-setup.svg"
+  }
+]

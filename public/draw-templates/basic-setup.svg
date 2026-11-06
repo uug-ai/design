@@ -1,0 +1,53 @@
+<!-- Generated from Draw's basic-setup template by scripts/sync-draw-templates.mjs. -->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="-24 -4 928 808" width="928" height="808"><title>Basic setup architecture template</title><style>:root {
+  --font-family-body: &#x27;Inter&#x27;, system-ui, sans-serif;
+  --header-height: 76px;
+  --canvas-controls-clearance: 86px;
+  --brand-gradient: linear-gradient(90deg, #2713ff 0%, #ff0059 100%);
+  --primary-color: #2713ff;
+  --primary-dark: #1807c7;
+  --secondary-color: #ff0059;
+  --text-primary: #0b0b12;
+  --text-secondary: #626676;
+  --background: #ffffff;
+  --surface: #f7f5fb;
+  --surface-strong: #efeafb;
+  --border: #e6e0f0;
+  --shadow: rgba(20, 11, 59, 0.08);
+  --canvas: #fbfaff;
+  --grid: #dcd6ea;
+  --primary-tint: rgba(39, 19, 255, 0.06);
+  --inverse: #0b0b12;
+  --on-inverse: #ffffff;
+  --backdrop: rgba(11, 11, 18, 0.32);
+  --block-card: #ffffff;
+  --block-edge: rgba(11, 11, 18, 0.08);
+  --block-title: #0b0b12;
+  --block-subtitle: #6d6666;
+  --block-shadow: rgba(20, 11, 59, 0.1);
+  --iso-top: var(--background);
+  --iso-front: var(--surface);
+  --iso-side: var(--surface-strong);
+  --iso-line: color-mix(in srgb, var(--text-primary) 38%, transparent);
+  --iso-detail: color-mix(in srgb, var(--text-primary) 16%, transparent);
+  --iso-accent: #7426ff;
+
+  color-scheme: light;
+  font-family: var(--font-family-body);
+  color: var(--text-primary);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+.block-card {
+  fill: var(--block-card);
+  stroke: var(--block-edge);
+}
+.block-title {
+  fill: var(--block-title);
+}
+.block-subtitle {
+  fill: var(--block-subtitle);
+}
+.block-shadow {
+  flood-color: var(--block-shadow);
+}</style><rect x="-24" y="-4" width="928" height="808" fill="var(--canvas)"></rect><defs><filter id="block-shadow" x="-20%" y="-20%" width="140%" height="160%"><feDropShadow class="block-shadow" dx="0" dy="6" stdDeviation="8"></feDropShadow></filter></defs><g class="ink"><g data-id="template-basic-setup-8"><rect x="0" y="20" width="880" height="760" rx="6" fill="none" stroke="#d1d1d1" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></rect><rect x="0" y="20" width="880" height="760" rx="6" stroke="transparent" stroke-width="14" fill="none" pointer-events="stroke"></rect></g><g data-id="template-basic-setup-9"><text font-size="12" font-family="Inter, system-ui, sans-serif" fill="#6d6666" style="white-space:pre"><tspan x="14" y="41.76">EDGE</tspan></text><rect x="14" y="30" width="29" height="15" fill="transparent"></rect></g><g data-id="template-basic-setup-10"><path d="M 220 145 L 232 145 Q 240 145 248 145 L 392 145 Q 400 145 408 145 L 552 145 Q 560 145 568 145 L 580 145" fill="none" stroke="#c9ccd6" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="10 10"></path><path d="M 220 145 L 232 145 Q 240 145 248 145 L 392 145 Q 400 145 408 145 L 552 145 Q 560 145 568 145 L 580 145" stroke="transparent" stroke-width="16" fill="none" pointer-events="stroke"></path></g><g data-id="template-basic-setup-11"><path d="M 220 315 L 232 315 Q 240 315 248 315 L 392 315 Q 400 315 408 315 L 552 315 Q 560 315 568 315 L 580 315" fill="none" stroke="#c9ccd6" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="10 10"></path><path d="M 220 315 L 232 315 Q 240 315 248 315 L 392 315 Q 400 315 408 315 L 552 315 Q 560 315 568 315 L 580 315" stroke="transparent" stroke-width="16" fill="none" pointer-events="stroke"></path></g><g data-id="template-basic-setup-12"><path d="M 220 485 L 232 485 Q 240 485 248 485 L 392 485 Q 400 485 408 485 L 552 485 Q 560 485 568 485 L 580 485" fill="none" stroke="#c9ccd6" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="10 10"></path><path d="M 220 485 L 232 485 Q 240 485 248 485 L 392 485 Q 400 485 408 485 L 552 485 Q 560 485 568 485 L 580 485" stroke="transparent" stroke-width="16" fill="none" pointer-events="stroke"></path></g><g data-id="template-basic-setup-13"><path d="M 220 655 L 232 655 Q 240 655 248 655 L 392 655 Q 400 655 408 655 L 552 655 Q 560 655 568 655 L 580 655" fill="none" stroke="#c9ccd6" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="10 10"></path><path d="M 220 655 L 232 655 Q 240 655 248 655 L 392 655 Q 400 655 408 655 L 552 655 Q 560 655 568 655 L 580 655" stroke="transparent" stroke-width="16" fill="none" pointer-events="stroke"></path></g><g data-id="template-basic-setup-0" class="block"><clipPath id="block-clip-template-basic-setup-0"><rect x="40" y="80" width="180" height="130" rx="12"></rect></clipPath><rect x="40" y="80" width="180" height="130" rx="12" class="block-card" filter="url(#block-shadow)"></rect><g clip-path="url(#block-clip-template-basic-setup-0)" font-family="Inter, system-ui, sans-serif" text-anchor="middle"><rect x="40" y="80" width="180" height="32" fill="#374151"></rect><text x="130" y="96" dominant-baseline="central" font-size="12" font-weight="700" letter-spacing="0.08em" fill="#ffffff">CAMERA</text><text x="130" y="158.4" font-size="18" font-weight="700" class="block-title">Camera 1</text><text x="130" y="179" font-size="13" class="block-subtitle">RTSP://</text></g></g><g data-id="template-basic-setup-1" class="block"><clipPath id="block-clip-template-basic-setup-1"><rect x="40" y="250" width="180" height="130" rx="12"></rect></clipPath><rect x="40" y="250" width="180" height="130" rx="12" class="block-card" filter="url(#block-shadow)"></rect><g clip-path="url(#block-clip-template-basic-setup-1)" font-family="Inter, system-ui, sans-serif" text-anchor="middle"><rect x="40" y="250" width="180" height="32" fill="#374151"></rect><text x="130" y="266" dominant-baseline="central" font-size="12" font-weight="700" letter-spacing="0.08em" fill="#ffffff">CAMERA</text><text x="130" y="328.4" font-size="18" font-weight="700" class="block-title">Camera 2</text><text x="130" y="349" font-size="13" class="block-subtitle">RTSP://</text></g></g><g data-id="template-basic-setup-2" class="block"><clipPath id="block-clip-template-basic-setup-2"><rect x="40" y="420" width="180" height="130" rx="12"></rect></clipPath><rect x="40" y="420" width="180" height="130" rx="12" class="block-card" filter="url(#block-shadow)"></rect><g clip-path="url(#block-clip-template-basic-setup-2)" font-family="Inter, system-ui, sans-serif" text-anchor="middle"><rect x="40" y="420" width="180" height="32" fill="#374151"></rect><text x="130" y="436" dominant-baseline="central" font-size="12" font-weight="700" letter-spacing="0.08em" fill="#ffffff">CAMERA</text><text x="130" y="498.4" font-size="18" font-weight="700" class="block-title">Camera 3</text><text x="130" y="519" font-size="13" class="block-subtitle">RTSP://</text></g></g><g data-id="template-basic-setup-3" class="block"><clipPath id="block-clip-template-basic-setup-3"><rect x="40" y="590" width="180" height="130" rx="12"></rect></clipPath><rect x="40" y="590" width="180" height="130" rx="12" class="block-card" filter="url(#block-shadow)"></rect><g clip-path="url(#block-clip-template-basic-setup-3)" font-family="Inter, system-ui, sans-serif" text-anchor="middle"><rect x="40" y="590" width="180" height="32" fill="#374151"></rect><text x="130" y="606" dominant-baseline="central" font-size="12" font-weight="700" letter-spacing="0.08em" fill="#ffffff">CAMERA</text><text x="130" y="668.4" font-size="18" font-weight="700" class="block-title">Camera 4</text><text x="130" y="689" font-size="13" class="block-subtitle">RTSP://</text></g></g><g data-id="template-basic-setup-4" class="block"><clipPath id="block-clip-template-basic-setup-4"><rect x="580" y="80" width="240" height="130" rx="12"></rect></clipPath><rect x="580" y="80" width="240" height="130" rx="12" class="block-card" filter="url(#block-shadow)"></rect><g clip-path="url(#block-clip-template-basic-setup-4)" font-family="Inter, system-ui, sans-serif" text-anchor="middle"><rect x="580" y="80" width="240" height="32" fill="#4a796b"></rect><text x="700" y="96" dominant-baseline="central" font-size="12" font-weight="700" letter-spacing="0.08em" fill="#ffffff">AGENT</text><text x="700" y="158.4" font-size="18" font-weight="700" class="block-title">Agent 1</text><text x="700" y="179" font-size="13" class="block-subtitle">Process stream</text></g></g><g data-id="template-basic-setup-5" class="block"><clipPath id="block-clip-template-basic-setup-5"><rect x="580" y="250" width="240" height="130" rx="12"></rect></clipPath><rect x="580" y="250" width="240" height="130" rx="12" class="block-card" filter="url(#block-shadow)"></rect><g clip-path="url(#block-clip-template-basic-setup-5)" font-family="Inter, system-ui, sans-serif" text-anchor="middle"><rect x="580" y="250" width="240" height="32" fill="#4a796b"></rect><text x="700" y="266" dominant-baseline="central" font-size="12" font-weight="700" letter-spacing="0.08em" fill="#ffffff">AGENT</text><text x="700" y="328.4" font-size="18" font-weight="700" class="block-title">Agent 2</text><text x="700" y="349" font-size="13" class="block-subtitle">Process stream</text></g></g><g data-id="template-basic-setup-6" class="block"><clipPath id="block-clip-template-basic-setup-6"><rect x="580" y="420" width="240" height="130" rx="12"></rect></clipPath><rect x="580" y="420" width="240" height="130" rx="12" class="block-card" filter="url(#block-shadow)"></rect><g clip-path="url(#block-clip-template-basic-setup-6)" font-family="Inter, system-ui, sans-serif" text-anchor="middle"><rect x="580" y="420" width="240" height="32" fill="#4a796b"></rect><text x="700" y="436" dominant-baseline="central" font-size="12" font-weight="700" letter-spacing="0.08em" fill="#ffffff">AGENT</text><text x="700" y="498.4" font-size="18" font-weight="700" class="block-title">Agent 3</text><text x="700" y="519" font-size="13" class="block-subtitle">Process stream</text></g></g><g data-id="template-basic-setup-7" class="block"><clipPath id="block-clip-template-basic-setup-7"><rect x="580" y="590" width="240" height="130" rx="12"></rect></clipPath><rect x="580" y="590" width="240" height="130" rx="12" class="block-card" filter="url(#block-shadow)"></rect><g clip-path="url(#block-clip-template-basic-setup-7)" font-family="Inter, system-ui, sans-serif" text-anchor="middle"><rect x="580" y="590" width="240" height="32" fill="#4a796b"></rect><text x="700" y="606" dominant-baseline="central" font-size="12" font-weight="700" letter-spacing="0.08em" fill="#ffffff">AGENT</text><text x="700" y="668.4" font-size="18" font-weight="700" class="block-title">Agent 4</text><text x="700" y="689" font-size="13" class="block-subtitle">Process stream</text></g></g></g></svg>

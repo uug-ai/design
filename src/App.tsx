@@ -1,4 +1,3 @@
-import { useEffect } from 'react'
 import { Routes, Route } from 'react-router-dom'
 import Layout from './components/Layout'
 import Home from './pages/Home'
@@ -7,16 +6,8 @@ import Typography from './pages/Typography'
 import Spacing from './pages/Spacing'
 import Branding from './pages/Branding'
 import Draw from './pages/Draw'
-import { storybookUrl } from './config/storybook'
+import Storybook from './pages/Storybook'
 import './App.css'
-
-function StorybookRedirect() {
-  useEffect(() => {
-    window.location.replace(storybookUrl)
-  }, [])
-
-  return null
-}
 
 function App() {
   return (
@@ -28,7 +19,7 @@ function App() {
         <Route path="/spacing" element={<Spacing />} />
         <Route path="/branding" element={<Branding />} />
         <Route path="/draw" element={<Draw />} />
-        <Route path="/components" element={<StorybookRedirect />} />
+        <Route path="/components" element={<Storybook />} />
       </Routes>
     </Layout>
   )

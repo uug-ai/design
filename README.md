@@ -2,6 +2,29 @@
 
 A comprehensive design system website for UUG.AI, built with React, TypeScript, and Vite.
 
+All design pages use the shared `SiteFooter`, matching the public website's
+branding, navigation groups and company details. Website destinations use
+absolute `https://uug.ai/` URLs; the footer's **Design system** link stays local.
+The footer uses the site's theme tokens and the public website's responsive layout.
+
+### Cookie settings
+
+The shared footer's **Cookie settings** button reopens the same nonmodal
+accept/reject notice used by the public website. It appears on the first visit
+and remembers `granted` or `denied` in localStorage under
+`uug-analytics-consent`, with no expiry. Preferences are local to the design
+site's origin, not shared with `uug.ai`; changing or clearing the choice in
+another tab synchronizes the notice.
+
+The design site has no analytics or advertising integration. Neither choice
+loads a tracker or sends cookieless analytics. The notice therefore uses a
+**Cookie settings** heading and design-specific explanatory copy instead of
+the website's analytics claims, with a link to the public privacy policy.
+The website's binary choice is preserved; it has no separate customization
+dialog. Blocked storage displays an error rather than claiming the choice
+was saved. Accepting or rejecting does not disable essential preferences such
+as the theme.
+
 ## Getting Started
 
 ### Prerequisites
@@ -129,6 +152,14 @@ This serves the built output locally with the same paths used in production:
 
 ### Storybook
 
+The **Storybook** navigation item and `/components` page introduce the shared
+component library for Agent, Vault, Factory and Hub, with links to their product
+pages on the UUG.AI website. **Open Storybook** launches the library itself:
+`http://localhost:6006/` in development and `/storybook/` in production.
+Each product card explains its role and uses its public-website colour identity,
+with themed text for contrast in light and dark modes.
+The intermediate page does not replace or reorganize the component stories.
+
 ```bash
 npm run storybook
 ```
@@ -139,8 +170,31 @@ emails in `src/components/Emails`.
 
 ### Draw building blocks
 
-The **Draw** navigation item and `/draw` page show every production Draw building
-block, grouped by category without search or filter controls. Storybook has a main
+The **Draw** navigation item and `/draw` page introduce our architecture-design
+tool with real **Basic setup**, **Hybrid setup** and **Cloud setup** templates
+from Draw's library, and link to `https://draw.uug.ai/`. Each tile has one ordinary
+**Open Draw** link directly below its preview image, opening the app without a
+template payload or separate full-size viewer.
+Previews preserve the actual template's nodes, groups, labels and connections,
+using Draw's own renderer and light canvas. Compact responsive tiles show the
+complete diagrams without cropping, with three columns on desktop, two on
+tablets and one on narrow screens.
+
+The self-contained SVG previews and metadata are generated from Draw's
+`web/src/templates/catalogue.ts`, diagram converter and production renderer.
+They require no live Draw connection at runtime. To refresh or verify the
+snapshot, pass a read-only Draw checkout's `web` directory:
+
+```bash
+npm run sync:draw-templates -- ../collaborate/web
+npm run test:draw-templates:sync -- ../collaborate/web
+```
+
+Do not hand-edit `public/draw-templates/` or `src/config/drawTemplates.json`.
+Change templates in Draw, then regenerate the previews here.
+
+The full block catalogue remains in Storybook, linked from `/components`.
+Storybook has a main
 **Draw / Building blocks / Docs** page listing the complete library. Each block
 category also has its own **Docs** page showing only that group's blocks in a
 responsive side-by-side grid, with links to the individual entries. Each block
@@ -173,7 +227,9 @@ When syncing new blocks, add their named stories to the corresponding category.
 The regression suite verifies that every production block has exactly one story
 and that each gallery link points to it.
 
-Build both the app and Storybook, then run `npm run test:draw-blocks` for story
+Build both the app and Storybook, then run `npx playwright test tests/landing-pages.spec.ts`
+for entry-page navigation, product links and responsive checks.
+Run `npm run test:draw-blocks` for story
 coverage, individual previews, gallery links, themes, assets and responsive checks.
 
 ### Emails

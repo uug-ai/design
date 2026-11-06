@@ -150,21 +150,6 @@
   flex: 1;
 }
 
-.footer {
-  background-color: var(--surface);
-  border-top: 1px solid var(--border);
-  margin-top: auto;
-}
-
-.footer-content {
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 20px;
-  text-align: center;
-  color: var(--text-secondary);
-  font-size: 0.875rem;
-}
-
 @media (max-width: 900px) {
   .header-content {
     padding-bottom: 0;

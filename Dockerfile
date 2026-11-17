@@ -29,7 +29,7 @@ RUN go test ./... && test -s /dist/index.html && \
     test -s /dist/storybook/index.html && \
     test -s /dist/storybook/iframe.html && test -s /dist/storybook/index.json
 
-FROM cgr.dev/chainguard/nginx:latest@sha256:9aa6c46648f17b2835d009fd4338b38591b2396670a07270ee19b532f83dbbb5
+FROM cgr.dev/chainguard/nginx:latest@sha256:9708b6c879cb97b0641ce48891a0ced73e09624b717a256564710e6864a42a5f
 ARG VERSION=dev
 ARG REVISION=unknown
 ARG CREATED

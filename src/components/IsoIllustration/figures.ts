@@ -1,6 +1,6 @@
 import { box, frame, FRONT, onPlane, P, range, SIDE, TOP, type Vec3 } from './iso'
 
-export type IsoFigure = 'agent' | 'control-tower' | 'hub' | 'vault' | 'factory' | 'ecosystem'
+export type IsoFigure = 'agent' | 'away' | 'control-tower' | 'hub' | 'vault' | 'factory' | 'ecosystem'
   | 'tutorial-agent-install'
   | 'tutorial-agent-camera'
   | 'tutorial-hub-workflow-stage'
@@ -10,7 +10,7 @@ export type IsoFigure = 'agent' | 'control-tower' | 'hub' | 'vault' | 'factory' 
   | 'tutorial-hub-webrtc-turn'
 
 export const ISO_FIGURE_NAMES: IsoFigure[] = [
-  'agent', 'control-tower', 'hub', 'vault', 'factory', 'ecosystem',
+  'agent', 'away', 'control-tower', 'hub', 'vault', 'factory', 'ecosystem',
   'tutorial-agent-install', 'tutorial-agent-camera', 'tutorial-hub-workflow-stage', 'tutorial-hub-moq-relay', 'tutorial-hub-transports', 'tutorial-hub-hls', 'tutorial-hub-webrtc-turn',
 ]
 
@@ -100,6 +100,76 @@ function agent(): FigureDrawing {
 
   return {
     viewBox: frame([[-3, 70, 0], [-3, 40, 57], [140, -20, 0], [128.75, -11.25, 108], [134, 14, 89], [38, 74, 0], [118, 66, 0]]),
+    markup,
+    glow: 1.6,
+    bloom: 10,
+  }
+}
+
+// An empty desk for the Hub "Are you still there?" prompt: the chair pushed
+// back, the monitor still showing a prompt whose button blinks, and a wall
+// clock whose second hand steps once a second.
+function away(): FigureDrawing {
+  const grid = range(10, 100, 15).map((at) =>
+    `<line class="iso-grid" x1="${at}" y1="0" x2="${at}" y2="75"/>`,
+  ).join('') + range(0, 75, 15).map((at) =>
+    `<line class="iso-grid" x1="10" y1="${at}" x2="100" y2="${at}"/>`,
+  ).join('')
+
+  const ticks = range(0, 330, 30).map((angle) =>
+    `<line class="iso-detail" x1="0" y1="-7.5" x2="0" y2="-6" transform="rotate(${angle})"/>`,
+  ).join('')
+
+  const [screenX, screenY] = P(50, 16, 55.5)
+
+  const markup = [
+    onPlane(TOP(0, 0, 0), grid),
+
+    // Back wall with a clock; its hand steps once a second.
+    box(10, -4, 0, 90, 4, 72),
+    onPlane(FRONT(10, 0, 72),
+      '<g transform="translate(74 15)">'
+      + '<circle class="iso-face iso-top" r="9"/>'
+      + ticks
+      + '<line class="iso-detail" x1="0" y1="0" x2="4" y2="-2.5"/>'
+      + '<g class="iso-away-hand"><line class="iso-away-needle iso-lit" x1="0" y1="1.5" x2="0" y2="-7"/></g>'
+      + '<circle class="iso-away-pin iso-lit" r="1"/>'
+      + '</g>'),
+
+    `<ellipse class="iso-halo" cx="${screenX}" cy="${screenY}" rx="30" ry="22"/>`,
+
+    // Desk: legs, then the top.
+    box(17, 8, 0, 3, 3, 28),
+    box(80, 8, 0, 3, 3, 28),
+    box(17, 29, 0, 3, 3, 28),
+    box(80, 29, 0, 3, 3, 28),
+    box(15, 6, 28, 70, 28, 3),
+
+    // Monitor facing the empty seat, showing the prompt.
+    box(42, 12, 31, 16, 7, 1.5),
+    box(48, 13, 32.5, 4, 3, 10),
+    box(30, 13, 42.5, 40, 3, 26),
+    onPlane(FRONT(30, 16, 68.5),
+      '<rect class="iso-pane iso-lit" x="2.5" y="2.5" width="35" height="21"/>'
+      + '<rect class="iso-face iso-top" x="11" y="7" width="18" height="11"/>'
+      + '<line class="iso-detail" x1="13.5" y1="10" x2="23" y2="10"/>'
+      + '<rect class="iso-away-button iso-lit" x="20" y="13.5" width="6.5" height="2.5"/>'),
+
+    // Keyboard.
+    box(36, 21, 31, 28, 8, 1.2),
+
+    // Chair, pushed back and empty: base, column, seat and backrest.
+    onPlane(TOP(78.5, 58.5, 0),
+      range(0, 288, 72).map((angle) =>
+        `<line class="iso-detail" x1="0" y1="0" x2="0" y2="-9" transform="rotate(${angle})"/>`,
+      ).join('')),
+    box(77, 57, 0, 3, 3, 14),
+    box(68, 48, 14, 21, 19, 3),
+    box(68, 65, 17, 21, 2, 18),
+  ].join('')
+
+  return {
+    viewBox: frame([[15, 34, 31], [17, 32, 0], [10, -4, 72], [100, -4, 72], [100, 0, 0], [100, 75, 0], [10, 75, 0], [89, 67, 35], [68, 67, 35]]),
     markup,
     glow: 1.6,
     bloom: 10,
@@ -1120,6 +1190,7 @@ function tutorialHubWebrtcTurn(): FigureDrawing {
 
 const FIGURES: Record<IsoFigure, (options: IsoRenderOptions) => FigureDrawing> = {
   agent,
+  away,
   'control-tower': controlTower,
   hub,
   vault,

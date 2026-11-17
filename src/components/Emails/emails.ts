@@ -103,6 +103,16 @@ export const NOTIFICATION_EMAILS: Record<NotificationFigure, EmailContent> = {
     body: 'Cameras that change status together usually share a cause, such as a site losing or regaining its internet connection or power.',
     cta: { label: 'Open cameras', href: '{{link}}' },
   },
+  recording: {
+    figure: 'recording', category: 'cameras',
+    subject: 'A camera stopped recording',
+    title: 'Camera recordings',
+    intro: 'Hi {{user}}, {{text}}',
+    block: '{{sections}}',
+    blockText: '{{sectionsText}}',
+    body: 'These cameras record continuously, so a new recording normally arrives every few minutes. When one stops while the camera is online, check whether the account reached its upload limit, whether the storage the recordings are sent to is reachable and has space, and whether the Agent\'s cloud settings are still valid. Cameras that are recording again need nothing.',
+    cta: { label: 'Open cameras', href: '{{link}}' },
+  },
   disable: {
     figure: 'disable', category: 'usage',
     subject: 'Daily upload limit reached',

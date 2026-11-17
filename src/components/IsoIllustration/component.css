@@ -240,6 +240,47 @@
   animation: iso-radar 6s linear infinite;
 }
 
+.iso-figure--away .iso-halo {
+  opacity: 0.22;
+}
+
+.iso-figure--away .iso-away-button,
+.iso-figure--away .iso-away-pin {
+  fill: var(--iso-color);
+  stroke: none;
+}
+
+.iso-figure--away .iso-away-button {
+  animation: iso-away-blink 2s ease-in-out infinite;
+}
+
+.iso-figure--away .iso-away-needle {
+  stroke: var(--iso-color);
+  stroke-width: 1.5;
+  stroke-linecap: round;
+}
+
+.iso-figure--away .iso-away-hand {
+  animation: iso-away-tick 60s steps(60) infinite;
+}
+
+@keyframes iso-away-blink {
+  0%,
+  100% {
+    opacity: 1;
+  }
+
+  50% {
+    opacity: 0.35;
+  }
+}
+
+@keyframes iso-away-tick {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
 @keyframes iso-agent-pulse {
   0% {
     stroke-dashoffset: 40;
@@ -1633,6 +1674,10 @@
 /* Reduced motion: hold the lit state and drop the travelling pulses. */
 @media (prefers-reduced-motion: reduce) {
   .iso-illustration :is(.iso-pane, .iso-halo, .iso-beacon, .iso-beacon-halo, .iso-led, .iso-radar, .iso-hub-reveal) {
+    animation: none;
+  }
+
+  .iso-figure--away :is(.iso-away-button, .iso-away-hand) {
     animation: none;
   }
 

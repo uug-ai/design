@@ -3,6 +3,7 @@ import type { Meta, StoryObj } from '@storybook/react-vite'
 import { HubButton, HubInput, HubSelect, HubTextarea } from '../controls'
 import { HubModal } from '../surfaces'
 import { ModalPreviewExample } from '../examples'
+import IsoIllustration from '../../IsoIllustration'
 
 type ModalStoryArgs = {
   title: string; confirmation: boolean; fullWidth?: boolean; centered?: boolean
@@ -108,6 +109,33 @@ export const Confirmation: Story = {
         <HubButton variant="alert" onClick={() => { setOpen(false); setDeleted(true) }}>Delete camera</HubButton>
       </>}>
         <p>This action removes the camera from this project. This is a presentation-only demo.</p>
+      </HubModal>
+    </>
+  },
+}
+export const SessionPrompt: Story = {
+  args: { title: 'Are you still there?', confirmation: true },
+  parameters: {
+    docs: {
+      description: {
+        story: 'The session inactivity prompt. With an illustration, ShowConfirm puts it left of the text from tablet width up (below the text on narrow screens) and needs less padding on its left.',
+      },
+    },
+  },
+  render: function SessionPromptStory(args) {
+    const [open, setOpen] = useState(true)
+    const [result, setResult] = useState('')
+    return <>
+      <HubButton onClick={() => { setOpen(true); setResult('') }}>Show session prompt</HubButton>
+      {result && <p role="status">{result}</p>}
+      <HubModal open={open} confirmation={args.confirmation} title={args.title} onClose={() => setOpen(false)} actions={<>
+        <HubButton variant="neutral" onClick={() => { setOpen(false); setResult('Signed out in this demo.') }}>Sign out</HubButton>
+        <HubButton onClick={() => { setOpen(false); setResult('Still signed in.') }}>Stay signed in</HubButton>
+      </>}>
+        <div style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', justifyContent: 'center', gap: '24px 42px' }}>
+          <div style={{ flex: '0 0 150px' }}><IsoIllustration figure="away" /></div>
+          <p style={{ flex: '1 1 240px', margin: 0 }}>You haven't used Hub for a while. To keep your cameras and recordings safe, you will be signed out in 17 seconds. Choose "Stay signed in" to continue where you left off.</p>
+        </div>
       </HubModal>
     </>
   },

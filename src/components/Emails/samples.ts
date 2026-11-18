@@ -50,4 +50,5 @@ export const SAMPLES: Record<EmailFigure, Record<string, string>> = {
   share_case: { user, url: `${app}/cases/share/c81f07`, expiry: '7 days' },
   share_case_otp: { code: '482913', expiry: '10 minutes' },
   assign_task: { user, assignee: 'sam.peeters', task_name: 'Review entrance footage', link: `${app}/tasks/71aa3c` },
+  invitation: { user: 'Jane Doe', organisation: 'Acme Security', url: `${app}/invitations/4c7e19b2d05a`, expiry: '25 November 2026 13:00 UTC' },
 }

@@ -7,7 +7,7 @@ import { box, frame, FRONT, onPlane, P, range, SIDE, TOP, type Vec3 } from '../I
 
 export type NotificationFigure =
   | 'welcome' | 'activate' | 'forgot' | 'newip' | 'detection' | 'device' | 'device_group'
-  | 'disable' | 'highupload' | 'share' | 'share_case' | 'share_case_otp' | 'assign_task'
+  | 'disable' | 'highupload' | 'share' | 'share_case' | 'share_case_otp' | 'assign_task' | 'invitation'
 
 export type LicenseFigure = 'license' | 'license_expiring' | 'license_expired'
 
@@ -180,6 +180,21 @@ const FIGURES: Record<EmailFigure, () => Drawing> = {
         + range(0, 3, 1).map(i => `<rect class="${i === 0 ? 'lit' : 't'}" x="9" y="${15 + i * 11}" width="6" height="6"/><line class="d" x1="19" y1="${18 + i * 11}" x2="${i === 3 ? 30 : 40}" y2="${18 + i * 11}"/>`).join('')
         + '<path class="w" d="M 10 18 L 12 20 L 14.5 16"/>'),
     bounds: block(30, 33, 80, 38, 70),
+  }),
+  // An invitation card standing out of its envelope: a member next to the lit seat
+  // with a plus, the place the invitee takes when they join.
+  invitation: () => ({
+    markup: grid(-20, -10, 120, 90)
+      + box(10, 20, 0, 80, 50, 4)
+      + onPlane(TOP(10, 20, 4), '<path class="d" d="M 0 0 L 40 26 L 80 0"/>')
+      + box(20, 40, 4, 60, 3, 50)
+      + onPlane(FRONT(20, 43, 54), '<circle class="t" cx="18" cy="13" r="5"/><path class="t" d="M 9 28 A 9 8 0 0 1 27 28 Z"/>'
+        + '<circle class="lit" cx="40" cy="13" r="5"/><path class="lit" d="M 31 28 A 9 8 0 0 1 49 28 Z"/>'
+        + '<circle class="t" cx="49" cy="9" r="5.6"/><circle class="lit" cx="49" cy="9" r="4.4"/><path class="w" d="M 49 6.6 V 11.4 M 46.6 9 H 51.4"/>'
+        + lines(6, 36, 48, 2))
+      + box(10, 58, 0, 80, 12, 16)
+      + onPlane(FRONT(10, 70, 16), '<path class="d" d="M 0 0 L 40 12 L 80 0"/>'),
+    bounds: block(10, 20, 90, 70, 54),
   }),
   // A license certificate with its seal, the key in front of it and the Hub box it unlocks.
   license: () => ({

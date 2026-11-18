@@ -6,7 +6,7 @@ import type { EmailFigure, LicenseFigure, NotificationFigure } from './figures'
 // the license emails hub-license's ($company, ...), so the generated templates can
 // replace the current ones name for name.
 
-export type EmailCategory = 'license' | 'license_expiring' | 'license_expired' | 'account' | 'security' | 'detections' | 'cameras' | 'usage' | 'sharing' | 'tasks'
+export type EmailCategory = 'license' | 'license_expiring' | 'license_expired' | 'account' | 'security' | 'detections' | 'cameras' | 'usage' | 'sharing' | 'tasks' | 'members'
 
 export const CATEGORIES: Record<EmailCategory, { label: string; accent: string; tint: string }> = {
   license: { label: 'License', accent: '#2713ff', tint: '#efedff' },
@@ -19,6 +19,7 @@ export const CATEGORIES: Record<EmailCategory, { label: string; accent: string; 
   usage: { label: 'Usage', accent: '#b45309', tint: '#fdf3e3' },
   sharing: { label: 'Sharing', accent: '#0b7fb3', tint: '#e6f5fc' },
   tasks: { label: 'Tasks', accent: '#2f855a', tint: '#e8f6ee' },
+  members: { label: 'Members', accent: '#0f766e', tint: '#e6f4f1' },
 }
 
 export interface EmailContent {
@@ -153,6 +154,18 @@ export const NOTIFICATION_EMAILS: Record<NotificationFigure, EmailContent> = {
     intro: 'Hi {{assignee}}, {{user}} assigned<br>a task to you in Hub.',
     rows: [['Task', '{{task_name}}'], ['Assigned by', '{{user}}']],
     cta: { label: 'View task', href: '{{link}}' },
+  },
+  // hub-api fills {{user}} (the inviter's name, or their email address), {{organisation}},
+  // {{url}} and {{expiry}}. The subject is INVITATION_TITLE, sent as is, so it has no placeholders.
+  invitation: {
+    figure: 'invitation', category: 'members',
+    subject: 'You are invited to join an organisation on Hub',
+    title: 'Join {{organisation}}',
+    intro: '{{user}} invited you to join<br><strong style="color:#0b0b12;font-weight:600;">{{organisation}}</strong> on Hub.',
+    rows: [['Invited by', '{{user}}'], ['Link works until', '{{expiry}}']],
+    body: 'Open the invitation to sign in, or to create your account if you do not have one yet, and join. Did not expect this invitation? You can ignore this email.',
+    cta: { label: 'Open invitation', href: '{{url}}' },
+    footer: 'You receive this email because someone invited this address to an organisation on Hub.',
   },
 }
 

@@ -1,0 +1,190 @@
+/* Account activation screen (/login/activate). One centred card on the page
+   background, the same surface the login form sits on. */
+.hub-widgets .hub-activation {
+  min-height: 100vh;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 24px;
+  padding: 48px 16px;
+  margin: -24px;
+  background:
+    radial-gradient(ellipse 80% 60% at 50% 0%, hsla(var(--hub-hsl), 0.10), transparent 70%),
+    var(--bg);
+}
+
+.hub-widgets .hub-activation-card {
+  width: 100%;
+  max-width: 440px;
+  background: var(--card);
+  border-radius: 8px;
+  box-shadow: var(--hub-card-shadow);
+  overflow: hidden;
+}
+
+.hub-widgets .hub-activation-figure {
+  background: color-mix(in srgb, var(--iso-accent, var(--hub)) 7%, var(--card-muted));
+  border-bottom: 1px solid var(--bg-muted);
+  padding: 20px 96px 12px;
+  transition: background 0.3s;
+}
+
+/* Until the account is active the badge shows no check. */
+.hub-widgets .hub-activation-figure .is-pending .iso-activate-check { display: none; }
+
+.hub-widgets .hub-activation-body {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: 28px 32px 8px;
+}
+
+.hub-widgets .hub-activation-title {
+  margin: 0;
+  font-size: 22px;
+  line-height: 32px;
+  font-weight: 600;
+  color: var(--text);
+}
+
+.hub-widgets.hub-widgets p.hub-activation-text {
+  margin: 6px 0 24px;
+  max-width: 340px;
+  color: var(--text-muted);
+  font-size: 15px;
+  line-height: 24px;
+}
+
+/* PIN: five card-coloured cells, the text always in the body colour so it
+   stays readable in every state; state shows on the border and tint only. */
+.hub-widgets .hub-pin {
+  display: flex;
+  gap: 8px;
+  justify-content: center;
+}
+
+.hub-widgets .hub-pin-cell {
+  box-sizing: border-box;
+  width: 52px;
+  height: 64px;
+  padding: 0;
+  border: 1px solid var(--bg-muted);
+  border-radius: 6px;
+  background: var(--card);
+  color: var(--text);
+  font: 600 26px/1 'Inter', sans-serif;
+  font-variant-numeric: tabular-nums;
+  text-align: center;
+  text-transform: uppercase;
+  caret-color: var(--hub);
+  outline: none;
+  transition: border-color 0.1s, box-shadow 0.1s, background 0.1s;
+}
+
+.hub-widgets .hub-pin-cell:hover { border-color: var(--text-light); }
+.hub-widgets .hub-pin-cell:focus-visible,
+.hub-widgets .hub-pin-cell:focus {
+  border-color: var(--hub);
+  box-shadow: 0 0 0 3px hsla(var(--hub-hsl), 0.2);
+}
+
+.hub-widgets .hub-pin-cell:disabled {
+  color: var(--text-muted);
+  background: var(--card-muted);
+  cursor: progress;
+}
+
+.hub-widgets .hub-activation--verifying .hub-pin-cell {
+  animation: hub-pin-check 1.2s ease-in-out infinite;
+}
+.hub-widgets .hub-activation--verifying .hub-pin-cell:nth-child(2) { animation-delay: 0.1s; }
+.hub-widgets .hub-activation--verifying .hub-pin-cell:nth-child(3) { animation-delay: 0.2s; }
+.hub-widgets .hub-activation--verifying .hub-pin-cell:nth-child(4) { animation-delay: 0.3s; }
+.hub-widgets .hub-activation--verifying .hub-pin-cell:nth-child(5) { animation-delay: 0.4s; }
+
+@keyframes hub-pin-check {
+  0%, 100% { border-color: var(--bg-muted); }
+  50% { border-color: var(--hub); }
+}
+
+.hub-widgets .hub-pin.is-invalid .hub-pin-cell {
+  border-color: var(--alert);
+  background: color-mix(in srgb, var(--alert) 6%, var(--card));
+}
+.hub-widgets .hub-pin.is-invalid .hub-pin-cell:focus {
+  box-shadow: 0 0 0 3px hsla(var(--alert-hsl), 0.2);
+}
+.hub-widgets .hub-activation--invalid .hub-pin { animation: hub-pin-shake 0.32s ease-in-out; }
+
+@keyframes hub-pin-shake {
+  25% { transform: translateX(-6px); }
+  50% { transform: translateX(5px); }
+  75% { transform: translateX(-3px); }
+}
+
+.hub-widgets.hub-widgets p.hub-activation-error {
+  margin: 12px 0 0;
+  max-width: 320px;
+  color: var(--alert);
+  font-size: 13px;
+  line-height: 20px;
+}
+.hub-widgets.hub-widgets[data-hub-theme='dark'] p.hub-activation-error { color: hsl(2, 75%, 68%); }
+
+.hub-widgets .hub-activation-note {
+  width: 100%;
+  margin-top: 16px;
+  text-align: start;
+}
+
+.hub-widgets .hub-activation .hub-button.hub-activation-action {
+  width: 100%;
+  margin: 24px 0 0;
+  justify-content: center;
+}
+
+.hub-widgets .hub-activation-footer {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px 16px;
+  padding: 16px 32px 24px;
+  font-size: 13px;
+  line-height: 20px;
+  color: var(--text-muted);
+}
+.hub-widgets .hub-activation--success .hub-activation-footer,
+.hub-widgets .hub-activation--mail-failed .hub-activation-footer,
+.hub-widgets .hub-activation--already-active .hub-activation-footer { justify-content: center; }
+
+.hub-widgets .hub-activation-footer :is(a, .hub-activation-hint) {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+.hub-widgets .hub-activation-footer a {
+  color: var(--hub);
+  font-weight: 500;
+  text-decoration: none;
+}
+[data-hub-theme='dark'] .hub-activation-footer a { color: hsl(278, 45%, 72%); }
+.hub-widgets .hub-activation-footer a:hover { text-decoration: underline; }
+
+@media (max-width: 480px) {
+  .hub-widgets .hub-activation-figure { padding-inline: 48px; }
+  .hub-widgets .hub-activation-body { padding-inline: 20px; }
+  .hub-widgets .hub-activation-footer { padding-inline: 20px; justify-content: center; }
+  .hub-widgets .hub-pin { gap: 6px; }
+  .hub-widgets .hub-pin-cell { width: 46px; height: 58px; font-size: 24px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hub-widgets .hub-activation--verifying .hub-pin-cell,
+  .hub-widgets .hub-activation--invalid .hub-pin { animation: none; }
+}
+
+.hub-widgets .hub-pin-cell::selection { background: hsla(var(--hub-hsl), 0.25); color: inherit; }

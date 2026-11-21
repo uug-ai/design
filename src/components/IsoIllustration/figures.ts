@@ -1,6 +1,6 @@
 import { box, frame, FRONT, onPlane, P, range, SIDE, TOP, type Vec3 } from './iso'
 
-export type IsoFigure = 'agent' | 'away' | 'control-tower' | 'hub' | 'vault' | 'factory' | 'ecosystem'
+export type IsoFigure = 'agent' | 'away' | 'activate' | 'control-tower' | 'hub' | 'vault' | 'factory' | 'ecosystem'
   | 'tutorial-agent-install'
   | 'tutorial-agent-camera'
   | 'tutorial-hub-workflow-stage'
@@ -10,7 +10,7 @@ export type IsoFigure = 'agent' | 'away' | 'control-tower' | 'hub' | 'vault' | '
   | 'tutorial-hub-webrtc-turn'
 
 export const ISO_FIGURE_NAMES: IsoFigure[] = [
-  'agent', 'away', 'control-tower', 'hub', 'vault', 'factory', 'ecosystem',
+  'agent', 'away', 'activate', 'control-tower', 'hub', 'vault', 'factory', 'ecosystem',
   'tutorial-agent-install', 'tutorial-agent-camera', 'tutorial-hub-workflow-stage', 'tutorial-hub-moq-relay', 'tutorial-hub-transports', 'tutorial-hub-hls', 'tutorial-hub-webrtc-turn',
 ]
 
@@ -170,6 +170,53 @@ function away(): FigureDrawing {
 
   return {
     viewBox: frame([[15, 34, 31], [17, 32, 0], [10, -4, 72], [100, -4, 72], [100, 0, 0], [100, 75, 0], [10, 75, 0], [89, 67, 35], [68, 67, 35]]),
+    markup,
+    glow: 1.6,
+    bloom: 10,
+  }
+}
+
+// The account activation screen: a badge standing behind a switch. The badge
+// shows the five PIN cells of the welcome email under a check; the switch in
+// front is flipped on. The page hides the check (.iso-activate-check) and
+// recolours the accent (--iso-accent) to tell the activation states apart.
+function activate(): FigureDrawing {
+  const grid = range(0, 110, 15).map((at) =>
+    `<line class="iso-grid" x1="${at}" y1="-5" x2="${at}" y2="85"/>`,
+  ).join('') + range(-5, 85, 15).map((at) =>
+    `<line class="iso-grid" x1="0" y1="${at}" x2="110" y2="${at}"/>`,
+  ).join('')
+
+  const cells = range(0, 4, 1).map((i) =>
+    `<rect class="iso-pane" x="${4 + i * 9}" y="30" width="7" height="9" rx="1"/>`
+    + `<line class="iso-detail" x1="${5.5 + i * 9}" y1="36.5" x2="${9.5 + i * 9}" y2="36.5"/>`,
+  ).join('')
+
+  const [checkX, checkY] = P(55, 14, 33)
+
+  const markup = [
+    onPlane(TOP(0, 0, 0), grid),
+
+    `<ellipse class="iso-halo" cx="${checkX}" cy="${checkY}" rx="22" ry="16"/>`,
+
+    // The badge: a check over the five PIN cells.
+    box(30, 10, 0, 50, 4, 46),
+    onPlane(FRONT(30, 14, 46),
+      '<g class="iso-activate-check">'
+      + '<circle class="iso-window iso-lit" cx="25" cy="14" r="8.5"/>'
+      + '<path class="iso-activate-tick" d="M 21 14 L 24 17 L 29.5 11"/>'
+      + '</g>'
+      + cells),
+
+    // The switch, flipped on.
+    box(14, 30, 0, 82, 34, 7),
+    onPlane(TOP(14, 30, 7),
+      '<rect class="iso-window iso-lit iso-activate-track" x="18" y="9" width="46" height="16" rx="8"/>'
+      + '<circle class="iso-face iso-top" cx="56" cy="17" r="6"/>'),
+  ].join('')
+
+  return {
+    viewBox: frame([[14, 64, 0], [96, 64, 0], [96, 30, 0], [30, 10, 46], [80, 10, 46], [80, 14, 0], [0, 85, 0], [110, -5, 0]]),
     markup,
     glow: 1.6,
     bloom: 10,
@@ -1191,6 +1238,7 @@ function tutorialHubWebrtcTurn(): FigureDrawing {
 const FIGURES: Record<IsoFigure, (options: IsoRenderOptions) => FigureDrawing> = {
   agent,
   away,
+  activate,
   'control-tower': controlTower,
   hub,
   vault,

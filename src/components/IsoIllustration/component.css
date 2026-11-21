@@ -1751,3 +1751,12 @@
     display: none;
   }
 }
+
+/* Activate: the check's tick is cut out of the lit disc. */
+.iso-illustration .iso-activate-tick {
+  fill: none;
+  stroke: var(--iso-base);
+  stroke-width: 1.6;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}

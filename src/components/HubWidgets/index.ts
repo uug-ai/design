@@ -16,3 +16,6 @@ export { HubToastContainer, HubLabelTag, HubIdentityBadge } from './notification
 export type { HubToastItem } from './notifications'
 export { HubActivation, HubPinInput } from './activation'
 export type { HubActivationState } from './activation'
+export { HubOnboarding } from './onboarding'
+export { emptyOnboardingData, ONBOARDING_ROLES } from './onboarding-data'
+export type { HubOnboardingStep, HubOnboardingData, HubOnboardingInvitation, HubOnboardingTask } from './onboarding-data'

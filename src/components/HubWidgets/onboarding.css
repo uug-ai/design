@@ -1,0 +1,487 @@
+/* Onboarding (/onboarding): the first sign-in of an account without an
+   organisation. The login background with one card, as the activation screen:
+   narrow for the welcome and the creation, wide with a step rail for the
+   wizard. Below 760px the rail folds into a progress line above the form. */
+.hub-widgets .hub-onboarding {
+  min-height: 100vh;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 48px 16px;
+  margin: -24px;
+  background:
+    radial-gradient(ellipse 80% 60% at 50% 0%, hsla(var(--hub-hsl), 0.10), transparent 70%),
+    var(--bg);
+}
+
+.hub-widgets .hub-onboarding-card {
+  width: 100%;
+  background: var(--card);
+  border-radius: 8px;
+  box-shadow: var(--hub-card-shadow);
+  overflow: hidden;
+}
+
+.hub-widgets .hub-onboarding-card--narrow { max-width: 480px; }
+
+.hub-widgets .hub-onboarding-card--wizard {
+  max-width: 1040px;
+  display: grid;
+  grid-template-columns: 260px minmax(0, 1fr);
+  min-height: 640px;
+}
+
+/* Welcome and creation */
+.hub-widgets .hub-onboarding-figure {
+  background: color-mix(in srgb, var(--iso-accent, var(--hub)) 7%, var(--card-muted));
+  border-bottom: 1px solid var(--bg-muted);
+  padding: 20px 110px 12px;
+  transition: background 0.3s;
+}
+
+.hub-widgets .hub-onboarding-center {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 16px;
+  padding: 28px 32px 32px;
+}
+
+.hub-widgets .hub-onboarding-center h1,
+.hub-widgets .hub-onboarding-head h1 {
+  margin: 0;
+  font-size: 22px;
+  line-height: 32px;
+  font-weight: 600;
+  color: var(--text);
+}
+
+.hub-widgets.hub-widgets .hub-onboarding-center > p {
+  margin: -8px 0 0;
+  max-width: 380px;
+  color: var(--text-muted);
+  font-size: 15px;
+  line-height: 24px;
+}
+
+.hub-widgets .hub-onboarding-cta { width: 100%; justify-content: center; }
+
+.hub-widgets .hub-onboarding-choices {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.hub-widgets .hub-onboarding-choice {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 12px 12px 14px;
+  border: 1px solid var(--bg-muted);
+  border-radius: var(--radius);
+  text-align: left;
+}
+
+.hub-widgets .hub-onboarding-choice-icon {
+  display: grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  flex: none;
+  border-radius: 50%;
+  color: var(--hub);
+  background: hsla(var(--hub-hsl), 0.10);
+}
+
+.hub-widgets .hub-onboarding-choice-text {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-width: 0;
+  color: var(--text);
+  overflow-wrap: anywhere;
+}
+
+.hub-widgets .hub-onboarding-choice-text small { color: var(--text-muted); }
+
+.hub-widgets .hub-onboarding-footer {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+  padding: 14px 32px;
+  border-top: 1px solid var(--bg-muted);
+  color: var(--text-muted);
+  font-size: 13px;
+}
+
+.hub-widgets .hub-onboarding-link {
+  background: none;
+  border: 0;
+  padding: 0;
+  color: var(--hub);
+  font: inherit;
+  cursor: pointer;
+}
+
+.hub-widgets .hub-onboarding-link:hover,
+.hub-widgets .hub-onboarding-link:focus-visible { text-decoration: underline; }
+
+/* Step rail */
+.hub-widgets .hub-onboarding-rail {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  padding: 28px 20px;
+  background: var(--card-muted);
+  border-right: 1px solid var(--bg-muted);
+}
+
+.hub-widgets.hub-widgets .hub-onboarding-brand {
+  margin: 0 8px;
+  color: var(--text-muted);
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.hub-widgets .hub-onboarding-steps {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  flex: 1;
+}
+
+.hub-widgets .hub-onboarding-step button {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  padding: 8px;
+  border: 0;
+  border-radius: var(--radius);
+  background: none;
+  color: var(--text-muted);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.hub-widgets .hub-onboarding-step button:disabled { cursor: default; color: var(--text-light); }
+.hub-widgets .hub-onboarding-step button:not(:disabled):hover { background: var(--bg-muted); }
+
+.hub-widgets .hub-onboarding-step-icon {
+  display: grid;
+  place-items: center;
+  width: 30px;
+  height: 30px;
+  flex: none;
+  border-radius: 50%;
+  border: 1px solid var(--bg-muted);
+  background: var(--card);
+}
+
+.hub-widgets .hub-onboarding-step-icon svg { width: 16px; height: 16px; }
+
+.hub-widgets .hub-onboarding-step-text { display: flex; flex-direction: column; line-height: 18px; }
+.hub-widgets .hub-onboarding-step-text small { font-size: 12px; color: var(--text-light); }
+
+.hub-widgets .hub-onboarding-step.is-current button { color: var(--text); font-weight: 600; background: var(--card); box-shadow: var(--hub-card-shadow); }
+.hub-widgets .hub-onboarding-step.is-current .hub-onboarding-step-icon { border-color: var(--hub); color: var(--hub); }
+.hub-widgets .hub-onboarding-step.is-done .hub-onboarding-step-icon { border-color: var(--success); background: var(--success); color: var(--bg-white); }
+.hub-widgets .hub-onboarding-step.is-done button { color: var(--text); }
+
+.hub-widgets.hub-widgets .hub-onboarding-account {
+  margin: 0 8px;
+  color: var(--text-muted);
+  font-size: 12px;
+  line-height: 18px;
+  overflow-wrap: anywhere;
+}
+
+/* Form panel */
+.hub-widgets .hub-onboarding-panel {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.hub-widgets .hub-onboarding-progress { display: none; }
+
+.hub-widgets .hub-onboarding-head { padding: 32px 40px 8px; }
+
+.hub-widgets.hub-widgets .hub-onboarding-head p {
+  margin: 4px 0 0;
+  max-width: 560px;
+  color: var(--text-muted);
+  font-size: 15px;
+  line-height: 24px;
+}
+
+.hub-widgets .hub-onboarding-body {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 16px 40px 24px;
+  flex: 1;
+}
+
+.hub-widgets .hub-onboarding-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px 16px;
+}
+
+.hub-widgets .hub-onboarding-grid--three { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.hub-widgets .hub-onboarding-grid--address { grid-template-columns: minmax(0, 3fr) minmax(0, 1fr) minmax(0, 1fr) minmax(0, 2fr); }
+.hub-widgets .hub-onboarding-grid--address > :nth-child(n+5) { grid-column: span 2; }
+
+.hub-widgets .hub-onboarding-section {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding-top: 16px;
+  border-top: 1px solid var(--bg-muted);
+}
+
+.hub-widgets .hub-onboarding-section h2 {
+  margin: 0;
+  font-size: 15px;
+  line-height: 22px;
+  font-weight: 600;
+  color: var(--text);
+}
+
+.hub-widgets.hub-widgets .hub-onboarding-section > p {
+  margin: -10px 0 0;
+  color: var(--text-muted);
+  font-size: 13px;
+  line-height: 20px;
+}
+
+.hub-widgets.hub-widgets .hub-onboarding-hint,
+.hub-widgets.hub-widgets .hub-onboarding-slug {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  margin: 0;
+  color: var(--text-muted);
+  font-size: 13px;
+  line-height: 20px;
+}
+
+.hub-widgets .hub-onboarding-hint svg { flex: none; margin-top: 2px; }
+.hub-widgets.hub-widgets .hub-onboarding-slug { margin-top: -8px; }
+.hub-widgets .hub-onboarding-slug code {
+  padding: 0 6px;
+  border-radius: 4px;
+  background: var(--bg-muted);
+  color: var(--text);
+  font-size: 12px;
+}
+
+/* Invitations: email, role and remove on one line, the role's meaning under it. */
+.hub-widgets .hub-onboarding-invites {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.hub-widgets .hub-onboarding-invite {
+  display: grid;
+  grid-template-columns: minmax(0, 3fr) minmax(0, 2fr) auto;
+  align-items: end;
+  gap: 4px 12px;
+}
+
+.hub-widgets.hub-widgets .hub-onboarding-role-note {
+  grid-column: 1 / -1;
+  margin: 0;
+  color: var(--text-muted);
+  font-size: 12px;
+  line-height: 18px;
+}
+
+/* Review */
+.hub-widgets .hub-onboarding-review { margin: 0; display: flex; flex-direction: column; }
+
+.hub-widgets .hub-onboarding-review-row {
+  display: grid;
+  grid-template-columns: 160px minmax(0, 1fr) auto;
+  gap: 12px;
+  align-items: start;
+  padding: 14px 0;
+  border-bottom: 1px solid var(--bg-muted);
+}
+
+.hub-widgets .hub-onboarding-review-row dt { color: var(--text-muted); font-size: 13px; line-height: 22px; }
+.hub-widgets .hub-onboarding-review-row dd { margin: 0; display: flex; flex-direction: column; color: var(--text); line-height: 22px; overflow-wrap: anywhere; }
+.hub-widgets .hub-onboarding-review-row dd span + span { color: var(--text-muted); font-size: 13px; }
+
+.hub-widgets .hub-onboarding-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 16px 40px;
+  border-top: 1px solid var(--bg-muted);
+  background: var(--card);
+  position: sticky;
+  bottom: 0;
+}
+
+.hub-widgets .hub-onboarding-actions-gap { flex: 1; }
+
+/* Creation progress */
+.hub-widgets .hub-onboarding-tasks {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  text-align: left;
+}
+
+.hub-widgets .hub-onboarding-task { display: flex; align-items: center; gap: 12px; color: var(--text-muted); }
+.hub-widgets .hub-onboarding-task small { display: block; color: var(--text-muted); font-size: 12px; }
+.hub-widgets .hub-onboarding-task.is-done,
+.hub-widgets .hub-onboarding-task.is-running { color: var(--text); }
+
+.hub-widgets .hub-onboarding-task-icon {
+  display: grid;
+  place-items: center;
+  width: 24px;
+  height: 24px;
+  flex: none;
+  border-radius: 50%;
+  border: 1px solid var(--bg-muted);
+}
+
+.hub-widgets .hub-onboarding-task-icon svg { width: 14px; height: 14px; }
+.hub-widgets .hub-onboarding-task.is-done .hub-onboarding-task-icon { background: var(--success); border-color: var(--success); color: var(--bg-white); }
+.hub-widgets .hub-onboarding-task.is-failed .hub-onboarding-task-icon { border-color: var(--warning); color: var(--warning); }
+.hub-widgets .hub-onboarding-task.is-running .hub-onboarding-task-icon { border-color: var(--hub); }
+
+.hub-widgets .hub-onboarding-spinner {
+  width: 12px;
+  height: 12px;
+  border: 2px solid hsla(var(--hub-hsl), 0.25);
+  border-top-color: var(--hub);
+  border-radius: 50%;
+  animation: hub-onboarding-spin 0.8s linear infinite;
+}
+
+@keyframes hub-onboarding-spin { to { transform: rotate(360deg); } }
+
+@media (prefers-reduced-motion: reduce) {
+  .hub-widgets .hub-onboarding-spinner { animation: none; }
+}
+
+/* Small screens: the rail becomes the progress line above the form. */
+@media (max-width: 760px) {
+  .hub-widgets .hub-onboarding { padding: 0; justify-content: flex-start; }
+  .hub-widgets .hub-onboarding-card { border-radius: 0; box-shadow: none; }
+  .hub-widgets .hub-onboarding-card--narrow { max-width: none; min-height: 100vh; }
+  .hub-widgets .hub-onboarding-card--wizard { grid-template-columns: 1fr; min-height: 100vh; }
+  .hub-widgets .hub-onboarding-rail { display: none; }
+  .hub-widgets .hub-onboarding-progress {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    padding: 20px 20px 0;
+    color: var(--text-muted);
+    font-size: 12px;
+    font-weight: 600;
+  }
+  .hub-widgets .hub-onboarding-progress-bar { height: 4px; border-radius: 2px; background: var(--bg-muted); overflow: hidden; }
+  .hub-widgets .hub-onboarding-progress-bar span { display: block; height: 100%; background: var(--hub); }
+  .hub-widgets .hub-onboarding-head { padding: 12px 20px 4px; }
+  .hub-widgets .hub-onboarding-body { padding: 12px 20px 20px; }
+  .hub-widgets .hub-onboarding-actions { padding: 12px 20px; flex-wrap: wrap; }
+  .hub-widgets .hub-onboarding-grid,
+  .hub-widgets .hub-onboarding-grid--three,
+  .hub-widgets .hub-onboarding-grid--address { grid-template-columns: minmax(0, 1fr); }
+  .hub-widgets .hub-onboarding-grid--address > :nth-child(n+5) { grid-column: auto; }
+  .hub-widgets .hub-onboarding-invite { grid-template-columns: minmax(0, 1fr) auto; }
+  .hub-widgets .hub-onboarding-invite .hub-select { grid-column: 1; }
+  .hub-widgets .hub-onboarding-review-row { grid-template-columns: minmax(0, 1fr) auto; }
+  .hub-widgets .hub-onboarding-review-row dt { grid-column: 1 / -1; }
+  .hub-widgets .hub-onboarding-figure { padding: 16px 80px 8px; }
+  .hub-widgets .hub-onboarding-center { padding: 24px 20px; }
+}
+
+/* Business or personal organisation: two option cards above the name. */
+.hub-widgets .hub-onboarding-kind {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+.hub-widgets .hub-onboarding-kind legend {
+  grid-column: 1 / -1;
+  margin-bottom: 8px;
+  padding: 0;
+  color: var(--text-muted);
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+}
+
+.hub-widgets .hub-onboarding-kind-option {
+  position: relative;
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 14px 16px;
+  border: 1px solid var(--bg-muted);
+  border-radius: var(--radius);
+  cursor: pointer;
+}
+
+.hub-widgets .hub-onboarding-kind-option:hover { border-color: hsla(var(--hub-hsl), 0.5); }
+.hub-widgets .hub-onboarding-kind-option.is-selected { border-color: var(--hub); box-shadow: 0 0 0 1px var(--hub); background: hsla(var(--hub-hsl), 0.05); }
+.hub-widgets .hub-onboarding-kind-option:has(input:focus-visible) { outline: 2px solid var(--hub); outline-offset: 2px; }
+
+.hub-widgets .hub-onboarding-kind-option input {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.hub-widgets .hub-onboarding-kind-icon {
+  display: grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  flex: none;
+  border-radius: 50%;
+  color: var(--hub);
+  background: hsla(var(--hub-hsl), 0.10);
+}
+
+.hub-widgets .hub-onboarding-kind-icon svg { width: 18px; height: 18px; }
+.hub-widgets .hub-onboarding-kind-text { display: flex; flex-direction: column; gap: 2px; color: var(--text); }
+.hub-widgets .hub-onboarding-kind-text small { color: var(--text-muted); font-size: 13px; line-height: 19px; }
+
+@media (max-width: 760px) {
+  .hub-widgets .hub-onboarding-kind { grid-template-columns: minmax(0, 1fr); }
+}

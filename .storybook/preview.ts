@@ -24,6 +24,11 @@ const preview: Preview = {
   ],
   parameters: {
     layout: 'padded',
+    options: {
+      storySort: {
+        order: ['Components', 'Emails', 'Draw'],
+      },
+    },
     controls: {
       matchers: {
         color: /(background|color)$/i,

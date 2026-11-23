@@ -8,10 +8,12 @@ export type IsoFigure = 'agent' | 'away' | 'activate' | 'control-tower' | 'hub' 
   | 'tutorial-hub-transports'
   | 'tutorial-hub-hls'
   | 'tutorial-hub-webrtc-turn'
+  | 'blog-release-gate'
 
 export const ISO_FIGURE_NAMES: IsoFigure[] = [
   'agent', 'away', 'activate', 'control-tower', 'hub', 'vault', 'factory', 'ecosystem',
   'tutorial-agent-install', 'tutorial-agent-camera', 'tutorial-hub-workflow-stage', 'tutorial-hub-moq-relay', 'tutorial-hub-transports', 'tutorial-hub-hls', 'tutorial-hub-webrtc-turn',
+  'blog-release-gate',
 ]
 
 // The product zones of the ecosystem figure. Pass links to make each one a link.
@@ -1235,6 +1237,92 @@ function tutorialHubWebrtcTurn(): FigureDrawing {
   ], [-30, 26], 530)
 }
 
+// A scanner arch over a short belt: a release crate rides through it while a
+// scan curtain lights the crate and the sign on the beam flashes.
+// Alarm red for a failing check. Inline styles win over the accent classes, so
+// it stays red whatever accent a page sets.
+const ALARM = { top: '#ef4444', front: '#b91c1c', side: '#7f1d1d' }
+const alarmStyle = (prop: 'fill' | 'stroke', seconds?: number) =>
+  `style="${prop}: ${ALARM.top}${seconds === undefined ? '' : `; animation-delay: ${round1(seconds)}s`}"`
+// A box painted alarm red: the same three faces, recoloured.
+const alarmBox = (x: number, y: number, z: number, w: number, d: number, h: number) =>
+  box(x, y, z, w, d, h).replace(/class="iso-face iso-(top|front|side)"/g, (match, face: keyof typeof ALARM) => `${match} style="fill: ${ALARM[face]}"`)
+
+function scannerArch([x, y]: [number, number], label: string, flash: number, alarm = false) {
+  const rollers = range(4, 22, 4).map((v) => `<line class="iso-detail" x1="2" y1="${v}" x2="32" y2="${v}"/>`).join('')
+  const beacon = alarm
+    ? `<g class="iso-lit iso-tut-blink" ${tutDelay(flash)}>${alarmBox(x + 14.5, y + 11, 35, 4, 4, 5)}</g>`
+    : ''
+  return box(x, y, 0, 34, 26, 3)
+    + onPlane(TOP(x, y, 3), rollers)
+    + box(x + 2, y + 11, 0, 4, 4, 28)
+    + box(x + 10, y + 7, 3, 14, 12, 10)
+    + onPlane(FRONT(x + 10, y + 19, 13), range(3, 12, 3).map((u) => `<line class="iso-detail" x1="${u}" y1="2" x2="${u}" y2="8"/>`).join(''))
+    // The scan curtain; it turns red on the scanner that raises the alarm. The
+    // red one blinks (opacity) rather than flashes, as a fill animation would win over its colour.
+    + onPlane(FRONT(x + 6, y + 13, 28), alarm
+      ? `<g opacity="0.45"><rect class="iso-lit iso-tut-blink" x="0" y="0" width="22" height="25" ${alarmStyle('fill', flash)}/></g>`
+      : `<rect class="iso-pane iso-lit iso-tut-flash" x="0" y="0" width="22" height="25" opacity="0.35" ${tutDelay(flash)}/>`)
+    + box(x + 28, y + 11, 0, 4, 4, 28)
+    + box(x + 2, y + 11, 28, 30, 4, 7)
+    + onPlane(FRONT(x + 2, y + 15, 35), `<rect class="iso-led iso-lit iso-tut-blink" x="2.5" y="2.3" width="3" height="2.4" ${alarm ? alarmStyle('fill', flash) : tutDelay(flash)}/>`
+      + `<text class="iso-label" x="7.5" y="5" font-size="${label.length > 6 ? 3.1 : 3.8}">${label}</text>`)
+    + beacon
+}
+
+// The release gate: a taller arch with a crate passing under it. Its sign
+// always reads "0 CVEs" (on a plain face, not a pane, so lit or reduced-motion styles never wash it out) and its
+// light blinks as the crate arrives. Anything with a finding never gets through.
+function releaseGate([x, y]: [number, number], flash: number) {
+  return box(x, y, 0, 40, 26, 3)
+    + onPlane(TOP(x, y, 3), range(4, 22, 4).map((v) => `<line class="iso-detail" x1="2" y1="${v}" x2="38" y2="${v}"/>`).join(''))
+    + box(x + 2, y + 11, 0, 5, 5, 34)
+    + box(x + 13, y + 7, 3, 14, 12, 10)
+    + onPlane(FRONT(x + 13, y + 19, 13), range(3, 12, 3).map((u) => `<line class="iso-detail" x1="${u}" y1="2" x2="${u}" y2="8"/>`).join(''))
+    + box(x + 33, y + 11, 0, 5, 5, 34)
+    + box(x + 2, y + 11, 34, 36, 5, 17)
+    + onPlane(FRONT(x + 2, y + 16, 51), `<rect class="iso-led iso-lit iso-tut-blink" x="3" y="2.4" width="3" height="2.4" ${tutDelay(flash)}/>`
+      + '<text class="iso-label" x="8" y="4.9" font-size="3.2">RELEASE GATE</text>'
+      + '<rect class="iso-face iso-side" x="3" y="6.6" width="30" height="8.4" rx="1"/>'
+      + '<path class="iso-det" d="M 5.8 10.8 L 7.6 12.6 L 10.8 9"/>'
+      + '<text class="iso-screen-text" x="13" y="13.2" font-size="5.6" font-weight="700">0 CVEs</text>')
+}
+
+// Zero known CVEs: a release crate leaves the build, rides through three
+// scanners and the release gate, is signed, and is admitted to production.
+// TRIVY raises a red alarm, as the gate does for any image with a finding.
+function blogReleaseGate(): FigureDrawing {
+  const [bx, by] = at(-262, 34)
+  const scanners = [['GOVULNCHECK', at(-180, 36)], ['TRIVY', at(-100, 36)], ['SBOM', at(-20, 36)]] as const
+  const [gx, gy] = at(62, 34)
+  const [sx, sy] = at(150, 34)
+  const [px, py] = at(222, 30)
+  const stops: [number, number][][] = [
+    [[bx + 34, by + 12], [scanners[0][1][0], scanners[0][1][1] + 13]],
+    ...scanners.slice(0, -1).map(([, [x, y]], k) => [[x + 34, y + 13], [scanners[k + 1][1][0], scanners[k + 1][1][1] + 13]] as [number, number][]),
+    [[scanners[2][1][0] + 34, scanners[2][1][1] + 13], [gx, gy + 13]],
+    [[gx + 40, gy + 13], [sx, sy + 9]],
+    [[sx + 24, sy + 9], [px, py + 13]],
+  ]
+  const segments = stops.map(([a, b]) => route(a, b, 2))
+  const floor = segments.map((d) => tutWire(d)).join('') + segments.map((d, k) => tutPulse(d, k * 0.9)).join('')
+  return tutBanner(floor, [
+    box(bx, by, 0, 34, 24, 16),
+    onPlane(FRONT(bx, by + 24, 16), `<rect class="iso-led iso-lit iso-tut-blink" x="3" y="4.5" width="4" height="2.4" ${tutDelay(-1.5)}/>`
+      + '<text class="iso-label" x="9.5" y="7.6" font-size="4.6">BUILD</text>'
+      + '<line class="iso-detail" x1="3" y1="11" x2="31" y2="11"/>'),
+    onPlane(SIDE(bx + 34, by + 24, 16), range(4, 20, 3).map((u) => `<line class="iso-detail" x1="${u}" y1="4" x2="${u}" y2="12"/>`).join('')),
+    ...scanners.map(([label, spot], k) => scannerArch(spot, label, k * 0.9, label === 'TRIVY')),
+    releaseGate([gx, gy], 2.7),
+    box(sx, sy, 0, 24, 18, 14),
+    onPlane(FRONT(sx, sy + 18, 14), '<text class="iso-label" x="3" y="5.4" font-size="3.6">SIGNED</text>'
+      + `<circle class="iso-pane iso-lit iso-tut-flash" cx="12" cy="9.6" r="2.8" ${tutDelay(3.6)}/>`
+      + '<path class="iso-wire" d="M 10.6 9.6 L 11.6 10.6 L 13.4 8.6"/>'),
+    onPlane(SIDE(sx + 24, sy + 18, 14), range(4, 16, 3).map((u) => `<line class="iso-detail" x1="${u}" y1="3" x2="${u}" y2="11"/>`).join('')),
+    rack([px, py], 26, 40, 'PROD', [`${tutDelay(4.5)}`, `${tutDelay(4.6)}`, '']),
+  ], [-20, 30], 540)
+}
+
 const FIGURES: Record<IsoFigure, (options: IsoRenderOptions) => FigureDrawing> = {
   agent,
   away,
@@ -1251,6 +1339,7 @@ const FIGURES: Record<IsoFigure, (options: IsoRenderOptions) => FigureDrawing> =
   'tutorial-hub-transports': tutorialHubTransports,
   'tutorial-hub-hls': tutorialHubHls,
   'tutorial-hub-webrtc-turn': tutorialHubWebrtcTurn,
+  'blog-release-gate': blogReleaseGate,
 }
 
 /**

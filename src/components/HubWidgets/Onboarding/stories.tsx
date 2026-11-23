@@ -1,7 +1,9 @@
+import { useEffect, useState } from 'react'
 import type { Meta, StoryObj } from '@storybook/react-vite'
+import { expect, userEvent, within } from 'storybook/test'
 import { HubOnboarding } from '../onboarding'
 import { emptyOnboardingData } from '../onboarding-data'
-import type { HubOnboardingData } from '../onboarding-data'
+import type { HubOnboardingData, HubOnboardingTask } from '../onboarding-data'
 
 const account = { username: 'sarah.peeters', email: 'sarah@acme-security.be' }
 
@@ -25,7 +27,7 @@ const filled: HubOnboardingData = {
 }
 
 const meta = {
-  title: 'Screens/Onboarding',
+  title: 'Areas/Onboarding',
   component: HubOnboarding,
   tags: ['autodocs'],
   args: { account, step: 'welcome' },
@@ -183,4 +185,104 @@ export const Playground: Story = {
     invitations: [{ id: 'i1', organisation: 'Northwind Logistics', invitedBy: 'Olivia Martens', role: 'editor' }],
   },
   parameters: { docs: { description: { story: 'The whole flow: Create an organisation, fill in or skip each step, review and create.' } } },
+}
+
+// Pauses between steps so an audience can read each screen before the next one.
+const pause = (ms: number) => new Promise(resolve => window.setTimeout(resolve, ms))
+
+export const Demo: Story = {
+  args: { step: 'welcome' },
+  parameters: {
+    docs: {
+      description: {
+        story: 'Plays the whole onboarding by itself, at reading pace, for demos: create an organisation, fill in the profile, organisation, contacts, one invitation and the first project, review and create. Open the story on its own (not in Docs) to watch it; the **Interactions** panel lists each step and replays it. Takes about 35 seconds.',
+      },
+    },
+  },
+  // After Create, the set-up tasks turn to done one by one, like the real creation.
+  render: function DemoStory(args) {
+    const [tasks, setTasks] = useState<HubOnboardingTask[] | undefined>(undefined)
+    useEffect(() => {
+      if (!tasks) return
+      const running = tasks.findIndex(task => task.state === 'running')
+      if (running < 0) return
+      const timer = window.setTimeout(() => setTasks(tasks.map((task, i) =>
+        i === running ? { ...task, state: 'done' } : i === running + 1 ? { ...task, state: 'running' } : task)), 1100)
+      return () => window.clearTimeout(timer)
+    }, [tasks])
+    return <HubOnboarding {...args} tasks={tasks} onFinish={data => {
+      const invites = data.invites.filter(invite => invite.email.trim()).length
+      setTasks([
+        { label: 'Saving your profile', state: 'running' },
+        { label: `Creating ${data.organisation.name}`, state: 'pending' },
+        { label: `Setting up ${data.project.name}`, state: 'pending' },
+        ...(invites ? [{ label: `Sending ${invites} invitation${invites === 1 ? '' : 's'}`, state: 'pending' as const }] : []),
+      ])
+    }} />
+  },
+  play: async ({ canvasElement, step }) => {
+    const canvas = within(canvasElement)
+    const user = userEvent.setup({ delay: 55 })
+    const continueTo = async (heading: string) => {
+      await pause(700)
+      await user.click(canvas.getByRole('button', { name: 'Continue' }))
+      await canvas.findByRole('heading', { level: 1, name: heading })
+      await pause(900)
+    }
+
+    await step('Welcome: create an organisation', async () => {
+      await pause(1200)
+      await user.click(canvas.getByRole('button', { name: 'Create an organisation' }))
+      await pause(900)
+    })
+
+    await step('Your profile', async () => {
+      await user.type(canvas.getByLabelText('First name'), filled.profile.firstName)
+      await user.type(canvas.getByLabelText('Last name'), filled.profile.lastName)
+      await continueTo('Create your organisation')
+    })
+
+    await step('Organisation', async () => {
+      await user.type(canvas.getByLabelText('Organisation name'), filled.organisation.name)
+      await user.type(canvas.getByLabelText('Description (optional)'), filled.organisation.description)
+      await user.type(canvas.getByLabelText('Legal name'), filled.organisation.legalName)
+      await user.type(canvas.getByLabelText('VAT number'), filled.organisation.vatNumber)
+      await continueTo('Billing and contacts')
+    })
+
+    await step('Billing & contacts', async () => {
+      await user.type(canvas.getByLabelText('Street'), filled.billing.address.street)
+      await user.type(canvas.getByLabelText('Number'), filled.billing.address.streetNumber)
+      await user.type(canvas.getByLabelText('Postal code'), filled.billing.address.postalCode)
+      await user.type(canvas.getByLabelText('City'), filled.billing.address.city)
+      await continueTo('Invite your team')
+    })
+
+    await step('Invite your team', async () => {
+      await user.type(canvas.getByLabelText('Email'), filled.invites[0].email)
+      await pause(400)
+      await user.click(canvas.getByRole('button', { name: 'Role: Editor' }))
+      await pause(700)
+      await user.click(canvas.getByRole('radio', { name: 'Organisation manager' }))
+      await continueTo('Name your first project')
+    })
+
+    await step('First project', async () => {
+      // The name starts as "Default project": replace it rather than append.
+      await user.clear(canvas.getByLabelText('Project name'))
+      await pause(300)
+      await user.type(canvas.getByLabelText('Project name'), filled.project.name)
+      await user.type(canvas.getByLabelText('Description (optional)'), filled.project.description)
+      await continueTo('Ready to create')
+    })
+
+    await step('Review and create', async () => {
+      await pause(1500)
+      await user.click(canvas.getByRole('button', { name: `Create ${filled.organisation.name}` }))
+    })
+
+    await step('Set-up finishes', async () => {
+      await expect(await canvas.findByRole('heading', { name: `${filled.organisation.name} is ready` }, { timeout: 10000 })).toBeVisible()
+    })
+  },
 }

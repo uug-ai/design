@@ -4,7 +4,7 @@ import { HubActivation } from '../activation'
 import type { HubActivationState } from '../activation'
 
 const meta = {
-  title: 'Screens/Account activation',
+  title: 'Areas/Account activation',
   component: HubActivation,
   tags: ['autodocs'],
   args: { state: 'enter', pin: '', onPinChange: () => undefined, onActivate: () => undefined },

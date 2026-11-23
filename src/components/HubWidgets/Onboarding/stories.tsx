@@ -3,6 +3,7 @@ import type { Meta, StoryObj } from '@storybook/react-vite'
 import { expect, userEvent, within } from 'storybook/test'
 import { HubOnboarding } from '../onboarding'
 import { emptyOnboardingData } from '../onboarding-data'
+import { DEMO_PACE, DEMO_TYPING_DELAY, pause } from '../demo-pace'
 import type { HubOnboardingData, HubOnboardingTask } from '../onboarding-data'
 
 const account = { username: 'sarah.peeters', email: 'sarah@acme-security.be' }
@@ -187,15 +188,13 @@ export const Playground: Story = {
   parameters: { docs: { description: { story: 'The whole flow: Create an organisation, fill in or skip each step, review and create.' } } },
 }
 
-// Pauses between steps so an audience can read each screen before the next one.
-const pause = (ms: number) => new Promise(resolve => window.setTimeout(resolve, ms))
 
 export const Demo: Story = {
   args: { step: 'welcome' },
   parameters: {
     docs: {
       description: {
-        story: 'Plays the whole onboarding by itself, at reading pace, for demos: create an organisation, fill in the profile, organisation, contacts, one invitation and the first project, review and create. Open the story on its own (not in Docs) to watch it; the **Interactions** panel lists each step and replays it. Takes about 35 seconds.',
+        story: 'Plays the whole onboarding by itself, at reading pace, for demos: create an organisation, fill in the profile, organisation, contacts, one invitation and the first project, review and create. Open the story on its own (not in Docs) to watch it; the **Interactions** panel lists each step and replays it. Takes about a minute.',
       },
     },
   },
@@ -207,7 +206,7 @@ export const Demo: Story = {
       const running = tasks.findIndex(task => task.state === 'running')
       if (running < 0) return
       const timer = window.setTimeout(() => setTasks(tasks.map((task, i) =>
-        i === running ? { ...task, state: 'done' } : i === running + 1 ? { ...task, state: 'running' } : task)), 1100)
+        i === running ? { ...task, state: 'done' } : i === running + 1 ? { ...task, state: 'running' } : task)), 1100 * DEMO_PACE)
       return () => window.clearTimeout(timer)
     }, [tasks])
     return <HubOnboarding {...args} tasks={tasks} onFinish={data => {
@@ -222,7 +221,7 @@ export const Demo: Story = {
   },
   play: async ({ canvasElement, step }) => {
     const canvas = within(canvasElement)
-    const user = userEvent.setup({ delay: 55 })
+    const user = userEvent.setup({ delay: DEMO_TYPING_DELAY })
     const continueTo = async (heading: string) => {
       await pause(700)
       await user.click(canvas.getByRole('button', { name: 'Continue' }))

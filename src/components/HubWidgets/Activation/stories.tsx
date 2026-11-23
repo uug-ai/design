@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import type { Meta, StoryObj } from '@storybook/react-vite'
+import { linkTo } from '@storybook/addon-links'
 import { expect, userEvent, within } from 'storybook/test'
 import { HubActivation } from '../activation'
 import { DEMO_TYPING_DELAY, pause } from '../demo-pace'
@@ -55,36 +56,52 @@ export const ServerError: Story = {
   parameters: { docs: { description: { story: 'ACTIVATE_FAILED or no answer: the PIN stays as typed and the button retries.' } } },
 }
 
+/**
+ * A stand-in for POST /activate: 7KQ2M activates, A1B2C is already active, Z9Z9Z
+ * fails on the server and any other PIN is unknown. Without onSignIn, Sign in
+ * starts over.
+ */
+function useSimulatedActivation(onSignIn?: () => void) {
+  const [state, setState] = useState<HubActivationState>('enter')
+  const [pin, setPin] = useState('')
+  const [checking, setChecking] = useState<string | null>(null)
+  useEffect(() => {
+    if (!checking) return
+    const timer = window.setTimeout(() => {
+      setState(checking === '7KQ2M' ? 'success' : checking === 'A1B2C' ? 'already-active' : checking === 'Z9Z9Z' ? 'error' : 'invalid')
+      setChecking(null)
+    }, 900)
+    return () => window.clearTimeout(timer)
+  }, [checking])
+  return {
+    state, pin,
+    onPinChange: (next: string) => { setPin(next); if (state === 'invalid' || state === 'error') setState('enter') },
+    onActivate: (next: string) => { setState('verifying'); setChecking(next) },
+    onSignIn: onSignIn ?? (() => { setState('enter'); setPin('') }),
+  }
+}
+
 export const Playground: Story = {
   parameters: { docs: { description: { story: 'Type or paste a PIN. 7KQ2M activates, A1B2C is already active, Z9Z9Z fails on the server and any other PIN is unknown.' } } },
   render: function PlaygroundStory() {
-    const [state, setState] = useState<HubActivationState>('enter')
-    const [pin, setPin] = useState('')
-    const [checking, setChecking] = useState<string | null>(null)
-    useEffect(() => {
-      if (!checking) return
-      const timer = window.setTimeout(() => {
-        setState(checking === '7KQ2M' ? 'success' : checking === 'A1B2C' ? 'already-active' : checking === 'Z9Z9Z' ? 'error' : 'invalid')
-        setChecking(null)
-      }, 900)
-      return () => window.clearTimeout(timer)
-    }, [checking])
-    return <HubActivation state={state} pin={pin}
-      onPinChange={(next) => { setPin(next); if (state === 'invalid' || state === 'error') setState('enter') }}
-      onActivate={(next) => { setState('verifying'); setChecking(next) }}
-      onSignIn={() => { setState('enter'); setPin('') }} />
+    return <HubActivation {...useSimulatedActivation()} />
   },
 }
+
+// Where the activation demo continues: the first sign-in of an account without an organisation.
+const openOnboardingDemo = linkTo('Areas/Onboarding', 'Demo')
 
 export const Demo: Story = {
   parameters: {
     docs: {
       description: {
-        story: 'Plays an activation by itself, at reading pace, for demos: a PIN with one wrong character is refused with the message under the field, the last character is corrected and the account activates. Open the story on its own (not in Docs) to watch it; the **Interactions** panel lists each step and replays it. Takes about 15 seconds.',
+        story: 'Plays an activation by itself, at reading pace, for demos: a PIN with one wrong character is refused with the message under the field, the last character is corrected and the account activates. It then selects **Sign in to Hub**, which opens **Areas / Onboarding / Demo**, so the two play as one demo from the welcome email to a ready organisation. Open the story on its own (not in Docs) to watch it; the **Interactions** panel lists each step and replays it. Takes about 15 seconds before the onboarding demo starts.',
       },
     },
   },
-  render: Playground.render,
+  render: function DemoStory() {
+    return <HubActivation {...useSimulatedActivation(openOnboardingDemo)} />
+  },
   play: async ({ canvasElement, step }) => {
     const canvas = within(canvasElement)
     const user = userEvent.setup({ delay: DEMO_TYPING_DELAY * 2 })
@@ -112,6 +129,11 @@ export const Demo: Story = {
       await expect(await canvas.findByRole('heading', { level: 1, name: 'Your account is active' }, { timeout: 10000 })).toBeVisible()
       await pause(1000)
       await user.hover(canvas.getByRole('button', { name: 'Sign in to Hub' }))
+      await pause(1500)
+    })
+
+    await step('Sign in: continues in the onboarding demo', async () => {
+      await user.click(canvas.getByRole('button', { name: 'Sign in to Hub' }))
     })
   },
 }

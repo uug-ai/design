@@ -1,6 +1,8 @@
 import { useEffect, useState } from 'react'
 import type { Meta, StoryObj } from '@storybook/react-vite'
+import { expect, userEvent, within } from 'storybook/test'
 import { HubActivation } from '../activation'
+import { DEMO_TYPING_DELAY, pause } from '../demo-pace'
 import type { HubActivationState } from '../activation'
 
 const meta = {
@@ -71,5 +73,45 @@ export const Playground: Story = {
       onPinChange={(next) => { setPin(next); if (state === 'invalid' || state === 'error') setState('enter') }}
       onActivate={(next) => { setState('verifying'); setChecking(next) }}
       onSignIn={() => { setState('enter'); setPin('') }} />
+  },
+}
+
+export const Demo: Story = {
+  parameters: {
+    docs: {
+      description: {
+        story: 'Plays an activation by itself, at reading pace, for demos: a PIN with one wrong character is refused with the message under the field, the last character is corrected and the account activates. Open the story on its own (not in Docs) to watch it; the **Interactions** panel lists each step and replays it. Takes about 15 seconds.',
+      },
+    },
+  },
+  render: Playground.render,
+  play: async ({ canvasElement, step }) => {
+    const canvas = within(canvasElement)
+    const user = userEvent.setup({ delay: DEMO_TYPING_DELAY * 2 })
+
+    await step('Type the PIN from the welcome email, with one wrong character', async () => {
+      await pause(1500)
+      await user.click(canvas.getByLabelText('Character 1 of 5'))
+      await user.keyboard('7KQ2N')
+    })
+
+    await step('The PIN does not match an account', async () => {
+      await expect(await canvas.findByRole('alert', {}, { timeout: 10000 })).toHaveTextContent('does not match an account')
+      await pause(2500)
+    })
+
+    await step('Correct the last character', async () => {
+      await user.click(canvas.getByLabelText('Character 5 of 5'))
+      await pause(400)
+      await user.keyboard('{Backspace}')
+      await pause(500)
+      await user.keyboard('M')
+    })
+
+    await step('The account is active', async () => {
+      await expect(await canvas.findByRole('heading', { level: 1, name: 'Your account is active' }, { timeout: 10000 })).toBeVisible()
+      await pause(1000)
+      await user.hover(canvas.getByRole('button', { name: 'Sign in to Hub' }))
+    })
   },
 }

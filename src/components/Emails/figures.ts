@@ -7,7 +7,8 @@ import { box, frame, FRONT, onPlane, P, range, SIDE, TOP, type Vec3 } from '../I
 
 export type NotificationFigure =
   | 'welcome' | 'activate' | 'forgot' | 'newip' | 'detection' | 'device' | 'device_group'
-  | 'disable' | 'highupload' | 'share' | 'share_case' | 'share_case_otp' | 'assign_task' | 'invitation'
+  | 'limit_50' | 'limit_75' | 'disable' | 'highupload' | 'share' | 'share_case' | 'share_case_otp' | 'assign_task'
+  | 'invitation'
 
 export type LicenseFigure = 'license' | 'license_expiring' | 'license_expired'
 
@@ -47,6 +48,23 @@ function agentBox(x: number, y: number, on = true) {
 function screen(x: number, y: number, z: number, content: string) {
   return box(x + 24, y, 0, 12, 8, 3) + box(x + 28, y + 2, 3, 4, 3, z - 3)
     + box(x, y + 2, z, 60, 3, 36) + onPlane(FRONT(x, y + 5, z + 36), content)
+}
+
+// A storage meter of eight bars with `lit` of them filled from the bottom, next to a dial
+// showing `share` (or a pause sign when the meter is full).
+function usageMeter(lit: number, share?: string): Drawing {
+  const dial = share
+    ? `<text class="dial-text" transform="rotate(-45 13 13)" x="13" y="15.6" text-anchor="middle">${share}</text>`
+    : '<rect class="lit" x="8" y="7" width="3.5" height="12"/><rect class="lit" x="14.5" y="7" width="3.5" height="12"/>'
+  return {
+    markup: grid(-20, -10, 120, 90)
+      + box(30, 20, 0, 40, 30, 70)
+      + onPlane(FRONT(30, 50, 70), range(0, 7, 1).map(i => `<rect class="${i >= 8 - lit ? 'lit' : 'd'}" x="6" y="${6 + i * 7.5}" width="28" height="5.5"/>`).join(''))
+      + onPlane(SIDE(70, 50, 70), lines(5, 10, 20, 3, 6))
+      + box(74, 40, 0, 26, 26, 4)
+      + onPlane(TOP(74, 40, 4), `<circle class="t" cx="13" cy="13" r="11"/>${dial}`),
+    bounds: block(30, 20, 100, 66, 70),
+  }
 }
 
 const FIGURES: Record<EmailFigure, () => Drawing> = {
@@ -121,16 +139,11 @@ const FIGURES: Record<EmailFigure, () => Drawing> = {
       + [[20, 4], [55, 18], [90, 32]].map(([x, y], i) => onPlaneCamera(x, y, i === 2)).join(''),
     bounds: [...block(0, 0, 120, 70, 6), [17, 4, 52], [87, 32, 52]],
   }),
-  // A storage meter filled to the brim with a pause sign: the daily limit is reached.
-  disable: () => ({
-    markup: grid(-20, -10, 120, 90)
-      + box(30, 20, 0, 40, 30, 70)
-      + onPlane(FRONT(30, 50, 70), range(0, 6, 1).map(i => `<rect class="lit" x="6" y="${8 + i * 8.5}" width="28" height="6"/>`).join(''))
-      + onPlane(SIDE(70, 50, 70), lines(5, 10, 20, 3, 6))
-      + box(74, 40, 0, 26, 26, 4)
-      + onPlane(TOP(74, 40, 4), '<circle class="t" cx="13" cy="13" r="11"/><rect class="lit" x="8" y="7" width="3.5" height="12"/><rect class="lit" x="14.5" y="7" width="3.5" height="12"/>'),
-    bounds: block(30, 20, 100, 66, 70),
-  }),
+  // The storage meter half and three quarters full, the share used lettered on its dial.
+  limit_50: () => usageMeter(4, '50%'),
+  limit_75: () => usageMeter(6, '75%'),
+  // The storage meter filled to the brim with a pause sign: the daily limit is reached.
+  disable: () => usageMeter(8),
   // An Agent sending a tall stack of recordings up: unusually many uploads.
   highupload: () => ({
     markup: grid(-20, -10, 120, 90)
@@ -285,6 +298,7 @@ export function renderEmailFigure(figure: EmailFigure, accent: string, tint: str
     '.iso-side{fill:#ebe8f2}.coin-edge{stroke:rgba(11,11,18,.42);stroke-width:.7}',
     `.coin-text{font-family:Outfit,Inter,Arial,sans-serif;font-weight:700;letter-spacing:.08em;fill:#0b0b12}`,
     `.stamp{fill:#ffffff;fill-opacity:.85;stroke:${accent};stroke-width:1.4}.stamp-text{font:700 6.5px Inter,Arial,sans-serif;letter-spacing:.8px;fill:${accent}}`,
+    `.dial-text{font:700 7.5px Inter,Arial,sans-serif;fill:${accent}}`,
     `.label{font:600 4px Inter,Arial,sans-serif;letter-spacing:.6px;fill:${accent}}`,
   ].join('')
   const [x, y, width, height] = canvas(bounds)

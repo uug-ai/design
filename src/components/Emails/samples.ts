@@ -44,6 +44,8 @@ export const SAMPLES: Record<EmailFigure, Record<string, string>> = {
       { title: 'Other cameras · Back online · 1 camera', cameras: [['Warehouse', 'online']] },
     ]),
   },
+  limit_50: { user, dataUsage: '25', link: `${app}/subscription` },
+  limit_75: { user, dataUsage: '37.5', link: `${app}/subscription` },
   disable: { user, dataUsage: '50', text: 'Your account uploaded 50 GB of recordings today.', link: `${app}/subscription` },
   highupload: { user, link: `${app}/alerts` },
   share: { user, title: 'Entrance, 31 October 14:32', body: 'Can you check who this is?', url: `${app}/share/9b1d4e` },

@@ -24,6 +24,8 @@ const preview: Preview = {
   ],
   parameters: {
     layout: 'padded',
+    // A Code tab next to Controls in the story view, with the same source as Show code on Docs pages.
+    docs: { codePanel: true },
     options: {
       storySort: {
         order: ['Components', 'Areas', 'Emails', 'Draw'],

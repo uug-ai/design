@@ -6,7 +6,7 @@ const config: StorybookConfig = {
     '../src/components/DrawBlocks/**/*.mdx',
     '../src/components/{HubWidgets,Emails,DrawBlocks}/**/stories.@(js|jsx|mjs|ts|tsx)',
   ],
-  addons: ['@storybook/addon-a11y', '@storybook/addon-docs'],
+  addons: ['@storybook/addon-a11y', '@storybook/addon-docs', '@storybook/addon-links'],
   features: {
     sidebarOnboardingChecklist: false,
   },

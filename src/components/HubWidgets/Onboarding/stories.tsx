@@ -194,7 +194,7 @@ export const Demo: Story = {
   parameters: {
     docs: {
       description: {
-        story: 'Plays the whole onboarding by itself, at reading pace, for demos: create an organisation, fill in the profile, organisation, contacts, one invitation and the first project, review and create. Open the story on its own (not in Docs) to watch it; the **Interactions** panel lists each step and replays it. Takes about a minute.',
+        story: 'Plays the whole onboarding by itself, at reading pace, for demos: create an organisation, fill in the profile, organisation, contacts, one invitation and the first project, review and create. **Areas / Account activation / Demo** continues here after Sign in. Open the story on its own (not in Docs) to watch it; the **Interactions** panel lists each step and replays it. Takes about a minute.',
       },
     },
   },
